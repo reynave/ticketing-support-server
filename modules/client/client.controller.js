@@ -61,10 +61,32 @@ async function remove(req, res, next) {
   }
 }
 
+async function listUsers(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await clientService.listClientUsers(id);
+    return res.json(success('Client users fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function createUser(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await clientService.createClientUser(id, req.body || {});
+    return res.status(201).json(success('Client user created', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
   create,
   update,
   remove,
+  listUsers,
+  createUser,
 };

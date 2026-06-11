@@ -1,4 +1,5 @@
 const { pool } = require('../../config/db');
+const userService = require('../user/user.service');
 
 function parseNumeric(value, fallback = null) {
   if (value === undefined || value === null || value === '') {
@@ -6,14 +7,6 @@ function parseNumeric(value, fallback = null) {
   }
 
   return Number(value);
-}
-
-function validateTinyInt(fieldName, value) {
-  if (!Number.isInteger(value) || value < 0 || value > 127) {
-    const error = new Error(`${fieldName} must be an integer between 0 and 127`);
-    error.statusCode = 400;
-    throw error;
-  }
 }
 
 function validateStatus(value) {
@@ -24,28 +17,42 @@ function validateStatus(value) {
   }
 }
 
+function buildDeletedEmail(email, userId) {
+  const randomPart = `${Date.now()}${Math.floor(Math.random() * 1000000)}`;
+  const source = String(email || '').trim() || `${userId || 'user'}@deleted.local`;
+  return `delete.${randomPart}.${source}`;
+}
+
 async function listClients(filters = {}) {
-  const conditions = ['presence = 1'];
+  const conditions = ['c.presence = 1'];
   const params = [];
 
   if (filters.status !== undefined) {
-    conditions.push('status = ?');
+    conditions.push('c.status = ?');
     params.push(Number(filters.status));
   }
 
   if (filters.industryId !== undefined) {
-    conditions.push('IndustryId = ?');
+    conditions.push('c.industryId = ?');
     params.push(Number(filters.industryId));
   }
 
   if (filters.keyword) {
-    conditions.push('(code LIKE ? OR name LIKE ?)');
+    conditions.push('(c.code LIKE ? OR c.name LIKE ?)');
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`);
   }
 
   const whereClause = `WHERE ${conditions.join(' AND ')}`;
   const [rows] = await pool.execute(
-    `SELECT * FROM client ${whereClause} ORDER BY id ASC`,
+    `
+      SELECT 
+        c.*, 
+        i.name as industryName
+      FROM client c
+      LEFT JOIN industry i ON c.industryId = i.id
+      ${whereClause}
+      ORDER BY c.id ASC
+    `,
     params
   );
 
@@ -54,7 +61,15 @@ async function listClients(filters = {}) {
 
 async function getClientDetail(id) {
   const [rows] = await pool.execute(
-    'SELECT * FROM client WHERE id = ? AND presence = 1 LIMIT 1',
+    `
+      SELECT 
+        c.*, 
+        i.name as industryName
+      FROM client c
+      LEFT JOIN industry i ON c.industryId = i.id
+      WHERE c.id = ? AND c.presence = 1
+      LIMIT 1
+    `,
     [id]
   );
 
@@ -79,7 +94,6 @@ async function createClient(payload) {
   const industryId = parseNumeric(payload.IndustryId, 0);
   const status = parseNumeric(payload.status, 1);
 
-  validateTinyInt('IndustryId', industryId);
   validateStatus(status);
 
   const [result] = await pool.execute(
@@ -114,7 +128,6 @@ async function updateClient(id, payload) {
 
   if (payload.IndustryId !== undefined) {
     const industryId = Number(payload.IndustryId);
-    validateTinyInt('IndustryId', industryId);
     fields.push('IndustryId = ?');
     params.push(industryId);
   }
@@ -151,22 +164,72 @@ async function updateClient(id, payload) {
 }
 
 async function deleteClient(id) {
-  const [result] = await pool.execute(
-    `
-      UPDATE client
-      SET presence = 0, updateDate = NOW(), updateBy = 1
-      WHERE id = ? AND presence = 1
-    `,
-    [id]
-  );
+  const connection = await pool.getConnection();
 
-  if (!result.affectedRows) {
-    const error = new Error('Client not found');
-    error.statusCode = 404;
+  try {
+    await connection.beginTransaction();
+
+    const [clientRows] = await connection.execute(
+      'SELECT id FROM client WHERE id = ? AND presence = 1 LIMIT 1',
+      [id]
+    );
+
+    if (!clientRows[0]) {
+      const error = new Error('Client not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const [users] = await connection.execute(
+      `
+        SELECT id, email
+        FROM user
+        WHERE clientId = ? AND presence = 1
+      `,
+      [id]
+    );
+
+    for (const user of users) {
+      const deletedEmail = buildDeletedEmail(user.email, user.id);
+      await connection.execute(
+        `
+          UPDATE user
+          SET email = ?, status = 0, presence = 0, updateDate = NOW(), updateBy = 1
+          WHERE id = ? AND presence = 1
+        `,
+        [deletedEmail, user.id]
+      );
+    }
+
+    await connection.execute(
+      `
+        UPDATE client
+        SET status = 0, presence = 0, updateDate = NOW(), updateBy = 1
+        WHERE id = ? AND presence = 1
+      `,
+      [id]
+    );
+
+    await connection.commit();
+
+    return {
+      id: Number(id),
+      deletedExternalUserCount: users.length,
+    };
+  } catch (error) {
+    await connection.rollback();
     throw error;
+  } finally {
+    connection.release();
   }
+}
 
-  return { id: Number(id) };
+async function listClientUsers(clientId) {
+  return userService.listExternalUsersByClient(Number(clientId));
+}
+
+async function createClientUser(clientId, payload) {
+  return userService.createExternalUserForClient(Number(clientId), payload);
 }
 
 module.exports = {
@@ -175,4 +238,6 @@ module.exports = {
   createClient,
   updateClient,
   deleteClient,
+  listClientUsers,
+  createClientUser,
 };

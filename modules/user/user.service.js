@@ -2,6 +2,9 @@ const { randomUUID } = require('crypto');
 const bcrypt = require('bcryptjs');
 const { pool } = require('../../config/db');
 
+const INTERNAL_USER_TYPE_ID = 1;
+const EXTERNAL_USER_TYPE_ID = 2;
+
 function buildUserId(inputId) {
   if (inputId && String(inputId).trim()) {
     return String(inputId).trim();
@@ -20,6 +23,104 @@ function parseStatus(value) {
   }
 
   return status;
+}
+
+function parseUserTypeId(value) {
+  const userTypeId = Number(value);
+
+  if (![INTERNAL_USER_TYPE_ID, EXTERNAL_USER_TYPE_ID].includes(userTypeId)) {
+    const error = new Error('userTypeId must be 1 (Internal) or 2 (External)');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return userTypeId;
+}
+
+function parseClientId(value) {
+  const clientId = Number(value);
+
+  if (!Number.isInteger(clientId) || clientId < 0) {
+    const error = new Error('clientId must be an integer greater than or equal to 0');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return clientId;
+}
+
+function buildDeletedEmail(email, userId) {
+  const randomPart = `${Date.now()}${Math.floor(Math.random() * 1000000)}`;
+  const source = String(email || '').trim() || `${userId || 'user'}@deleted.local`;
+  return `delete.${randomPart}.${source}`;
+}
+
+async function assertClientExists(clientId) {
+  const [rows] = await pool.execute(
+    'SELECT id FROM client WHERE id = ? AND presence = 1 LIMIT 1',
+    [clientId]
+  );
+
+  if (!rows[0]) {
+    const error = new Error('Client not found or inactive');
+    error.statusCode = 404;
+    throw error;
+  }
+}
+
+function normalizeClientIdInput(clientIdInput) {
+  if (clientIdInput === undefined || clientIdInput === null || clientIdInput === '') {
+    return null;
+  }
+
+  return parseClientId(clientIdInput);
+}
+
+async function resolveClientIdByUserType(userTypeId, clientIdInput, currentClientId = null) {
+  const parsedInput = normalizeClientIdInput(clientIdInput);
+
+  if (userTypeId === INTERNAL_USER_TYPE_ID) {
+    if (parsedInput !== null && parsedInput !== 0) {
+      const error = new Error('Internal user must use clientId = 0');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    return 0;
+  }
+
+  const candidateClientId = parsedInput === null ? currentClientId : parsedInput;
+
+  if (!Number.isInteger(candidateClientId) || candidateClientId <= 0) {
+    const error = new Error('External user must provide a valid clientId > 0');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await assertClientExists(candidateClientId);
+  return candidateClientId;
+}
+
+async function getUserForUpdate(id) {
+  const [rows] = await pool.execute(
+    `
+      SELECT id, email, clientId, userTypeId
+      FROM user
+      WHERE id = ? AND presence = 1
+      LIMIT 1
+    `,
+    [id]
+  );
+
+  const user = rows[0];
+
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return user;
 }
 
 async function assertEmailUnique(email, exceptUserId = null) {
@@ -62,6 +163,11 @@ async function listUsers(filters = {}) {
     params.push(Number(filters.clientId));
   }
 
+  if (filters.userTypeId !== undefined) {
+    conditions.push('userTypeId = ?');
+    params.push(Number(filters.userTypeId));
+  }
+
   if (filters.keyword) {
     conditions.push('(id LIKE ? OR email LIKE ? OR firstName LIKE ? OR lastName LIKE ?)');
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
@@ -71,7 +177,7 @@ async function listUsers(filters = {}) {
   const [rows] = await pool.execute(
     `
       SELECT
-        id, email, clientId, authlevelId, firstName, lastName, phone, mobile,
+        id, email, clientId, userTypeId, authlevelId, firstName, lastName, phone, mobile,
         birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       FROM user
       ${whereClause}
@@ -87,7 +193,7 @@ async function getUserDetail(id) {
   const [rows] = await pool.execute(
     `
       SELECT
-        id, email, clientId, authlevelId, firstName, lastName, phone, mobile,
+        id, email, clientId, userTypeId, authlevelId, firstName, lastName, phone, mobile,
         birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       FROM user
       WHERE id = ? AND presence = 1
@@ -108,7 +214,7 @@ async function getUserDetail(id) {
 }
 
 async function createUser(payload) {
-  const required = ['email', 'password', 'authlevelId', 'firstName'];
+  const required = ['email', 'password', 'authlevelId', 'firstName', 'userTypeId'];
   const missing = required.filter((field) => payload[field] === undefined || payload[field] === null || payload[field] === '');
 
   if (missing.length) {
@@ -123,19 +229,22 @@ async function createUser(payload) {
   const passwordHash = await bcrypt.hash(String(payload.password), 4);
   const status = payload.status === undefined ? 1 : parseStatus(payload.status);
   const birthday = payload.birthday || '2000-01-01';
+  const userTypeId = parseUserTypeId(payload.userTypeId);
+  const clientId = await resolveClientIdByUserType(userTypeId, payload.clientId, null);
 
   await pool.execute(
     `
       INSERT INTO user (
-        id, email, clientId, password, authlevelId, firstName, lastName,
+        id, email, clientId, userTypeId, password, authlevelId, firstName, lastName,
         phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
     `,
     [
       id,
       payload.email,
-      payload.clientId === undefined ? null : Number(payload.clientId),
+      clientId,
+      userTypeId,
       passwordHash,
       Number(payload.authlevelId),
       payload.firstName,
@@ -151,6 +260,7 @@ async function createUser(payload) {
 }
 
 async function updateUser(id, payload) {
+  const currentUser = await getUserForUpdate(id);
   const fields = [];
   const params = [];
 
@@ -161,8 +271,31 @@ async function updateUser(id, payload) {
   }
 
   if (payload.clientId !== undefined) {
+    // clientId will be validated and set after userTypeId evaluation.
+  }
+
+  let nextUserTypeId = currentUser.userTypeId;
+
+  if (payload.userTypeId !== undefined) {
+    nextUserTypeId = parseUserTypeId(payload.userTypeId);
+    fields.push('userTypeId = ?');
+    params.push(nextUserTypeId);
+  }
+
+  if (nextUserTypeId === null || nextUserTypeId === undefined) {
+    const error = new Error('userTypeId is required for existing user data');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (payload.clientId !== undefined || payload.userTypeId !== undefined) {
+    const resolvedClientId = await resolveClientIdByUserType(
+      nextUserTypeId,
+      payload.clientId,
+      currentUser.clientId
+    );
     fields.push('clientId = ?');
-    params.push(payload.clientId === null ? null : Number(payload.clientId));
+    params.push(resolvedClientId);
   }
 
   if (payload.authlevelId !== undefined) {
@@ -231,13 +364,16 @@ async function updateUser(id, payload) {
 }
 
 async function deleteUser(id) {
+  const user = await getUserForUpdate(id);
+  const deletedEmail = buildDeletedEmail(user.email, user.id);
+
   const [result] = await pool.execute(
     `
       UPDATE user
-      SET presence = 0, updateDate = NOW(), updateBy = 1
+      SET email = ?, status = 0, presence = 0, updateDate = NOW(), updateBy = 1
       WHERE id = ? AND presence = 1
     `,
-    [id]
+    [deletedEmail, id]
   );
 
   if (!result.affectedRows) {
@@ -246,13 +382,45 @@ async function deleteUser(id) {
     throw error;
   }
 
-  return { id };
+  return { id, email: deletedEmail };
+}
+
+async function listExternalUsersByClient(clientId) {
+  await assertClientExists(clientId);
+
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        id, email, clientId, userTypeId, authlevelId, firstName, lastName, phone, mobile,
+        birthday, status, presence, inputDate, inputBy, updateDate, updateBy
+      FROM user
+      WHERE presence = 1 AND userTypeId = ? AND clientId = ?
+      ORDER BY inputDate DESC
+    `,
+    [EXTERNAL_USER_TYPE_ID, clientId]
+  );
+
+  return rows;
+}
+
+async function createExternalUserForClient(clientId, payload = {}) {
+  const normalizedClientId = parseClientId(clientId);
+
+  return createUser({
+    ...payload,
+    clientId: normalizedClientId,
+    userTypeId: EXTERNAL_USER_TYPE_ID,
+  });
 }
 
 module.exports = {
+  INTERNAL_USER_TYPE_ID,
+  EXTERNAL_USER_TYPE_ID,
   listUsers,
   getUserDetail,
   createUser,
   updateUser,
   deleteUser,
+  listExternalUsersByClient,
+  createExternalUserForClient,
 };

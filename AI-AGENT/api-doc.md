@@ -1,4 +1,4 @@
-# API Doc — Login & Master Data
+# API Doc — Auth, Master, Client, User, Project, Ticket Balance
 
 ## Base URL
 
@@ -22,9 +22,12 @@ Semua endpoint memakai format response:
 - Email: `admin@thinktank.local`
 - Password: `Admin123!`
 
-### Client Demo
+### Client Demo (phase berikutnya)
 - Email: `client.demo@thinktank.local`
 - Password: `Client123!`
+
+Catatan phase saat ini:
+- Login hanya untuk user internal (`clientId = 0`).
 
 ## Headers
 
@@ -41,7 +44,7 @@ Content-Type: application/json
 
 ### POST `/api/auth/login`
 
-Login user dan mendapatkan JWT token.
+Login user internal dan mendapatkan JWT token.
 
 ### Request Body
 
@@ -72,7 +75,8 @@ Login user dan mendapatkan JWT token.
 			"name": "System Admin",
 			"email": "admin@thinktank.local",
 			"authlevelId": 1,
-			"clientId": null
+			"clientId": 0,
+			"userTypeId": 1
 		}
 	}
 }
@@ -121,7 +125,8 @@ Authorization: Bearer <token>
 		"name": "System Admin",
 		"email": "admin@thinktank.local",
 		"authlevelId": 1,
-		"clientId": null
+		"clientId": 0,
+		"userTypeId": 1
 	}
 }
 ```
@@ -448,7 +453,33 @@ Update client existing (partial update).
 
 ### DELETE `/api/client/:id`
 
-Soft delete client (`presence = 0`).
+Soft delete client dengan policy:
+- set client `status = 0`, `presence = 0`
+- cascade soft delete semua user external terkait client tsb
+
+### GET `/api/client/:id/users`
+
+List user external untuk client tertentu.
+
+### POST `/api/client/:id/users`
+
+Create user external dari halaman detail client.
+
+Body example:
+
+```json
+{
+	"email": "external.user@thinktank.local",
+	"password": "Strong123!",
+	"authlevelId": 2,
+	"firstName": "External",
+	"lastName": "User"
+}
+```
+
+Catatan:
+- endpoint ini auto-set `userTypeId = 2` (External)
+- endpoint ini auto-set `clientId = :id`
 
 ### Success Response Example (Create)
 
@@ -547,10 +578,17 @@ Create user baru.
 	"authlevelId": 2,
 	"firstName": "New",
 	"lastName": "User",
+	"userTypeId": 2,
 	"clientId": 351,
 	"status": 1
 }
 ```
+
+Rule validasi Phase 6:
+- `userTypeId` wajib: `1=Internal`, `2=External`
+- Internal user wajib `clientId = 0`
+- External user wajib `clientId > 0` dan harus ada di tabel client aktif (`presence=1`)
+- Email wajib unik
 
 ---
 
@@ -647,7 +685,10 @@ Update user existing (partial update).
 
 ### DELETE `/api/user/:id`
 
-Soft delete user (`presence = 0`).
+Soft delete user dengan policy:
+- set `presence = 0`
+- set `status = 0`
+- set email menjadi `delete.<RANDOM_NUMBER>.<EMAIL_LAMA>`
 
 ### Success Response Example (Create)
 

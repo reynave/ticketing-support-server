@@ -2,7 +2,7 @@
 -- Host:                         localhost
 -- Server version:               10.4.28-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
--- HeidiSQL Version:             12.17.0.7270
+-- HeidiSQL Version:             12.18.0.7304
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -42,9 +42,12 @@ CREATE TABLE IF NOT EXISTS `client` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=351 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=353 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.client: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.client: ~2 rows (approximately)
+INSERT INTO `client` (`id`, `code`, `name`, `address`, `IndustryId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(351, 'CLI-DEMO', 'Demo Client', 'Jakarta', 127, 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
+	(352, 'CLI-TEMP-CRUD', 'Client Temp CRUD Updated', 'Bandung', 127, 0, 0, '2026-06-10 16:48:55', 1, '2026-06-10 16:48:55', 1);
 
 -- Dumping structure for table thinktank-ticket.global_setting
 CREATE TABLE IF NOT EXISTS `global_setting` (
@@ -61,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `global_setting` (
 
 -- Dumping data for table thinktank-ticket.global_setting: ~2 rows (approximately)
 INSERT INTO `global_setting` (`id`, `name`, `value`, `note`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(1000, 'ticket', '3', 'hour', '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(1000, 'ticket', '3', 'hours', '2025-01-01 00:00:00', 1, '2026-06-11 13:47:51', 1),
 	(1001, 'Man Day', '8', 'hour', '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
 
 -- Dumping structure for table thinktank-ticket.industry
@@ -74,12 +77,14 @@ CREATE TABLE IF NOT EXISTS `industry` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=353 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=355 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.industry: ~2 rows (approximately)
+-- Dumping data for table thinktank-ticket.industry: ~3 rows (approximately)
 INSERT INTO `industry` (`id`, `name`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(351, 'Automative', 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(352, 'FMCG', 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
+	(352, 'FMCG', 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(353, 'Dummy Industry CRUD Updated', 0, '2026-06-10 16:43:35', 1, '2026-06-10 16:43:35', 1),
+	(354, 'Temp Industry UI Test Updated', 0, '2026-06-11 13:35:24', 1, '2026-06-11 13:35:24', 1);
 
 -- Dumping structure for table thinktank-ticket.product
 CREATE TABLE IF NOT EXISTS `product` (
@@ -92,12 +97,13 @@ CREATE TABLE IF NOT EXISTS `product` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.product: ~2 rows (approximately)
 INSERT INTO `product` (`id`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 'Acumatica ERP', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(2, 'SAP B1', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
+	(2, 'SAP B1', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(3, 'odoo', 1, 1, '2026-06-11 13:39:06', 1, '2026-06-11 13:39:06', 1);
 
 -- Dumping structure for table thinktank-ticket.project
 CREATE TABLE IF NOT EXISTS `project` (
@@ -119,7 +125,10 @@ CREATE TABLE IF NOT EXISTS `project` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.project: ~2 rows (approximately)
+INSERT INTO `project` (`id`, `projectTypeId`, `projectBilleableId`, `projectCategoryId`, `productId`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('PRJ-822BC171', 1, 1, 1, 1, '351', '2026-06-10', '2026-08-10', 1, 'TB-TEST', 0, '2026-06-10 16:58:11', 1, '2026-06-10 16:58:11', 1),
+	('PRJ-CACC2C8D', 1, 1, 1, 1, '351', '2026-06-10', '2026-07-10', 0, 'TMP-UPDATED', 0, '2026-06-10 16:52:20', 1, '2026-06-10 16:52:20', 1);
 
 -- Dumping structure for table thinktank-ticket.project_billeable
 CREATE TABLE IF NOT EXISTS `project_billeable` (
@@ -132,14 +141,15 @@ CREATE TABLE IF NOT EXISTS `project_billeable` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.project_billeable: ~4 rows (approximately)
 INSERT INTO `project_billeable` (`id`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 'Chrageable', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(2, 'Internal', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(3, 'NBD', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(4, 'Non Chargeable', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
+	(4, 'Non Chargeable', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(5, 'BILL-TEMP-UPDATED', 1, 0, '2026-06-10 17:00:27', 1, '2026-06-10 17:00:27', 1);
 
 -- Dumping structure for table thinktank-ticket.project_categories
 CREATE TABLE IF NOT EXISTS `project_categories` (
@@ -152,16 +162,17 @@ CREATE TABLE IF NOT EXISTS `project_categories` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_categories: ~6 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_categories: ~7 rows (approximately)
 INSERT INTO `project_categories` (`id`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 'Blueprint', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(2, 'Configuration', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(3, 'SIT & UAT', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(4, 'Training', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(5, 'Deployement', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(6, 'GO LIVE', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
+	(6, 'GO LIVE', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(7, 'CAT-TEMP', 1, 0, '2026-06-10 17:00:27', 1, '2026-06-10 17:00:27', 1);
 
 -- Dumping structure for table thinktank-ticket.project_type
 CREATE TABLE IF NOT EXISTS `project_type` (
@@ -175,14 +186,17 @@ CREATE TABLE IF NOT EXISTS `project_type` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=355 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=358 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_type: ~4 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_type: ~7 rows (approximately)
 INSERT INTO `project_type` (`id`, `name`, `ticketBased`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 'Software Implementation', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(2, 'Software Support Ticket Based', 1, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(3, 'Software Support Fixed Cost', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(4, 'Change Request', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
+	(4, 'Change Request', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(355, 'TYPE-TEMP', 0, 1, 0, '2026-06-10 17:00:27', 1, '2026-06-10 17:00:27', 1),
+	(356, 'TYPE-TEMP2', 0, 1, 0, '2026-06-10 17:01:03', 1, '2026-06-10 17:01:03', 1),
+	(357, 'TYPE-TEMP2', 0, 1, 0, '2026-06-10 17:01:43', 1, '2026-06-10 17:01:43', 1);
 
 -- Dumping structure for table thinktank-ticket.ticket_balance
 CREATE TABLE IF NOT EXISTS `ticket_balance` (
@@ -198,15 +212,19 @@ CREATE TABLE IF NOT EXISTS `ticket_balance` (
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `projectId` (`projectId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_balance: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_balance: ~2 rows (approximately)
+INSERT INTO `ticket_balance` (`id`, `projectId`, `date`, `ticketIn`, `ticketOut`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(4, 'PRJ-822BC171', '2026-06-10 16:58:11', 10, 0, 1, '2026-06-10 16:58:11', 1, '2026-06-10 16:58:11', 1),
+	(5, 'PRJ-822BC171', '2026-06-10 16:58:11', 0, 3, 1, '2026-06-10 16:58:11', 1, '2026-06-10 16:58:11', 1);
 
 -- Dumping structure for table thinktank-ticket.user
 CREATE TABLE IF NOT EXISTS `user` (
   `id` varchar(250) NOT NULL DEFAULT '',
   `email` varchar(200) DEFAULT NULL,
-  `clientId` int(11) DEFAULT NULL,
+  `clientId` int(11) NOT NULL DEFAULT 0,
+  `userTypeId` tinyint(4) DEFAULT NULL,
   `password` varchar(200) DEFAULT NULL,
   `authlevelId` smallint(6) DEFAULT NULL,
   `firstName` varchar(200) DEFAULT NULL,
@@ -224,7 +242,11 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.user: ~3 rows (approximately)
+INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `authlevelId`, `firstName`, `lastName`, `phone`, `mobile`, `birthday`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('USR-62199DD8', 'temp.user.crud@thinktank.local', 0, NULL, '$2b$04$ZC9rTZ16ZujoiD2rHXzgIOyfCUPXWl5LhWd4IyziFTXSz70.ob8QO', 2, 'Temp Updated', 'User', NULL, NULL, '2000-01-01', 0, 0, '2026-06-10 16:55:29', 1, '2026-06-10 16:55:29', 1),
+	('USR-ADMIN', 'admin@thinktank.local', 0, NULL, '$2b$04$pBuL95VqIupLzvuvu399huQEYeuC5bJbEfAU.6uo58Xq3xVIs6BLS', 1, 'System', 'Admin', '021000000', '081200000001', '1990-01-01', 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
+	('USR-CLIENT', 'client.demo@thinktank.local', 351, NULL, '$2b$04$vpl.W2psDhKPJt3CdgMOUOPqdxu6dG3ORdEMUCHl5Fo65ZMzeTD3S', 2, 'Client', 'Demo', '021111111', '081200000002', '1992-02-02', 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1);
 
 -- Dumping structure for table thinktank-ticket.user_access_right
 CREATE TABLE IF NOT EXISTS `user_access_right` (
@@ -258,7 +280,10 @@ CREATE TABLE IF NOT EXISTS `user_auth_level` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_auth_level: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_auth_level: ~2 rows (approximately)
+INSERT INTO `user_auth_level` (`id`, `name`, `c`, `r`, `u`, `d`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(1, 'Administrator', 1, 1, 1, 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
+	(2, 'Client User', 1, 1, 0, 0, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1);
 
 -- Dumping structure for table thinktank-ticket.user_type
 CREATE TABLE IF NOT EXISTS `user_type` (

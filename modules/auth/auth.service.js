@@ -9,15 +9,16 @@ function buildUserPayload(user) {
     email: user.email,
     authlevelId: user.authlevelId,
     clientId: user.clientId,
+    userTypeId: user.userTypeId,
   };
 }
 
 async function login(email, password) {
   const [rows] = await pool.execute(
     `
-      SELECT id, email, clientId, password, authlevelId, firstName, lastName
+      SELECT id, email, clientId, userTypeId, password, authlevelId, firstName, lastName
       FROM user
-      WHERE email = ? AND status = 1 AND presence = 1
+      WHERE email = ? AND status = 1 AND presence = 1 AND clientId = 0
       LIMIT 1
     `,
     [email]
@@ -53,9 +54,9 @@ async function login(email, password) {
 async function getMe(userId) {
   const [rows] = await pool.execute(
     `
-      SELECT id, email, clientId, authlevelId, firstName, lastName
+      SELECT id, email, clientId, userTypeId, authlevelId, firstName, lastName
       FROM user
-      WHERE id = ? AND status = 1 AND presence = 1
+      WHERE id = ? AND status = 1 AND presence = 1 AND clientId = 0
       LIMIT 1
     `,
     [userId]

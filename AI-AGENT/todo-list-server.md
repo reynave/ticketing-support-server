@@ -103,6 +103,47 @@ Scope dokumen ini: fokus tahap awal hanya LOGIN + MASTER DATA dari tabel existin
 
 ---
 
+
+## Phase 6: Client & User (Final Requirement)
+
+Tujuan phase ini: finalisasi kontrak REST API untuk relasi client-user sebelum implementasi kode.
+
+### Rule Bisnis Final
+
+- [x] Istilah domain resmi: gunakan Client (bukan Company).
+- [x] Modul terpisah: Client module dan User module.
+- [x] Email user wajib isi (mandatory) dan harus unik.
+- [x] userTypeId sudah tersedia di tabel user (`user_type`: 1=Internal, 2=External).
+- [x] Relasi user ke client:
+  - Internal user: `clientId = 0`
+  - External user: `clientId` wajib mengarah ke `client.id`
+- [x] Untuk phase saat ini, login dibatasi hanya internal user (`clientId = 0`).
+- [x] Dari screen detail client, create user external via endpoint `POST /api/client/:id/users`.
+
+### Soft Delete Policy (Wajib)
+
+- [x] Soft delete user wajib update sekaligus:
+  - `presence = 0`
+  - `status = 0`
+  - `email` diacak: `delete.<RANDOM_NUMBER>.<EMAIL_LAMA>`
+- [x] Soft delete client harus cascade ke semua external user terkait (rule sama seperti soft delete user).
+- [x] UI/UX wajib tampilkan warning besar karena delete bersifat menonaktifkan user login.
+
+### Todo Implementasi API (Belum Coding)
+
+- [x] Tambahkan validasi `userTypeId` di create/update user.
+- [x] Tambahkan validasi konsistensi `userTypeId` vs `clientId`.
+- [x] Tambahkan endpoint list external user per client: `GET /api/client/:id/users`.
+- [x] Tambahkan endpoint create external user dari client detail: `POST /api/client/:id/users`.
+- [x] Update endpoint delete user agar menerapkan email random + status/presence nonaktif.
+- [x] Update endpoint delete client agar melakukan soft delete cascade ke user external terkait.
+- [x] Update login query agar hanya mengizinkan internal user (`clientId = 0`).
+- [x] Update dokumentasi request/response untuk endpoint baru Phase 6.
+
+## pharse 7 : project
+
+
+
 ## Out of Scope / Pending Requirement
 
 - [x] Modul User CRUD
