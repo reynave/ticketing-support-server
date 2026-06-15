@@ -1,4 +1,20 @@
+const fs = require('fs');
+const logStream = fs.createWriteStream('./app.log', { flags: 'a' });
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+const originalStderrWrite = process.stderr.write.bind(process.stderr);
+
+process.stdout.write = (chunk, encoding, callback) => {
+  logStream.write(chunk, encoding);
+  return originalStdoutWrite(chunk, encoding, callback);
+};
+
+process.stderr.write = (chunk, encoding, callback) => {
+  logStream.write(chunk, encoding);
+  return originalStderrWrite(chunk, encoding, callback);
+};
+
 require('dotenv').config();
+const PREFIX_SERVER = process.env.PREFIX_SERVER || '/api';
 
 const http = require('http');
 const express = require('express');
@@ -27,16 +43,16 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get(`${PREFIX_SERVER}`, (req, res) => {
   res.json(success('Server is running', { uptime: process.uptime() }));
 });
-
-app.use('/api/auth', authRoutes);
-app.use('/api/master', masterRoutes);
-app.use('/api/client', clientRoutes);
-app.use('/api/project', projectRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/ticket-balance', ticketBalanceRoutes);
+ 
+app.use(`${PREFIX_SERVER}/auth`, authRoutes);
+app.use(`${PREFIX_SERVER}/master`, masterRoutes);
+app.use(`${PREFIX_SERVER}/client`, clientRoutes);
+app.use(`${PREFIX_SERVER}/project`, projectRoutes);
+app.use(`${PREFIX_SERVER}/user`, userRoutes);
+app.use(`${PREFIX_SERVER}/ticket-balance`, ticketBalanceRoutes);
 
 app.use(errorHandler);
 

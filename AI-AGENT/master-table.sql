@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `client` (
   `code` varchar(50) NOT NULL DEFAULT '',
   `name` varchar(250) NOT NULL DEFAULT '',
   `address` varchar(250) NOT NULL DEFAULT '',
-  `IndustryId` tinyint(4) NOT NULL DEFAULT 0,
+  `IndustryId` int(11) NOT NULL DEFAULT 0,
   `status` tinyint(4) NOT NULL DEFAULT 0,
   `presence` tinyint(2) NOT NULL DEFAULT 1,
   `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
@@ -42,12 +42,16 @@ CREATE TABLE IF NOT EXISTS `client` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=353 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=357 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.client: ~2 rows (approximately)
+-- Dumping data for table thinktank-ticket.client: ~6 rows (approximately)
 INSERT INTO `client` (`id`, `code`, `name`, `address`, `IndustryId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(351, 'CLI-DEMO', 'Demo Client', 'Jakarta', 127, 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
-	(352, 'CLI-TEMP-CRUD', 'Client Temp CRUD Updated', 'Bandung', 127, 0, 0, '2026-06-10 16:48:55', 1, '2026-06-10 16:48:55', 1);
+	(351, 'CLI-DEMO', 'Demo Client 123', 'Jakarta', 352, 1, 1, '2026-06-10 15:53:03', 1, '2026-06-11 15:49:05', 1),
+	(352, 'CLI-TEMP-CRUD', 'Client Temp CRUD Updated', 'Bandung', 127, 0, 0, '2026-06-10 16:48:55', 1, '2026-06-10 16:48:55', 1),
+	(353, 'CLI-AUTO-1781164821', 'Client Auto Updated 1781164821', 'Jakarta', 127, 0, 0, '2026-06-11 15:00:21', 1, '2026-06-11 15:00:21', 1),
+	(354, 'CLI-VAL-1781164843', 'Client Val 1781164843', 'Bandung', 127, 0, 0, '2026-06-11 15:00:43', 1, '2026-06-11 15:00:44', 1),
+	(355, 'CLI-VAL-1781164861', 'Client Val 1781164861', 'Bandung', 127, 0, 0, '2026-06-11 15:01:01', 1, '2026-06-11 15:01:01', 1),
+	(356, 'test 123', 'Tentang Belfoods', '123tt ter', 351, 0, 0, '2026-06-11 15:36:48', 1, '2026-06-11 15:37:00', 1);
 
 -- Dumping structure for table thinktank-ticket.global_setting
 CREATE TABLE IF NOT EXISTS `global_setting` (
@@ -69,7 +73,7 @@ INSERT INTO `global_setting` (`id`, `name`, `value`, `note`, `inputDate`, `input
 
 -- Dumping structure for table thinktank-ticket.industry
 CREATE TABLE IF NOT EXISTS `industry` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` mediumint(9) NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL DEFAULT '',
   `presence` tinyint(2) NOT NULL DEFAULT 1,
   `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
@@ -79,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `industry` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=355 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.industry: ~3 rows (approximately)
+-- Dumping data for table thinktank-ticket.industry: ~4 rows (approximately)
 INSERT INTO `industry` (`id`, `name`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(351, 'Automative', 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(352, 'FMCG', 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
@@ -99,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.product: ~2 rows (approximately)
+-- Dumping data for table thinktank-ticket.product: ~1 rows (approximately)
 INSERT INTO `product` (`id`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 'Acumatica ERP', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(2, 'SAP B1', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
@@ -224,9 +228,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   `id` varchar(250) NOT NULL DEFAULT '',
   `email` varchar(200) DEFAULT NULL,
   `clientId` int(11) NOT NULL DEFAULT 0,
-  `userTypeId` tinyint(4) DEFAULT NULL,
+  `userTypeId` mediumint(9) DEFAULT NULL,
   `password` varchar(200) DEFAULT NULL,
-  `authlevelId` smallint(6) DEFAULT NULL,
+  `userAuthLevelId` smallint(6) DEFAULT NULL,
   `firstName` varchar(200) DEFAULT NULL,
   `lastName` varchar(200) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
@@ -242,9 +246,14 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user: ~3 rows (approximately)
-INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `authlevelId`, `firstName`, `lastName`, `phone`, `mobile`, `birthday`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+-- Dumping data for table thinktank-ticket.user: ~8 rows (approximately)
+INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAuthLevelId`, `firstName`, `lastName`, `phone`, `mobile`, `birthday`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('USR-12788040', 'delete.1781164844006836299.int.1781164843@thinktank.local', 0, 1, '$2b$04$JBxug4U1FQOL/67qnHFCp.wmLdntsXE3PjjeSDvou2qoWNtLdh87K', 1, 'Internal', 'Tester', NULL, NULL, '2000-01-01', 0, 0, '2026-06-11 15:00:43', 1, '2026-06-11 15:00:44', 1),
+	('USR-405F00F4', 'delete.1781164861883547748.int.1781164861@thinktank.local', 0, 1, '$2b$04$AOsIwcrlShK0kLi/mArz2ei57DRvpGh/z3zKvLCn8rUmcBCZiEY.O', 1, 'Internal', 'Tester', NULL, NULL, '2000-01-01', 0, 0, '2026-06-11 15:01:01', 1, '2026-06-11 15:01:01', 1),
 	('USR-62199DD8', 'temp.user.crud@thinktank.local', 0, NULL, '$2b$04$ZC9rTZ16ZujoiD2rHXzgIOyfCUPXWl5LhWd4IyziFTXSz70.ob8QO', 2, 'Temp Updated', 'User', NULL, NULL, '2000-01-01', 0, 0, '2026-06-10 16:55:29', 1, '2026-06-10 16:55:29', 1),
+	('USR-6CBBCE3A', 'delete.1781164821451874774.ext.1781164821.1@thinktank.local', 353, 2, '$2b$04$BflCbR5izWKIr3mQhY70QeCsDWAd6jzamlJtABhDTrlP3TobcrEdi', 2, 'ExternalUpdated', 'One', NULL, '081200009999', '2000-01-01', 0, 0, '2026-06-11 15:00:21', 1, '2026-06-11 15:00:21', 1),
+	('USR-8C76A791', 'cso12333@email.com', 351, 2, '$2b$04$gGfp6qMsTh4bWBYh6Dmla.2wSQT0uXP2ojguZEz4f3YgMBAMEIDNS', 2, 'baba', 'cdcd', NULL, NULL, '2000-01-01', 1, 1, '2026-06-11 15:58:19', 1, '2026-06-15 13:08:26', 1),
+	('USR-9B8746FD', 'delete.1781164821484390428.ext.1781164821.2@thinktank.local', 353, 2, '$2b$04$HtnLpRDw4ChNT73Uh26.s.GaDhDAKk2sWx03N2a2r6LDHYIhoT94O', 2, 'External', 'Two', NULL, NULL, '2000-01-01', 0, 0, '2026-06-11 15:00:21', 1, '2026-06-11 15:00:21', 1),
 	('USR-ADMIN', 'admin@thinktank.local', 0, NULL, '$2b$04$pBuL95VqIupLzvuvu399huQEYeuC5bJbEfAU.6uo58Xq3xVIs6BLS', 1, 'System', 'Admin', '021000000', '081200000001', '1990-01-01', 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
 	('USR-CLIENT', 'client.demo@thinktank.local', 351, NULL, '$2b$04$vpl.W2psDhKPJt3CdgMOUOPqdxu6dG3ORdEMUCHl5Fo65ZMzeTD3S', 2, 'Client', 'Demo', '021111111', '081200000002', '1992-02-02', 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1);
 

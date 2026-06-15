@@ -15,6 +15,7 @@ function parseId(id) {
 
 async function list(req, res, next) {
   try {
+    console.log('Query parameters:', req.query);
     const data = await masterService.getMasterData(req.params.masterKey, req.query);
     return res.json(success('Master data fetched', data));
   } catch (error) {

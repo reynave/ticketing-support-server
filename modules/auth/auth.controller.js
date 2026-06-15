@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const authService = require('./auth.service');
-const { success } = require('../../helpers/response');
+const { success, failure } = require('../../helpers/response');
 
 async function login(req, res, next) {
   try {
@@ -23,7 +23,12 @@ async function login(req, res, next) {
 
 async function me(req, res, next) {
   try {
-    const user = await authService.getMe(req.user.id);
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json(failure('Unauthorized'));
+    }
+
+    const user = await authService.getMe(userId);
     return res.json(success('Current user fetched', user));
   } catch (error) {
     return next(error);

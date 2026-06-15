@@ -153,9 +153,9 @@ async function listUsers(filters = {}) {
     params.push(Number(filters.status));
   }
 
-  if (filters.authlevelId !== undefined) {
-    conditions.push('authlevelId = ?');
-    params.push(Number(filters.authlevelId));
+  if (filters.userAuthLevelId !== undefined) {
+    conditions.push('userAuthLevelId = ?');
+    params.push(Number(filters.userAuthLevelId));
   }
 
   if (filters.clientId !== undefined) {
@@ -177,7 +177,7 @@ async function listUsers(filters = {}) {
   const [rows] = await pool.execute(
     `
       SELECT
-        id, email, clientId, userTypeId, authlevelId, firstName, lastName, phone, mobile,
+        id, email, clientId, userTypeId, userAuthLevelId, firstName, lastName, phone, mobile,
         birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       FROM user
       ${whereClause}
@@ -193,10 +193,12 @@ async function getUserDetail(id) {
   const [rows] = await pool.execute(
     `
       SELECT
-        id, email, clientId, userTypeId, authlevelId, firstName, lastName, phone, mobile,
-        birthday, status, presence, inputDate, inputBy, updateDate, updateBy
-      FROM user
-      WHERE id = ? AND presence = 1
+        u.id, u.email, u.clientId, u.userTypeId, u.userAuthLevelId, u.firstName, u.lastName, u.phone, u.mobile,
+        u.birthday, u.status, u.presence, u.inputDate, u.inputBy, u.updateDate, u.updateBy,
+        c.name as clientName
+      FROM user as u
+      left join client as c on u.clientId = c.id
+      WHERE u.id = ? AND u.presence = 1
       LIMIT 1
     `,
     [id]
@@ -214,7 +216,7 @@ async function getUserDetail(id) {
 }
 
 async function createUser(payload) {
-  const required = ['email', 'password', 'authlevelId', 'firstName', 'userTypeId'];
+  const required = ['email', 'password', 'userAuthLevelId', 'firstName', 'userTypeId'];
   const missing = required.filter((field) => payload[field] === undefined || payload[field] === null || payload[field] === '');
 
   if (missing.length) {
@@ -235,7 +237,7 @@ async function createUser(payload) {
   await pool.execute(
     `
       INSERT INTO user (
-        id, email, clientId, userTypeId, password, authlevelId, firstName, lastName,
+        id, email, clientId, userTypeId, password, userAuthLevelId, firstName, lastName,
         phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
@@ -246,7 +248,7 @@ async function createUser(payload) {
       clientId,
       userTypeId,
       passwordHash,
-      Number(payload.authlevelId),
+      Number(payload.userAuthLevelId),
       payload.firstName,
       payload.lastName || null,
       payload.phone || null,
@@ -298,9 +300,9 @@ async function updateUser(id, payload) {
     params.push(resolvedClientId);
   }
 
-  if (payload.authlevelId !== undefined) {
-    fields.push('authlevelId = ?');
-    params.push(Number(payload.authlevelId));
+  if (payload.userAuthLevelId !== undefined) {
+    fields.push('userAuthLevelId = ?');
+    params.push(Number(payload.userAuthLevelId));
   }
 
   if (payload.firstName !== undefined) {
@@ -391,7 +393,7 @@ async function listExternalUsersByClient(clientId) {
   const [rows] = await pool.execute(
     `
       SELECT
-        id, email, clientId, userTypeId, authlevelId, firstName, lastName, phone, mobile,
+        id, email, clientId, userTypeId, userAuthLevelId, firstName, lastName, phone, mobile,
         birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       FROM user
       WHERE presence = 1 AND userTypeId = ? AND clientId = ?

@@ -111,6 +111,28 @@ const tableMap = {
     allowUpdate: true,
     allowDelete: true,
   },
+  'user-access-right': {
+    tableName: 'user_access_right',
+    hasStatus: true,
+    hasPresence: true,
+    requiredFields: ['authLevelId', 'moduleId'],
+    editableFields: ['authLevelId', 'moduleId', 'status'],
+    numericFields: ['authLevelId', 'moduleId', 'status'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
+  user_access_right: {
+    tableName: 'user_access_right',
+    hasStatus: true,
+    hasPresence: true,
+    requiredFields: ['authLevelId', 'moduleId'],
+    editableFields: ['authLevelId', 'moduleId', 'status'],
+    numericFields: ['authLevelId', 'moduleId', 'status'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
   'global-setting': {
     tableName: 'global_setting',
     hasStatus: false,
@@ -214,7 +236,8 @@ async function getMasterData(masterKey, filters = {}) {
     `SELECT * FROM ${config.tableName} ${whereClause} ORDER BY id ASC`,
     params
   );
-
+  console.log('Executed SQL:', `SELECT * FROM ${config.tableName} ${whereClause} ORDER BY id ASC`, 'with params:', params);
+  
   return rows;
 }
 

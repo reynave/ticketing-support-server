@@ -7,7 +7,7 @@ function buildUserPayload(user) {
     id: user.id,
     name: [user.firstName, user.lastName].filter(Boolean).join(' ').trim(),
     email: user.email,
-    authlevelId: user.authlevelId,
+    userAuthLevelId: user.userAuthLevelId,
     clientId: user.clientId,
     userTypeId: user.userTypeId,
   };
@@ -16,7 +16,7 @@ function buildUserPayload(user) {
 async function login(email, password) {
   const [rows] = await pool.execute(
     `
-      SELECT id, email, clientId, userTypeId, password, authlevelId, firstName, lastName
+      SELECT id, email, clientId, userTypeId, password, userAuthLevelId, firstName, lastName
       FROM user
       WHERE email = ? AND status = 1 AND presence = 1 AND clientId = 0
       LIMIT 1
@@ -54,14 +54,14 @@ async function login(email, password) {
 async function getMe(userId) {
   const [rows] = await pool.execute(
     `
-      SELECT id, email, clientId, userTypeId, authlevelId, firstName, lastName
+      SELECT id, email, clientId, userTypeId, userAuthLevelId, firstName, lastName
       FROM user
       WHERE id = ? AND status = 1 AND presence = 1 AND clientId = 0
       LIMIT 1
     `,
     [userId]
   );
-
+  
   const user = rows[0];
 
   if (!user) {
