@@ -59,6 +59,29 @@ async function listClients(filters = {}) {
   return rows;
 }
 
+async function listClientProjects(clientId) {
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        p.*, 
+        pt.name AS projectTypeName,
+        pb.name AS projectBilleableName,
+        pc.name AS projectCategoryName,
+        pr.name AS productName
+      FROM project p 
+      LEFT JOIN project_type pt ON pt.id = p.projectTypeId
+      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId
+      LEFT JOIN project_categories pc ON pc.id = p.projectCategoryId
+      LEFT JOIN product pr ON pr.id = p.productId
+      WHERE p.clientId = ? AND p.presence = 1
+      ORDER BY p.id ASC
+    `,
+    [clientId]
+  );
+
+  return rows;
+}
+     
 async function getClientDetail(id) {
   const [rows] = await pool.execute(
     `
@@ -240,4 +263,5 @@ module.exports = {
   deleteClient,
   listClientUsers,
   createClientUser,
+  listClientProjects,
 };

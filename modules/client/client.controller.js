@@ -21,7 +21,15 @@ async function list(req, res, next) {
     return next(error);
   }
 }
-
+async function listProjects(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await clientService.listClientProjects(id);
+    return res.json(success('Client projects fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
 async function detail(req, res, next) {
   try {
     const id = parseId(req.params.id);
@@ -89,4 +97,5 @@ module.exports = {
   remove,
   listUsers,
   createUser,
+  listProjects,
 };

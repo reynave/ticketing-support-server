@@ -12,4 +12,6 @@ router.post('/:id/users', authMiddleware, clientController.createUser);
 router.put('/:id', authMiddleware, clientController.update);
 router.delete('/:id', authMiddleware, clientController.remove);
 
+router.get('/:id/projects', authMiddleware, clientController.listProjects);
+
 module.exports = router;

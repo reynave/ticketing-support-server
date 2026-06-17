@@ -157,6 +157,31 @@ LEFT JOIN user AS u ON u.id = t.submitBy
 
   return row;
 }
+async function getTicketLogs(id) {
+  const [rows] = await pool.execute(
+    `
+   SELECT t.* , 
+CONCAT(u.firstName, ' ', u.lastName) AS 'inputName',
+CONCAT(u2.firstName, ' ', u2.lastName) AS 'updateName'
+  FROM ticket_logs AS t
+LEFT JOIN user AS u ON u.id = t.inputBy 
+LEFT JOIN user AS u2 ON u2.id = t.updateBy
+WHERE t.presence = 1 AND t.ticketId = ?
+ORDER BY t.inputDate DESC
+    `,
+    [id]
+  );
+
+  const row = rows;
+
+  if (!row) {
+    const error = new Error('Ticket not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return row;
+}
 
 async function createTicket(payload) {
   const data = normalizeCreatePayload(payload);
@@ -195,31 +220,62 @@ async function createTicket(payload) {
   return getTicketDetail(generatedId);
 }
 
-async function updateTicket(id, payload) {
-  const fields = [];
-  const params = [];
-   
+async function createTicketLog(payload) {
+  console.log('createTicketLog payload', payload);
+  const data = payload;
   const q =  `
-      UPDATE ticket
-      SET   
-        assignTo = '${String(payload.assignTo || '').trim()}',
-        crNoRef = '${String(payload.crNoRef || '').trim()}',
-        description = '${String(payload.description || '').trim()}',
-        issueNo = '${String(payload.issueNo || '').trim()}',
-        rating = ${parseOptionalNumber(payload.rating, 'rating') === null ? 0 : parseOptionalNumber(payload.rating, 'rating')},
-        ratesBy = ${String(payload.ratesBy || '').trim()},
-        taskSolution = '${String(payload.taskSolution || '').trim()}',
-        targetCompletionDate = '${payload.targetCompletionDate}',
-        ticketStatusId = ${parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId')},
-        actualCompletionDate = '${payload.actualCompletionDate}',
-        description = '${String(payload.description || '').trim()}',
-        title = '${String(payload.title || '').trim()}',
-        updateDate = NOW(), 
-        updateBy = 1
-      WHERE id = '${id}' AND presence = 1
+      INSERT INTO ticket_logs (
+        ticketId,   description, 
+        presence, inputDate, inputBy, updateDate, updateBy
+      )
+      VALUES (
+        '${data.ticketId}', '${data.description}',
+        1, NOW(),  '${data.submitBy}', NOW(),  '${data.submitBy}'
+      )
     `;
-    
-  const [result] = await pool.execute(q); 
+  await pool.execute(q);
+
+  return data.ticketId;
+}
+
+async function updateTicket(id, payload) {
+  const fields = []; 
+   
+const q = `
+  UPDATE ticket
+  SET   
+    assignTo = ?,
+    crNoRef = ?,
+    issueNo = ?,
+    rating = ?,
+    ratesBy = ?,
+    targetCompletionDate = ?,
+    ticketStatusId = ?,
+    actualCompletionDate = ?,
+    description = ?,
+    taskSolution = ?,
+    title = ?,
+    updateDate = NOW(),
+    updateBy = 1
+  WHERE id = ? AND presence = 1
+`;
+
+const params = [
+  String(payload.assignTo || '').trim(),
+  String(payload.crNoRef || '').trim(),
+  String(payload.issueNo || '').trim(),
+  parseOptionalNumber(payload.rating, 'rating') ?? 0,
+  String(payload.ratesBy || '').trim(),
+  payload.targetCompletionDate || null,
+  parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
+  payload.actualCompletionDate || null,
+  String(payload.description || '').trim(),
+  String(payload.taskSolution || '').trim(),
+  String(payload.title || '').trim(),
+  id
+];
+
+const [result] = await pool.execute(q, params);
 
   if (!result.affectedRows) {
     const error = new Error('Ticket not found');
@@ -253,6 +309,8 @@ module.exports = {
   listTickets,
   getTicketDetail,
   createTicket,
+  createTicketLog,
   updateTicket,
   deleteTicket,
+  getTicketLogs,
 };

@@ -151,13 +151,14 @@ async function createProject(payload) {
   await pool.execute(
     `
       INSERT INTO project (
-        id, projectTypeId, projectBilleableId, projectCategoryId, productId, clientId,
+        id, name, projectTypeId, projectBilleableId, projectCategoryId, productId, clientId,
         startDate, endDate, status, templateMaster, presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
     `,
     [
       id,
+      payload.name,
       projectTypeId,
       projectBilleableId,
       projectCategoryId,
@@ -220,6 +221,11 @@ async function updateProject(id, payload) {
   if (payload.templateMaster !== undefined) {
     fields.push('templateMaster = ?');
     params.push(String(payload.templateMaster));
+  }
+
+   if (payload.name !== undefined) {
+    fields.push('name = ?');
+    params.push(String(payload.name));
   }
 
   if (!fields.length) {

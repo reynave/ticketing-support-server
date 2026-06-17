@@ -155,6 +155,17 @@ const tableMap = {
     allowUpdate: true,
     allowDelete: false,
   },
+   ticketStatus: {
+    tableName: 'ticket_status',
+    hasStatus: false,
+    hasPresence: false,
+    requiredFields: ['name', 'id'],
+    editableFields: ['name', 'id'],
+    numericFields: [],
+    allowCreate: false,
+    allowUpdate: true,
+    allowDelete: false,
+  },
 };
 
 function getMasterConfig(masterKey) {
