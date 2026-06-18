@@ -359,10 +359,29 @@ async function deleteMasterData(masterKey, id) {
   return { id: Number(id) };
 }
 
+async function loadbBadge() {
+  const q = `SELECT 'task' AS name, COUNT(id) AS 'total'  FROM ticket 
+where presence = 1 and ticketStatusId  < 900 AND ticketTypeId = 1
+
+UNION ALL
+
+SELECT 'issue' AS name, COUNT(id) AS 'total'  FROM ticket 
+where presence = 1 and ticketStatusId  < 900 AND ticketTypeId = 2
+UNION ALL
+
+SELECT 'cr' AS name, COUNT(id) AS 'total'  FROM ticket 
+where presence = 1 and ticketStatusId  < 900 AND   ticketTypeId = 3
+
+`;
+  const [rows] = await pool.execute(q);
+  return rows;
+}
+
 module.exports = {
   getMasterData,
   getMasterDetail,
   createMasterData,
   updateMasterData,
   deleteMasterData,
+  loadbBadge,
 };

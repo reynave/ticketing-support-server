@@ -89,6 +89,18 @@ async function createUser(req, res, next) {
   }
 }
 
+async function removeProject(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    console.log('Removing project from client with id:', id);
+    console.log('Request body:', req.body);
+    const data = await clientService.removeClientProject(id, req.body || {});
+    return res.json(success('Client project removed', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
@@ -98,4 +110,5 @@ module.exports = {
   listUsers,
   createUser,
   listProjects,
+  removeProject,
 };

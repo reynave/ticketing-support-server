@@ -52,15 +52,25 @@ async function update(req, res, next) {
   }
 }
 
-async function remove(req, res, next) {
+  async function remove(req, res, next) {
+    try {
+      const id = parseId(req.params.id);
+      const data = await masterService.deleteMasterData(req.params.masterKey, id);
+      return res.json(success('Master data deleted', data));
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+async function loadbBadge(req, res, next) {
   try {
-    const id = parseId(req.params.id);
-    const data = await masterService.deleteMasterData(req.params.masterKey, id);
-    return res.json(success('Master data deleted', data));
+    const data = await masterService.loadbBadge();
+    return res.json(success('Badge data loaded', data));
   } catch (error) {
     return next(error);
   }
 }
+
 
 module.exports = {
   list,
@@ -68,4 +78,5 @@ module.exports = {
   create,
   update,
   remove,
+  loadbBadge,
 };

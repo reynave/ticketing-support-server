@@ -254,6 +254,27 @@ async function listClientUsers(clientId) {
 async function createClientUser(clientId, payload) {
   return userService.createExternalUserForClient(Number(clientId), payload);
 }
+async function removeClientProject(id, payload) {
+  const fields = []; 
+  const updateBy = payload.updateBy; // This should ideally come from the authenticated user context
+  const params = [updateBy];
+  const [result] = await pool.execute(
+    `
+      UPDATE project
+      SET clientId = '', updateDate = NOW(), updateBy = ?, status = 0
+      WHERE id = ? AND presence = 1
+    `,
+    [...params, payload.id]
+  );
+
+  if (!result.affectedRows) {
+    const error = new Error('Project not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return getClientDetail(id);
+}
 
 module.exports = {
   listClients,
@@ -264,4 +285,5 @@ module.exports = {
   listClientUsers,
   createClientUser,
   listClientProjects,
+  removeClientProject
 };

@@ -4,6 +4,7 @@ const masterController = require('./master.controller');
 
 const router = express.Router();
 
+router.get('/loadbBadge', authMiddleware, masterController.loadbBadge);
 router.get('/:masterKey', authMiddleware, masterController.list);
 router.get('/:masterKey/:id', authMiddleware, masterController.detail);
 router.post('/:masterKey', authMiddleware, masterController.create);

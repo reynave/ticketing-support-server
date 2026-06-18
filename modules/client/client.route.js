@@ -13,5 +13,5 @@ router.put('/:id', authMiddleware, clientController.update);
 router.delete('/:id', authMiddleware, clientController.remove);
 
 router.get('/:id/projects', authMiddleware, clientController.listProjects);
-
+router.post('/:id/removeProject', authMiddleware, clientController.removeProject);
 module.exports = router;
