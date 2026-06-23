@@ -52,27 +52,20 @@ function validateRequiredCreateFields(payload) {
 }
 
 function normalizeCreatePayload(payload) {
-  validateRequiredCreateFields(payload);
-
-  const rating = parseOptionalNumber(payload.rating, 'rating');
-  const ratesBy = parseOptionalNumber(payload.ratesBy, 'ratesBy');
-
+ 
+ 
   return {
     ticketTypeId: parseNonNegativeNumber(payload.ticketTypeId, 'ticketTypeId'),
-    crNoRef: String(payload.crNoRef || '').trim(),
+   
     title: String(payload.title || '').trim(),
     description: String(payload.description || '').trim(),
     projectId: String(payload.projectId).trim(),
-    submitBy: parseNonNegativeNumber(payload.submitBy, 'submitBy'),
+    submitBy: payload.submitBy,
     submitDate: payload.submitDate,
     targetCompletionDate: payload.targetCompletionDate,
-    assignTo: parseNonNegativeNumber(payload.assignTo, 'assignTo'),
-    taskSolution: String(payload.taskSolution || '').trim(),
+    assignTo: payload.assignTo, 
     actualCompletionDate: payload.actualCompletionDate || payload.targetCompletionDate,
-    ticketStatusId: parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
-    rating: rating === null ? 0 : rating,
-    ratesBy: ratesBy === null ? 0 : ratesBy,
-    issueNo: String(payload.issueNo || '').trim(),
+    ticketStatusId: parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),  
   };
 }
 
@@ -186,21 +179,21 @@ ORDER BY t.inputDate DESC
 async function createTicket(payload) {
   const data = normalizeCreatePayload(payload);
   const generatedId = await buildTicketId(payload.id);
-
+  console.log('createTicket payload', data, 'generatedId:', generatedId);
   await pool.execute(
     `
       INSERT INTO ticket (
-        id, ticketTypeId, crNoRef, title, description, projectId,
-        submitBy, submitDate, targetCompletionDate, assignTo, taskSolution,
-        actualCompletionDate, ticketStatusId, rating, ratesBy, issueNo,
+        id, ticketTypeId,  title, description, projectId,
+        submitBy, submitDate, targetCompletionDate, assignTo, 
+        actualCompletionDate, ticketStatusId, 
         presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+      1, NOW(), '1', NOW(), '1')
     `,
     [
       generatedId,
-      data.ticketTypeId,
-      data.crNoRef,
+      data.ticketTypeId, 
       data.title,
       data.description,
       data.projectId,
@@ -208,12 +201,8 @@ async function createTicket(payload) {
       data.submitDate,
       data.targetCompletionDate,
       data.assignTo,
-      data.taskSolution,
       data.actualCompletionDate,
       data.ticketStatusId,
-      data.rating,
-      data.ratesBy,
-      data.issueNo,
     ]
   );
 

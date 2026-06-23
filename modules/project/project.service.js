@@ -36,8 +36,7 @@ function buildProjectId(inputId) {
 function validateRequiredCreateFields(payload) {
   const requiredFields = [
     'projectTypeId',
-    'projectBilleableId',
-    'projectCategoryId',
+    'projectBilleableId', 
     'productId',
     'clientId',
     'startDate',
@@ -85,14 +84,12 @@ async function listProjects(filters = {}) {
         p.*,
         c.name AS clientName,
         pt.name AS projectTypeName,
-        pb.name AS projectBilleableName,
-        pc.name AS projectCategoryName,
+        pb.name AS projectBilleableName, 
         pr.name AS productName
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
-      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId
-      LEFT JOIN project_categories pc ON pc.id = p.projectCategoryId
+      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId 
       LEFT JOIN product pr ON pr.id = p.productId
       ${whereClause}
       ORDER BY p.inputDate DESC
@@ -110,14 +107,12 @@ async function getProjectDetail(id) {
         p.*,
         c.name AS clientName,
         pt.name AS projectTypeName,
-        pb.name AS projectBilleableName,
-        pc.name AS projectCategoryName,
+        pb.name AS projectBilleableName, 
         pr.name AS productName
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
-      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId
-      LEFT JOIN project_categories pc ON pc.id = p.projectCategoryId
+      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId 
       LEFT JOIN product pr ON pr.id = p.productId
       WHERE p.id = ? AND p.presence = 1
       LIMIT 1
@@ -137,37 +132,30 @@ async function getProjectDetail(id) {
 }
 
 async function createProject(payload) {
-  validateRequiredCreateFields(payload);
+  
 
   const id = buildProjectId(payload.id);
-  const projectTypeId = parseNumeric(payload.projectTypeId, 'projectTypeId');
-  const projectBilleableId = parseNumeric(payload.projectBilleableId, 'projectBilleableId');
-  const projectCategoryId = parseNumeric(payload.projectCategoryId, 'projectCategoryId');
-  const productId = parseNumeric(payload.productId, 'productId');
-  const clientId = String(payload.clientId);
-  const status = payload.status === undefined ? 1 : parseStatus(payload.status);
-  const templateMaster = payload.templateMaster === undefined ? '0' : String(payload.templateMaster);
-
+ 
+  console.log('payload', payload, 'Generated ID:', id);
   await pool.execute(
     `
       INSERT INTO project (
-        id, name, projectTypeId, projectBilleableId, projectCategoryId, productId, clientId,
+        id, name, projectTypeId, projectBilleableId, productId, clientId,
         startDate, endDate, status, templateMaster, presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
     `,
     [
       id,
       payload.name,
-      projectTypeId,
-      projectBilleableId,
-      projectCategoryId,
-      productId,
-      clientId,
-      payload.startDate,
-      payload.endDate,
-      status,
-      templateMaster,
+      payload.projectTypeId,
+      payload.projectBilleableId,
+      payload.productId,
+      payload.clientId,
+      `${payload.startDate['year']}-${payload.startDate['month']}-${payload.startDate['day']}`,
+      `${payload.endDate['year']}-${payload.endDate['month']}-${payload.endDate['day']}`,
+      payload.status,
+      payload.templateMaster,
     ]
   );
 
@@ -188,10 +176,7 @@ async function updateProject(id, payload) {
     params.push(parseNumeric(payload.projectBilleableId, 'projectBilleableId'));
   }
 
-  if (payload.projectCategoryId !== undefined) {
-    fields.push('projectCategoryId = ?');
-    params.push(parseNumeric(payload.projectCategoryId, 'projectCategoryId'));
-  }
+  
 
   if (payload.productId !== undefined) {
     fields.push('productId = ?');
@@ -205,12 +190,12 @@ async function updateProject(id, payload) {
 
   if (payload.startDate !== undefined) {
     fields.push('startDate = ?');
-    params.push(payload.startDate);
+    params.push(`${payload.startDate.year}-${String(payload.startDate.month).padStart(2, '0')}-${String(payload.startDate.day).padStart(2, '0')}`);
   }
 
   if (payload.endDate !== undefined) {
     fields.push('endDate = ?');
-    params.push(payload.endDate);
+    params.push(`${payload.endDate.year}-${String(payload.endDate.month).padStart(2, '0')}-${String(payload.endDate.day).padStart(2, '0')}`);
   }
 
   if (payload.status !== undefined) {

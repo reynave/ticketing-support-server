@@ -43,8 +43,10 @@ async function detailLogs(req, res, next) {
 
 async function create(req, res, next) {
   try {
+  
+    console.log('create ticket payload', req.body);
     const data = await ticketService.createTicket(req.body || {});
-    return res.status(201).json(success('Ticket created', data));
+    return res.status(201).json(success('Ticket created', 'data'));
   } catch (error) {
     return next(error);
   }
