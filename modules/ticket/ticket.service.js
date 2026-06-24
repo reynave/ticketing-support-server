@@ -154,13 +154,15 @@ async function getTicketLogs(id) {
   const [rows] = await pool.execute(
     `
    SELECT t.* , 
-CONCAT(u.firstName, ' ', u.lastName) AS 'inputName',
-CONCAT(u2.firstName, ' ', u2.lastName) AS 'updateName'
-  FROM ticket_logs AS t
-LEFT JOIN user AS u ON u.id = t.inputBy 
-LEFT JOIN user AS u2 ON u2.id = t.updateBy
-WHERE t.presence = 1 AND t.ticketId = ?
-ORDER BY t.inputDate DESC
+      CONCAT(u.firstName, ' ', u.lastName) AS 'inputName',
+      CONCAT(u2.firstName, ' ', u2.lastName) AS 'updateName',
+      t.parentId, t2.description as 'replyFrom'
+        FROM ticket_logs AS t
+      LEFT JOIN user AS u ON u.id = t.inputBy 
+      LEFT JOIN user AS u2 ON u2.id = t.updateBy
+      left join ticket_logs as t2 on t2.id = t.parentId
+    WHERE t.presence = 1 AND t.ticketId = ?
+    ORDER BY t.inputDate DESC
     `,
     [id]
   );
@@ -214,15 +216,20 @@ async function createTicketLog(payload) {
   const data = payload;
   const q =  `
       INSERT INTO ticket_logs (
-        ticketId,   description, 
+        ticketId,   description, parentId,
         presence, inputDate, inputBy, updateDate, updateBy
       )
       VALUES (
-        '${data.ticketId}', '${data.description}',
+        ?, ?, ?,
         1, NOW(),  '${data.submitBy}', NOW(),  '${data.submitBy}'
       )
     `;
-  await pool.execute(q);
+  await pool.execute(q,
+    [ 
+      data.ticketId,
+      data.description,
+      data.parentId,  
+    ]);
 
   return data.ticketId;
 }
@@ -233,11 +240,7 @@ async function updateTicket(id, payload) {
 const q = `
   UPDATE ticket
   SET   
-    assignTo = ?,
-    crNoRef = ?,
-    issueNo = ?,
-    rating = ?,
-    ratesBy = ?,
+    assignTo = ?, 
     targetCompletionDate = ?,
     ticketStatusId = ?,
     actualCompletionDate = ?,
@@ -245,16 +248,12 @@ const q = `
     taskSolution = ?,
     title = ?,
     updateDate = NOW(),
-    updateBy = 1
+    updateBy = '1'
   WHERE id = ? AND presence = 1
 `;
 
 const params = [
-  String(payload.assignTo || '').trim(),
-  String(payload.crNoRef || '').trim(),
-  String(payload.issueNo || '').trim(),
-  parseOptionalNumber(payload.rating, 'rating') ?? 0,
-  String(payload.ratesBy || '').trim(),
+  String(payload.assignTo || '').trim(), 
   payload.targetCompletionDate || null,
   parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
   payload.actualCompletionDate || null,
@@ -263,7 +262,7 @@ const params = [
   String(payload.title || '').trim(),
   id
 ];
-
+console.log('updateTicket query:', q, 'params:', params);
 const [result] = await pool.execute(q, params);
 
   if (!result.affectedRows) {
