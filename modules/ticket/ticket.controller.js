@@ -1,5 +1,6 @@
 const ticketService = require('./ticket.service');
 const { success } = require('../../helpers/response');
+const { runMiddleware, upload } = require('../../middlewares/upload.middleware');
 
 function parseId(id) {
   if (!id || !String(id).trim()) {
@@ -43,7 +44,7 @@ async function detailLogs(req, res, next) {
 
 async function create(req, res, next) {
   try {
-  
+
     console.log('create ticket payload', req.body);
     const data = await ticketService.createTicket(req.body || {});
     return res.status(201).json(success('Ticket created', 'data'));
@@ -55,7 +56,10 @@ async function create(req, res, next) {
 async function createLog(req, res, next) {
   try {
     const id = parseId(req.params.id);
-    const data = await ticketService.createTicketLog(req.body || {});
+    // Handle multipart/form-data (text fields + files)
+    await runMiddleware(req, res, upload.array('files', 20));
+    const files = req.files || [];
+    const data = await ticketService.createTicketLog(req.body || {}, files, req);
     return res.status(201).json(success('Ticket log created', data));
   } catch (error) {
     return next(error);
@@ -67,6 +71,17 @@ async function update(req, res, next) {
     const id = parseId(req.params.id);
     console.log('update ticket payload', req.body);
     const data = await ticketService.updateTicket(id, req.body || {});
+    return res.json(success('Ticket updated', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function submitRate(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    console.log('update ticket payload', req.body);
+    const data = await ticketService.submitRateService(id, req.body || {});
     return res.json(success('Ticket updated', data));
   } catch (error) {
     return next(error);
@@ -91,4 +106,5 @@ module.exports = {
   remove,
   createLog,
   detailLogs,
+  submitRate
 };

@@ -31,7 +31,7 @@ const userRoutes = require('./modules/user/user.route');
 const ticketBalanceRoutes = require('./modules/ticket-balance/ticket-balance.route');
 const errorHandler = require('./middlewares/errorHandler');
 const { testConnection } = require('./config/db');
-
+const path = require('path'); 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -40,9 +40,22 @@ const io = new Server(server, {
   },
 });
 
+// Auto-create uploads folder
+const uploadDir = path.join(__dirname, 'uploads');     // ← tambah
+if (!fs.existsSync(uploadDir)) {                       // ← tambah
+  fs.mkdirSync(uploadDir, { recursive: true });        // ← tambah
+}     
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Tambahkan ini khusus untuk folder uploads
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+});
+app.use('/uploads', express.static(uploadDir));
 
 app.get(`${PREFIX_SERVER}`, (req, res) => {
   res.json(success('Server is running', { uptime: process.uptime() }));
