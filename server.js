@@ -27,6 +27,7 @@ const masterRoutes = require('./modules/master/master.route');
 const clientRoutes = require('./modules/client/client.route');
 const projectRoutes = require('./modules/project/project.route');
 const ticketRoutes = require('./modules/ticket/ticket.route');
+const caseRoutes = require('./modules/cases/case.route');
 const userRoutes = require('./modules/user/user.route');
 const ticketBalanceRoutes = require('./modules/ticket-balance/ticket-balance.route');
 const errorHandler = require('./middlewares/errorHandler');
@@ -66,6 +67,7 @@ app.use(`${PREFIX_SERVER}/master`, masterRoutes);
 app.use(`${PREFIX_SERVER}/client`, clientRoutes);
 app.use(`${PREFIX_SERVER}/project`, projectRoutes);
 app.use(`${PREFIX_SERVER}/ticket`, ticketRoutes);
+app.use(`${PREFIX_SERVER}/cases`, caseRoutes);
 app.use(`${PREFIX_SERVER}/user`, userRoutes);
 app.use(`${PREFIX_SERVER}/ticket-balance`, ticketBalanceRoutes);
 

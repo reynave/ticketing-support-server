@@ -113,25 +113,36 @@ const tableMap = {
   },
   'user-access-right': {
     tableName: 'user_access_right',
-    hasStatus: true,
+    hasStatus: false,
     hasPresence: true,
     requiredFields: ['authLevelId', 'moduleId'],
-    editableFields: ['authLevelId', 'moduleId', 'status'],
-    numericFields: ['authLevelId', 'moduleId', 'status'],
+    editableFields: ['authLevelId', 'moduleId', 'c', 'r', 'u', 'd'],
+    numericFields: ['authLevelId', 'moduleId', 'c', 'r', 'u', 'd'],
     allowCreate: true,
     allowUpdate: true,
     allowDelete: true,
   },
   user_access_right: {
     tableName: 'user_access_right',
-    hasStatus: true,
+    hasStatus: false,
     hasPresence: true,
     requiredFields: ['authLevelId', 'moduleId'],
-    editableFields: ['authLevelId', 'moduleId', 'status'],
-    numericFields: ['authLevelId', 'moduleId', 'status'],
+    editableFields: ['authLevelId', 'moduleId', 'c', 'r', 'u', 'd'],
+    numericFields: ['authLevelId', 'moduleId', 'c', 'r', 'u', 'd'],
     allowCreate: true,
     allowUpdate: true,
     allowDelete: true,
+  },
+  module: {
+    tableName: 'module',
+    hasStatus: false,
+    hasPresence: false,
+    requiredFields: ['name'],
+    editableFields: ['name'],
+    numericFields: [],
+    allowCreate: false,
+    allowUpdate: false,
+    allowDelete: false,
   },
   'global-setting': {
     tableName: 'global_setting',
@@ -176,6 +187,66 @@ const tableMap = {
     allowCreate: false,
     allowUpdate: true,
     allowDelete: false,
+  },
+  'ticket-severities': {
+    tableName: 'ticket_severity',
+    orderBy: 'id ASC',
+    hasStatus: false,
+    hasPresence: true,
+    requiredFields: ['name', 'duration'],
+    editableFields: ['name', 'duration'],
+    numericFields: ['duration'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
+  ticket_severities: {
+    tableName: 'ticket_severity',
+    orderBy: 'id ASC',
+    hasStatus: false,
+    hasPresence: true,
+    requiredFields: ['name', 'duration'],
+    editableFields: ['name', 'duration'],
+    numericFields: ['duration'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
+  'ticket-severity': {
+    tableName: 'ticket_severity',
+    orderBy: 'id ASC',
+    hasStatus: false,
+    hasPresence: true,
+    requiredFields: ['name', 'duration'],
+    editableFields: ['name', 'duration'],
+    numericFields: ['duration'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
+  ticket_severity: {
+    tableName: 'ticket_severity',
+    orderBy: 'id ASC',
+    hasStatus: false,
+    hasPresence: true,
+    requiredFields: ['name', 'duration'],
+    editableFields: ['name', 'duration'],
+    numericFields: ['duration'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
+  ticketSeverity: {
+    tableName: 'ticket_severity',
+    orderBy: 'id ASC',
+    hasStatus: false,
+    hasPresence: true,
+    requiredFields: ['name', 'duration'],
+    editableFields: ['name', 'duration'],
+    numericFields: ['duration'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
   },
 };
 
@@ -240,6 +311,7 @@ function buildEditablePayload(config, payload) {
 
 async function getMasterData(masterKey, filters = {}) {
   const config = getMasterConfig(masterKey);
+  const orderBy = config.orderBy || 'id ASC';
 
   const conditions = [];
   const params = [];
@@ -253,12 +325,17 @@ async function getMasterData(masterKey, filters = {}) {
     params.push(Number(filters.status));
   }
 
+  if (config.tableName === 'user_access_right' && filters.authLevelId !== undefined) {
+    conditions.push('authLevelId = ?');
+    params.push(Number(filters.authLevelId));
+  }
+
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
   const [rows] = await pool.execute(
-    `SELECT * FROM ${config.tableName} ${whereClause} ORDER BY id ASC`,
+    `SELECT * FROM ${config.tableName} ${whereClause} ORDER BY ${orderBy}`,
     params
   );
-  console.log('Executed SQL:', `SELECT * FROM ${config.tableName} ${whereClause} ORDER BY id ASC`, 'with params:', params);
+  console.log('Executed SQL:', `SELECT * FROM ${config.tableName} ${whereClause} ORDER BY ${orderBy}`, 'with params:', params);
   
   return rows;
 }
