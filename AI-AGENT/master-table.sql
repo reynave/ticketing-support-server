@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `auto_number` (
 INSERT INTO `auto_number` (`id`, `name`, `prefix`, `digit`, `runningNumber`, `lastRecord`, `updateDate`) VALUES
 	(324, 'project', 'P', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(325, 'client', 'C', 6, 0, NULL, '2024-01-01 00:00:00'),
-	(326, 'task', 'TA', 6, 12, 'TA000012', '2026-07-08 16:41:04'),
+	(326, 'task', 'TA', 6, 13, 'TA000013', '2026-07-10 12:37:01'),
 	(327, 'issue', 'IS', 6, 8, 'IS000008', '2026-07-08 17:41:41'),
 	(328, 'changeRequest', 'CR', 6, 0, NULL, '2024-01-01 00:00:00');
 
@@ -149,6 +149,7 @@ CREATE TABLE IF NOT EXISTS `project` (
   `projectTypeId` smallint(6) NOT NULL DEFAULT 0,
   `projectBilleableId` smallint(6) NOT NULL DEFAULT 0,
   `productId` int(11) NOT NULL DEFAULT 0,
+  `ticketCategoriesParentId` int(11) NOT NULL,
   `clientId` varchar(50) NOT NULL DEFAULT '0',
   `startDate` date NOT NULL DEFAULT '2025-01-01',
   `endDate` date NOT NULL DEFAULT '2025-01-01',
@@ -162,14 +163,16 @@ CREATE TABLE IF NOT EXISTS `project` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project: ~5 rows (approximately)
-INSERT INTO `project` (`id`, `name`, `projectTypeId`, `projectBilleableId`, `productId`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	('PRJ-7492E30C', 'prject mbg123', 1, 1, 1, '', '2026-06-11', '2026-07-11', 0, '0', 1, '2026-06-17 17:23:19', '1', '2026-06-18 14:36:33', 'USR-ADMIN'),
-	('PRJ-822BC171', 'test 1', 1, 1, 1, '351', '2026-06-10', '2026-08-10', 1, 'TB-TEST', 0, '2026-06-10 16:58:11', '1', '2026-06-10 16:58:11', '1'),
-	('PRJ-B8887D5E', 'ASCO Akumatik', 1, 1, 1, '351', '2026-06-17', '2026-07-04', 1, '0', 1, '2026-06-17 17:12:04', '1', '2026-07-08 17:42:30', '1'),
-	('PRJ-CACC2C8D', 'tes 3', 1, 1, 1, '351', '2026-06-10', '2026-07-10', 0, 'TMP-UPDATED', 0, '2026-06-10 16:52:20', '1', '2026-06-10 16:52:20', '1'),
-	('PRJ-D83A04BE', 'INTERNAL PROJECT', 1, 1, 1, '351', '2026-06-17', '2026-09-30', 1, '0', 1, '2026-06-15 14:41:34', '1', '2026-07-08 17:42:49', '1'),
-	('t3', 'Project Astra ERP', 1, 1, 1, '351', '2026-06-23', '2026-06-23', 1, '0', 1, '2026-06-23 16:05:47', '1', '2026-07-08 17:42:11', '1');
+-- Dumping data for table thinktank-ticket.project: ~8 rows (approximately)
+INSERT INTO `project` (`id`, `name`, `projectTypeId`, `projectBilleableId`, `productId`, `ticketCategoriesParentId`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('PRJ-54E3A483', 'Ticketing System 2026', 2, 1, 1, 0, '351', '2026-07-10', '2026-08-31', 0, '0', 1, '2026-07-10 12:00:47', '1', '2026-07-13 16:00:18', 'USR-ADMIN'),
+	('PRJ-7492E30C', 'prject mbg123', 1, 1, 1, 0, '', '2026-06-11', '2026-07-11', 0, '0', 1, '2026-06-17 17:23:19', '1', '2026-06-18 14:36:33', 'USR-ADMIN'),
+	('PRJ-822BC171', 'test 1', 1, 1, 1, 0, '351', '2026-06-10', '2026-08-10', 1, 'TB-TEST', 0, '2026-06-10 16:58:11', '1', '2026-06-10 16:58:11', '1'),
+	('PRJ-B8887D5E', 'ASCO Akumatik', 1, 1, 1, 0, '351', '2026-06-17', '2026-07-04', 1, '0', 1, '2026-06-17 17:12:04', '1', '2026-07-08 17:42:30', '1'),
+	('PRJ-CACC2C8D', 'tes 3', 1, 1, 1, 0, '351', '2026-06-10', '2026-07-10', 0, 'TMP-UPDATED', 0, '2026-06-10 16:52:20', '1', '2026-06-10 16:52:20', '1'),
+	('PRJ-D83A04BE', 'INTERNAL PROJECT', 1, 1, 1, 0, '351', '2026-06-17', '2026-09-30', 1, '0', 1, '2026-06-15 14:41:34', '1', '2026-07-08 17:42:49', '1'),
+	('PRJ-FA50EC5D', 'tre1', 1, 1, 1, 10, '351', '2026-07-13', '2026-10-30', 1, '0', 1, '2026-07-13 16:50:13', 'USR-ADMIN', '2026-07-13 17:40:46', 'USR-ADMIN'),
+	('t3', 'Project Astra ERP', 1, 1, 1, 0, '351', '2026-06-23', '2026-06-23', 1, '0', 1, '2026-06-23 16:05:47', '1', '2026-07-13 16:07:26', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.project_billeable
 CREATE TABLE IF NOT EXISTS `project_billeable` (
@@ -214,6 +217,29 @@ INSERT INTO `project_type` (`id`, `name`, `ticketBased`, `categoryBased`, `statu
 	(3, 'Software Support Fixed Cost', 0, 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(4, 'Change Request', 0, 1, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
 
+-- Dumping structure for table thinktank-ticket.project_users
+CREATE TABLE IF NOT EXISTS `project_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `projectId` varchar(50) NOT NULL DEFAULT '',
+  `userId` varchar(100) NOT NULL,
+  `asManager` tinyint(4) NOT NULL DEFAULT 0,
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` varchar(50) NOT NULL DEFAULT '',
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table thinktank-ticket.project_users: ~4 rows (approximately)
+INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(7, 'PRJ-54E3A483', 'USR-8C76A791', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
+	(8, 'PRJ-54E3A483', 'USR-ADMIN', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
+	(9, 't3', 'USR-8C76A791', 0, 1, '2026-07-13 16:07:26', 'USR-ADMIN', '2026-07-13 16:07:26', 'USR-ADMIN'),
+	(10, 't3', 'USR-CLIENT', 0, 1, '2026-07-13 16:07:26', 'USR-ADMIN', '2026-07-13 16:07:26', 'USR-ADMIN'),
+	(11, 'PRJ-FA50EC5D', 'USR-8C76A791', 0, 1, '2026-07-13 17:40:46', 'USR-ADMIN', '2026-07-13 17:40:46', 'USR-ADMIN'),
+	(12, 'PRJ-FA50EC5D', 'USR-ADMIN', 1, 1, '2026-07-13 17:40:46', 'USR-ADMIN', '2026-07-13 17:40:46', 'USR-ADMIN');
+
 -- Dumping structure for table thinktank-ticket.ticket
 CREATE TABLE IF NOT EXISTS `ticket` (
   `id` varchar(50) NOT NULL DEFAULT '',
@@ -242,7 +268,7 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket: ~20 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket: ~19 rows (approximately)
 INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `crNoRef`, `issueNo`, `title`, `description`, `projectId`, `submitBy`, `submitDate`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	('a1', 1, 0, 0, '', '', 'Title 123', '<p>123</p>', 'PRJ-D83A04BE', 'data.submitBy', '2026-06-23 00:00:00', '2026-06-23', 'USR-ADMIN', '<p>1232343453453</p>', '2026-06-23', 990, 2, 'USR-ADMIN', 1, '2026-06-23 17:43:41', '1', '2026-06-25 17:38:58', 'data.submitBy'),
 	('a2', 1, 0, 0, '', '', '1', 'Description  123', 'PRJ-D83A04BE', 'data.submitBy', '2026-06-23 00:00:00', '2026-06-23', 'USR-ADMIN', '', '2026-06-23', 100, 0, '', 0, '2026-06-23 17:46:21', '1', '2026-06-25 16:10:54', '1'),
@@ -254,10 +280,11 @@ INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityI
 	('IS000004', 2, 5, 20, '', '', 'Description  system down', '<p>Description system down</p>', 'PRJ-D83A04BE', 'USR-ADMIN', '2026-07-08 00:00:00', '2026-07-08', 'USR-8C76A791', '<p>123</p>', '2026-07-08', 900, 2, 'USR-ADMIN', 1, '2026-07-08 15:40:01', '1', '2026-07-08 17:17:17', 'USR-ADMIN'),
 	('IS000005', 2, 5, 30, '', '', 'error bugs', 'error bugs', 'PRJ-B8887D5E', 'USR-ADMIN', '2026-07-08 00:00:00', '2026-07-08', 'USR-8C76A791', '', '2026-07-08', 1, 0, '', 1, '2026-07-08 17:35:42', '1', '2026-07-08 17:35:42', '1'),
 	('IS000006', 2, 2, 10, '', '', 'bac', 'abc', 't3', 'USR-ADMIN', '2026-07-08 00:00:00', '2026-07-08', 'USR-ADMIN', '', '2026-07-08', 1, 0, '', 1, '2026-07-08 17:39:06', '1', '2026-07-08 17:39:06', '1'),
-	('IS000007', 2, 1, 20, '', '', 'hhh', 'hhhhhh', 't3', 'USR-ADMIN', '2026-07-08 00:00:00', '2026-07-08', 'USR-8C76A791', '', '2026-07-08', 1, 0, '', 1, '2026-07-08 17:39:56', '1', '2026-07-08 17:39:56', '1'),
-	('IS000008', 2, 6, 10, '', '', 'A1', 'A1', 'PRJ-B8887D5E', 'USR-ADMIN', '2026-07-08 17:41:41', '2026-07-08', 'USR-8C76A791', '', '2026-07-08', 1, 0, '', 1, '2026-07-08 17:41:41', '1', '2026-07-08 17:41:41', '1'),
-	('TA000010', 1, 1, 0, '', '', 'hahah', 'Description', 't3', 'USR-ADMIN', '2026-07-08 00:00:00', '2026-07-08', 'USR-8C76A791', '', '2026-07-08', 1, 0, '', 1, '2026-07-08 15:54:40', '1', '2026-07-08 15:54:40', '1'),
+	('IS000007', 2, 1, 20, '', '', 'hhh', '<p>hhhhhh</p>', 't3', 'USR-ADMIN', '2026-07-08 00:00:00', '2026-07-08', 'USR-8C76A791', '', '2026-07-08', 490, 0, '', 1, '2026-07-08 17:39:56', '1', '2026-07-10 15:19:47', 'USR-ADMIN'),
+	('IS000008', 2, 6, 10, '', '', 'A1', '<p>A1</p>', 'PRJ-B8887D5E', 'USR-ADMIN', '2026-07-08 17:41:41', '2026-07-08', 'USR-8C76A791', '', '2026-07-08', 900, 0, '', 1, '2026-07-08 17:41:41', '1', '2026-07-10 15:19:02', 'USR-ADMIN'),
+	('TA000010', 1, 1, 0, '', '', 'hahah', '<p>Description</p>', 't3', 'USR-ADMIN', '2026-07-08 00:00:00', '2026-07-08', 'USR-8C76A791', '', '2026-07-08', 100, 0, '', 1, '2026-07-08 15:54:40', '1', '2026-07-09 18:35:57', 'USR-ADMIN'),
 	('TA000012', 1, 1, 0, '', 'IS000004', 'Task of IS000004', '<p>Follow up from case IS000004</p>', 'PRJ-D83A04BE', '0', '2026-07-08 00:00:00', '2026-07-15', '0', '', '2026-07-15', 900, 6, 'USR-ADMIN', 1, '2026-07-08 16:41:04', '0', '2026-07-08 17:16:54', 'USR-ADMIN'),
+	('TA000013', 1, 1, 0, '', 'IS000008', 'Task of IS000008', '<p>Follow up from case IS000008</p>', 'PRJ-B8887D5E', 'USR-ADMIN', '2026-07-10 00:00:00', '2026-07-17', 'USR-8C76A791', '<p>ok tidak ada masalah </p>', '2026-07-17', 900, 5, 'USR-ADMIN', 1, '2026-07-10 12:37:01', 'USR-ADMIN', '2026-07-10 15:08:07', 'USR-ADMIN'),
 	('TS000002', 1, 0, 0, '', '2', 'project iseu ASP.net new project', '<h1>Hello</h1><p>This is editable text. <span style="color: rgb(217, 63, 11);">You can focus it and start typing</span>.</p><p><code>code block</code></p><blockquote><p><strong>Lorem Ipsum</strong>&nbsp;is <span style="background-color: rgb(251, 202, 4);">simply dummy</span> text of the printing and typesetting industry. <em>Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s</em>, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p></blockquote><h2>The code block is a code editor</h2><p>This editor has been wired up to render code blocks as instances of the <a href="https://codemirror.net" title="https://codemirror.net" target="_blank">CodeMirror</a> code editor, which provides <a href="https://en.wikipedia.org" title="" target="_blank">syntax highlighting</a>, auto-indentation, and similar.</p><pre><code>function max(a, b) {\n  return a &gt; b ? a : b\n}</code></pre><p>The content of the code editor is kept in sync with the content of the code block in the rich text editor, so that it is as if you\'re directly editing the outer document, using a more convenient interface.</p><h4 style="text-align: center;">Mr. Bean</h4><p style="text-align: center;">The image is resizable. Include <strong>image</strong> plugin to enable image resizing</p><h3 style="text-align: center;"><img src="https://wallpapercave.com/wp/wp2318909.png" alt="Bean" title="Mr. Bean" width="98px"></h3><h3>Bullet list</h3><ul><li><p><strong>Lorem Ipsum</strong>&nbsp;is simply dummy text of the printing and typesetting industry</p><ul><li><p>(<strong>depth 1</strong>) It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p><ul><li><p>(<strong>depth 2</strong>) The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested.</p></li></ul></li></ul></li><li><p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don\'t look even slightly believable</p></li><li><p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</p></li></ul><h4>Ordered List</h4><ol><li><p><strong>Lorem Ipsum</strong>&nbsp;is simply dummy text of the printing and typesetting industry</p></li><li><p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don\'t look even slightly believable</p><ol><li><p>(<strong>depth 1</strong>) It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p><ol><li><p>(<strong>depth 2</strong>) The chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested.</p></li></ol></li></ol></li><li><p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</p></li></ol>', 'PRJ-D83A04BE', 'USR-8C76A791', '2026-06-15 00:00:00', '2026-05-20', 'USR-ADMIN', '<p>12<strong>31231234</strong></p>', '2026-05-20', 900, 3, 'USR-8C76A791', 1, '2026-06-15 16:59:27', '1', '2026-06-25 17:29:39', 'USR-8C76A791'),
 	('TS000003', 1, 0, 0, '', 'Issue No', 'error 191', '<p>213</p>', 'PRJ-D83A04BE', 'USR-8C76A791', '2026-06-17 00:00:00', '2026-06-05', 'USR-ADMIN', '<p>ok good</p>', '2026-06-29', 900, 5, 'USR-ADMIN', 1, '2026-06-17 15:50:29', '1', '2026-07-08 16:50:34', 'USR-ADMIN'),
 	('TS000006', 1, 0, 0, '', '', '123123', '<p>123</p>', 'PRJ-B8887D5E', 'data.submitBy', '2026-06-23 00:00:00', '2026-06-23', 'USR-ADMIN', '', '2026-06-23', 900, 0, 'data.submitBy', 1, '2026-06-23 17:41:50', '1', '2026-06-25 17:05:37', 'data.submitBy'),
@@ -290,6 +317,7 @@ INSERT INTO `ticket_balance` (`id`, `projectId`, `ticketId`, `date`, `ticketIn`,
 -- Dumping structure for table thinktank-ticket.ticket_categories
 CREATE TABLE IF NOT EXISTS `ticket_categories` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parentId` int(11) NOT NULL DEFAULT 0,
   `name` varchar(250) NOT NULL DEFAULT '',
   `weight` tinyint(4) NOT NULL DEFAULT 0,
   `status` tinyint(4) NOT NULL DEFAULT 0,
@@ -299,23 +327,26 @@ CREATE TABLE IF NOT EXISTS `ticket_categories` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_categories: ~7 rows (approximately)
-INSERT INTO `ticket_categories` (`id`, `name`, `weight`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(1, 'Blueprint', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(2, 'Configuration', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(3, 'SIT & UAT', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(4, 'Training', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(5, 'Deployement', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(6, 'GO LIVE', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(7, 'CAT-TEMP', 0, 1, 0, '2026-06-10 17:00:27', 1, '2026-06-10 17:00:27', 1);
+-- Dumping data for table thinktank-ticket.ticket_categories: ~8 rows (approximately)
+INSERT INTO `ticket_categories` (`id`, `parentId`, `name`, `weight`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(10, 0, 'SAP Implement ', 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(100, 10, 'Blueprint', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(102, 10, 'Configuration', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(103, 10, 'SIT & UAT', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(104, 10, 'Training', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(105, 10, 'Deployement', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(106, 10, 'GO LIVE', 0, 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(107, 10, 'CAT-TEMP', 0, 1, 0, '2026-06-10 17:00:27', 1, '2026-06-10 17:00:27', 1);
 
 -- Dumping structure for table thinktank-ticket.ticket_logs
 CREATE TABLE IF NOT EXISTS `ticket_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `parentId` int(11) NOT NULL DEFAULT 0,
   `ticketId` varchar(50) NOT NULL DEFAULT '',
+  `starDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `closeDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
   `description` text NOT NULL DEFAULT '',
   `presence` tinyint(2) NOT NULL DEFAULT 1,
   `inputBySystem` tinyint(2) NOT NULL DEFAULT 0,
@@ -324,51 +355,59 @@ CREATE TABLE IF NOT EXISTS `ticket_logs` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_logs: ~41 rows (approximately)
-INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `description`, `presence`, `inputBySystem`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(8, 0, 'TS000002', '1231231 23 123', 1, 0, '2026-06-17 14:51:46', '1', '2026-06-17 14:51:46', '1'),
-	(9, 0, 'TS000002', '1231231 23 123', 1, 0, '2026-06-17 14:51:53', '1', '2026-06-17 14:51:53', '1'),
-	(10, 0, 'TS000002', '1231231 23 123', 1, 0, '2026-06-17 14:51:54', '1', '2026-06-17 14:51:54', '1'),
-	(11, 0, 'TS000002', '1231231 23 123', 1, 0, '2026-06-17 14:52:50', 'USR-8C76A791', '2026-06-17 14:52:50', 'USR-8C76A791'),
-	(12, 0, 'TS000002', '123123', 1, 0, '2026-06-17 14:53:43', 'USR-8C76A791', '2026-06-17 14:53:43', 'USR-8C76A791'),
-	(13, 0, 'TS000002', '123123', 1, 0, '2026-06-17 15:01:49', 'USR-8C76A791', '2026-06-17 15:01:49', 'USR-8C76A791'),
-	(14, 0, 'TS000002', 'asdfasdfadf', 1, 0, '2026-06-17 15:02:02', 'USR-8C76A791', '2026-06-17 15:02:02', 'USR-8C76A791'),
-	(15, 0, 'TS000003', 'Add Activity 123123 Add Activity', 1, 0, '2026-06-17 15:53:23', '1', '2026-06-17 15:53:23', '1'),
-	(16, 0, 'TS000003', 'A reference to the currently opened (active) modal.\n\nInstances of this class can be injected into your component passed as modal content. So you can .update(), .close() or .dismiss() the modal window from your component.\nMethods', 1, 0, '2026-06-17 15:53:43', '1', '2026-06-17 15:53:43', '1'),
-	(17, 0, 'TS000003', 'desc baru 123', 1, 0, '2026-06-17 15:57:49', '1', '2026-06-17 15:57:49', '1'),
-	(18, 0, 'TS000003', 'halo halo', 1, 0, '2026-06-22 15:17:04', '1', '2026-06-22 15:17:04', '1'),
-	(19, 0, 'TS000008', 'test 123', 1, 0, '2026-06-24 14:50:49', 'USR-ADMIN', '2026-06-24 14:50:49', 'USR-ADMIN'),
-	(20, 0, 'TS000008', '13123', 1, 0, '2026-06-24 14:51:32', 'USR-ADMIN', '2026-06-24 14:51:32', 'USR-ADMIN'),
-	(23, 0, 'TS000008', '<p>Integrating <strong>ngx-editor</strong> inside a modal requires managing the <code>Editor</code> instance lifecycle properly. Failing to initialize and destroy the editor instance when opening and closing the modal can cause rendering crashes or memory leaks.</p><p>Here is how to set up <strong>ngx-editor</strong> inside an Angular modal (like <code>@angular/material/dialog</code> or <code>ngx-bootstrap/modal</code>):</p>', 1, 0, '2026-06-24 14:58:57', 'USR-ADMIN', '2026-06-24 14:58:57', 'USR-ADMIN'),
-	(24, 14, 'TS000002', '<p>123123</p>', 1, 0, '2026-06-24 16:10:04', 'USR-8C76A791', '2026-06-24 16:10:04', 'USR-8C76A791'),
-	(25, 12, 'TS000002', '<p><span style="color: rgb(33, 37, 41);">The content of the code editor is kept in sync with the content of the code block in the rich text editor, so that it is as if you\'re directly editing the outer document, using a more convenient interface.</span></p><h4 style="text-align: start;"><strong><span style="color: rgb(33, 37, 41);">Mr. Bean</span></strong></h4><p style="text-align: start;"><span style="color: rgb(33, 37, 41);">The image is resizable. Include </span><strong><span style="color: rgb(33, 37, 41);">image</span></strong><span style="color: rgb(33, 37, 41);"> plugin to enable image resizing</span></p><p><br></p>', 1, 0, '2026-06-24 16:11:32', 'USR-8C76A791', '2026-06-24 16:11:32', 'USR-8C76A791'),
-	(26, 25, 'TS000002', '<p>tav</p>', 1, 0, '2026-06-24 16:18:17', 'USR-8C76A791', '2026-06-24 16:18:17', 'USR-8C76A791'),
-	(27, 0, 'C22', '<p>123123123 12 3123</p>', 1, 0, '2026-06-25 13:16:52', 'USR-ADMIN', '2026-06-25 13:16:52', 'USR-ADMIN'),
-	(28, 0, 'C22', '<p>asdfasdf</p>', 1, 0, '2026-06-25 13:17:03', 'USR-ADMIN', '2026-06-25 13:17:03', 'USR-ADMIN'),
-	(29, 28, 'C22', '<p>123123213</p>', 1, 0, '2026-06-25 13:17:08', 'USR-ADMIN', '2026-06-25 13:17:08', 'USR-ADMIN'),
-	(30, 0, 'C22', '<p>143424</p>', 1, 0, '2026-06-25 13:37:48', 'USR-ADMIN', '2026-06-25 13:37:48', 'USR-ADMIN'),
-	(31, 0, 'C22', '<p>test upload</p>', 1, 0, '2026-06-25 14:22:01', 'USR-ADMIN', '2026-06-25 14:22:01', 'USR-ADMIN'),
-	(33, 0, 'C22', '<p>tes123 123</p>', 1, 0, '2026-06-25 14:40:57', 'USR-ADMIN', '2026-06-25 14:40:57', 'USR-ADMIN'),
-	(34, 0, 'C22', '<p>123123</p>', 1, 0, '2026-06-25 15:05:33', 'USR-ADMIN', '2026-06-25 15:05:33', 'USR-ADMIN'),
-	(35, 0, 'C22', 'Update from 1 2 ', 1, 0, '2026-06-25 15:58:09', 'USR-ADMIN', '2026-06-25 15:58:09', 'USR-ADMIN'),
-	(36, 0, 'B1', 'Update Status from Open To  Client - Completed', 1, 0, '2026-06-25 16:08:57', 'USR-ADMIN', '2026-06-25 16:08:57', 'USR-ADMIN'),
-	(37, 0, 'B1', 'Update Status from <strong>Client - Completed</strong> To  <strong>Open - On Review</strong>', 1, 0, '2026-06-25 16:10:06', 'USR-ADMIN', '2026-06-25 16:10:06', 'USR-ADMIN'),
-	(38, 0, 'C22', 'Update Status from <strong>Open - On Review</strong> To  <strong>Complete - Review</strong>', 1, 0, '2026-06-25 16:25:39', 'USR-ADMIN', '2026-06-25 16:25:39', 'USR-ADMIN'),
-	(39, 0, 'C22', 'Update Status from <strong>Complete - Review</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 16:25:49', 'USR-ADMIN', '2026-06-25 16:25:49', 'USR-ADMIN'),
-	(40, 0, 'TS000006', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 17:05:37', 'data.submitBy', '2026-06-25 17:05:37', 'data.submitBy'),
-	(41, 0, 'TS000002', 'Update Status from <strong>Open - Assigned</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 17:06:47', 'USR-8C76A791', '2026-06-25 17:06:47', 'USR-8C76A791'),
-	(42, 0, 'TS000007', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 17:07:39', 'data.submitBy', '2026-06-25 17:07:39', 'data.submitBy'),
-	(43, 0, 'a1', 'Update Status from <strong>Open</strong> To  <strong>Cancelled</strong>', 1, 0, '2026-06-25 17:37:26', 'data.submitBy', '2026-06-25 17:37:26', 'data.submitBy'),
-	(44, 0, 'TS000003', 'Update Status from <strong>Open</strong> To  <strong>Open - Submit</strong>', 1, 0, '2026-06-25 17:57:18', '', '2026-06-25 17:57:18', ''),
-	(45, 0, 'TS000008', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 18:20:18', 'USR-ADMIN', '2026-06-25 18:20:18', 'USR-ADMIN'),
-	(46, 0, 'C223', 'Update Status from <strong>Draft</strong> To  <strong>Open</strong>', 1, 0, '2026-07-08 14:36:57', 'USR-ADMIN', '2026-07-08 14:36:57', 'USR-ADMIN'),
-	(47, 0, 'TS000003', 'Update Status from <strong>Open - Submit</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-08 15:36:26', 'USR-8C76A791', '2026-07-08 15:36:26', 'USR-8C76A791'),
-	(48, 0, 'IS000002', '', 1, 0, '2026-07-08 16:18:23', 'USR-ADMIN', '2026-07-08 16:18:23', 'USR-ADMIN'),
-	(49, 0, 'IS000004', 'Update Status from <strong>Draft</strong> To  <strong>Open</strong>', 1, 0, '2026-07-08 17:14:48', 'USR-ADMIN', '2026-07-08 17:14:48', 'USR-ADMIN'),
-	(50, 0, 'TA000012', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-08 17:16:49', '0', '2026-07-08 17:16:49', '0'),
-	(51, 0, 'IS000004', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-08 17:17:12', 'USR-ADMIN', '2026-07-08 17:17:12', 'USR-ADMIN');
+-- Dumping data for table thinktank-ticket.ticket_logs: ~48 rows (approximately)
+INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeDateTime`, `description`, `presence`, `inputBySystem`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(8, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '1231231 23 123', 1, 0, '2026-06-17 14:51:46', '1', '2026-06-17 14:51:46', '1'),
+	(9, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '1231231 23 123', 1, 0, '2026-06-17 14:51:53', '1', '2026-06-17 14:51:53', '1'),
+	(10, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '1231231 23 123', 1, 0, '2026-06-17 14:51:54', '1', '2026-06-17 14:51:54', '1'),
+	(11, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '1231231 23 123', 1, 0, '2026-06-17 14:52:50', 'USR-8C76A791', '2026-06-17 14:52:50', 'USR-8C76A791'),
+	(12, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '123123', 1, 0, '2026-06-17 14:53:43', 'USR-8C76A791', '2026-06-17 14:53:43', 'USR-8C76A791'),
+	(13, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '123123', 1, 0, '2026-06-17 15:01:49', 'USR-8C76A791', '2026-06-17 15:01:49', 'USR-8C76A791'),
+	(14, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'asdfasdfadf', 1, 0, '2026-06-17 15:02:02', 'USR-8C76A791', '2026-06-17 15:02:02', 'USR-8C76A791'),
+	(15, 0, 'TS000003', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Add Activity 123123 Add Activity', 1, 0, '2026-06-17 15:53:23', '1', '2026-06-17 15:53:23', '1'),
+	(16, 0, 'TS000003', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'A reference to the currently opened (active) modal.\n\nInstances of this class can be injected into your component passed as modal content. So you can .update(), .close() or .dismiss() the modal window from your component.\nMethods', 1, 0, '2026-06-17 15:53:43', '1', '2026-06-17 15:53:43', '1'),
+	(17, 0, 'TS000003', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'desc baru 123', 1, 0, '2026-06-17 15:57:49', '1', '2026-06-17 15:57:49', '1'),
+	(18, 0, 'TS000003', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'halo halo', 1, 0, '2026-06-22 15:17:04', '1', '2026-06-22 15:17:04', '1'),
+	(19, 0, 'TS000008', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'test 123', 1, 0, '2026-06-24 14:50:49', 'USR-ADMIN', '2026-06-24 14:50:49', 'USR-ADMIN'),
+	(20, 0, 'TS000008', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '13123', 1, 0, '2026-06-24 14:51:32', 'USR-ADMIN', '2026-06-24 14:51:32', 'USR-ADMIN'),
+	(23, 0, 'TS000008', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>Integrating <strong>ngx-editor</strong> inside a modal requires managing the <code>Editor</code> instance lifecycle properly. Failing to initialize and destroy the editor instance when opening and closing the modal can cause rendering crashes or memory leaks.</p><p>Here is how to set up <strong>ngx-editor</strong> inside an Angular modal (like <code>@angular/material/dialog</code> or <code>ngx-bootstrap/modal</code>):</p>', 1, 0, '2026-06-24 14:58:57', 'USR-ADMIN', '2026-06-24 14:58:57', 'USR-ADMIN'),
+	(24, 14, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>123123</p>', 1, 0, '2026-06-24 16:10:04', 'USR-8C76A791', '2026-06-24 16:10:04', 'USR-8C76A791'),
+	(25, 12, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p><span style="color: rgb(33, 37, 41);">The content of the code editor is kept in sync with the content of the code block in the rich text editor, so that it is as if you\'re directly editing the outer document, using a more convenient interface.</span></p><h4 style="text-align: start;"><strong><span style="color: rgb(33, 37, 41);">Mr. Bean</span></strong></h4><p style="text-align: start;"><span style="color: rgb(33, 37, 41);">The image is resizable. Include </span><strong><span style="color: rgb(33, 37, 41);">image</span></strong><span style="color: rgb(33, 37, 41);"> plugin to enable image resizing</span></p><p><br></p>', 1, 0, '2026-06-24 16:11:32', 'USR-8C76A791', '2026-06-24 16:11:32', 'USR-8C76A791'),
+	(26, 25, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>tav</p>', 1, 0, '2026-06-24 16:18:17', 'USR-8C76A791', '2026-06-24 16:18:17', 'USR-8C76A791'),
+	(27, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>123123123 12 3123</p>', 1, 0, '2026-06-25 13:16:52', 'USR-ADMIN', '2026-06-25 13:16:52', 'USR-ADMIN'),
+	(28, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>asdfasdf</p>', 1, 0, '2026-06-25 13:17:03', 'USR-ADMIN', '2026-06-25 13:17:03', 'USR-ADMIN'),
+	(29, 28, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>123123213</p>', 1, 0, '2026-06-25 13:17:08', 'USR-ADMIN', '2026-06-25 13:17:08', 'USR-ADMIN'),
+	(30, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>143424</p>', 1, 0, '2026-06-25 13:37:48', 'USR-ADMIN', '2026-06-25 13:37:48', 'USR-ADMIN'),
+	(31, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>test upload</p>', 1, 0, '2026-06-25 14:22:01', 'USR-ADMIN', '2026-06-25 14:22:01', 'USR-ADMIN'),
+	(33, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>tes123 123</p>', 1, 0, '2026-06-25 14:40:57', 'USR-ADMIN', '2026-06-25 14:40:57', 'USR-ADMIN'),
+	(34, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>123123</p>', 1, 0, '2026-06-25 15:05:33', 'USR-ADMIN', '2026-06-25 15:05:33', 'USR-ADMIN'),
+	(35, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update from 1 2 ', 1, 0, '2026-06-25 15:58:09', 'USR-ADMIN', '2026-06-25 15:58:09', 'USR-ADMIN'),
+	(36, 0, 'B1', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from Open To  Client - Completed', 1, 0, '2026-06-25 16:08:57', 'USR-ADMIN', '2026-06-25 16:08:57', 'USR-ADMIN'),
+	(37, 0, 'B1', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Client - Completed</strong> To  <strong>Open - On Review</strong>', 1, 0, '2026-06-25 16:10:06', 'USR-ADMIN', '2026-06-25 16:10:06', 'USR-ADMIN'),
+	(38, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open - On Review</strong> To  <strong>Complete - Review</strong>', 1, 0, '2026-06-25 16:25:39', 'USR-ADMIN', '2026-06-25 16:25:39', 'USR-ADMIN'),
+	(39, 0, 'C22', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Complete - Review</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 16:25:49', 'USR-ADMIN', '2026-06-25 16:25:49', 'USR-ADMIN'),
+	(40, 0, 'TS000006', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 17:05:37', 'data.submitBy', '2026-06-25 17:05:37', 'data.submitBy'),
+	(41, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open - Assigned</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 17:06:47', 'USR-8C76A791', '2026-06-25 17:06:47', 'USR-8C76A791'),
+	(42, 0, 'TS000007', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 17:07:39', 'data.submitBy', '2026-06-25 17:07:39', 'data.submitBy'),
+	(43, 0, 'a1', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Cancelled</strong>', 1, 0, '2026-06-25 17:37:26', 'data.submitBy', '2026-06-25 17:37:26', 'data.submitBy'),
+	(44, 0, 'TS000003', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Open - Submit</strong>', 1, 0, '2026-06-25 17:57:18', '', '2026-06-25 17:57:18', ''),
+	(45, 0, 'TS000008', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-06-25 18:20:18', 'USR-ADMIN', '2026-06-25 18:20:18', 'USR-ADMIN'),
+	(46, 0, 'C223', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Draft</strong> To  <strong>Open</strong>', 1, 0, '2026-07-08 14:36:57', 'USR-ADMIN', '2026-07-08 14:36:57', 'USR-ADMIN'),
+	(47, 0, 'TS000003', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open - Submit</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-08 15:36:26', 'USR-8C76A791', '2026-07-08 15:36:26', 'USR-8C76A791'),
+	(48, 0, 'IS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '', 1, 0, '2026-07-08 16:18:23', 'USR-ADMIN', '2026-07-08 16:18:23', 'USR-ADMIN'),
+	(49, 0, 'IS000004', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Draft</strong> To  <strong>Open</strong>', 1, 0, '2026-07-08 17:14:48', 'USR-ADMIN', '2026-07-08 17:14:48', 'USR-ADMIN'),
+	(50, 0, 'TA000012', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-08 17:16:49', '0', '2026-07-08 17:16:49', '0'),
+	(51, 0, 'IS000004', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-08 17:17:12', 'USR-ADMIN', '2026-07-08 17:17:12', 'USR-ADMIN'),
+	(52, 0, 'TA000010', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Draft</strong> To  <strong>Open</strong>', 1, 0, '2026-07-09 18:35:57', 'USR-ADMIN', '2026-07-09 18:35:57', 'USR-ADMIN'),
+	(53, 0, 'TA000013', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>kerjain ABCA</p>', 1, 0, '2026-07-10 12:40:01', 'USR-ADMIN', '2026-07-10 12:40:01', 'USR-ADMIN'),
+	(54, 0, 'TA000013', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '', 1, 0, '2026-07-10 12:45:16', 'USR-ADMIN', '2026-07-10 12:45:16', 'USR-ADMIN'),
+	(55, 0, 'TA000013', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '<p>barang </p>', 1, 0, '2026-07-10 12:49:28', 'USR-ADMIN', '2026-07-10 12:49:28', 'USR-ADMIN'),
+	(56, 0, 'TA000013', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open - On Review</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-10 13:14:35', 'USR-ADMIN', '2026-07-10 13:14:35', 'USR-ADMIN'),
+	(57, 0, 'IS000008', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-07-10 15:19:02', 'USR-ADMIN', '2026-07-10 15:19:02', 'USR-ADMIN'),
+	(58, 0, 'IS000007', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 'Update Status from <strong>Open</strong> To  <strong>Client - Completed</strong>', 1, 0, '2026-07-10 15:19:47', 'USR-ADMIN', '2026-07-10 15:19:47', 'USR-ADMIN'),
+	(59, 0, 'TA000010', '2026-07-02 19:35:00', '2026-07-18 18:34:00', '<p>tes ai</p>', 1, 0, '2026-07-10 16:33:01', 'USR-ADMIN', '2026-07-10 16:33:01', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_logs_attachments
 CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
@@ -383,14 +422,17 @@ CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
   `inputDate` datetime DEFAULT current_timestamp(),
   `inputBy` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table thinktank-ticket.ticket_logs_attachments: ~4 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_logs_attachments: ~6 rows (approximately)
 INSERT INTO `ticket_logs_attachments` (`id`, `ticketId`, `ticketLogId`, `originalName`, `filename`, `mimetype`, `size`, `url`, `inputDate`, `inputBy`) VALUES
 	(1, 'C22', 33, '9f602d89e09afc00586c4531712d98c0.jpg', '1782373257961-575028619.jpg', 'image/jpeg', 78999, 'http://localhost:3000/uploads/1782373257961-575028619.jpg', '2026-06-25 14:40:57', 'USR-ADMIN'),
 	(2, 'C22', 34, 'af9ba7cec186ceed2959188052710d88.jpg', '1782374733014-180734174.jpg', 'image/jpeg', 75719, 'http://localhost:3000/uploads/1782374733014-180734174.jpg', '2026-06-25 15:05:33', 'USR-ADMIN'),
 	(3, 'IS000002', 48, '9f602d89e09afc00586c4531712d98c0.jpg', '1783502303457-217871611.jpg', 'image/jpeg', 78999, 'http://localhost:3000/uploads/1783502303457-217871611.jpg', '2026-07-08 16:18:23', 'USR-ADMIN'),
-	(4, 'IS000002', 48, 'ball joint shf.jpg', '1783502303458-110124108.jpg', 'image/jpeg', 56188, 'http://localhost:3000/uploads/1783502303458-110124108.jpg', '2026-07-08 16:18:23', 'USR-ADMIN');
+	(4, 'IS000002', 48, 'ball joint shf.jpg', '1783502303458-110124108.jpg', 'image/jpeg', 56188, 'http://localhost:3000/uploads/1783502303458-110124108.jpg', '2026-07-08 16:18:23', 'USR-ADMIN'),
+	(5, 'TA000013', 54, 'af9ba7cec186ceed2959188052710d88.jpg', '1783662316688-296160190.jpg', 'image/jpeg', 75719, 'http://localhost:3000/uploads/1783662316688-296160190.jpg', '2026-07-10 12:45:16', 'USR-ADMIN'),
+	(6, 'TA000013', 54, 'ball joint shf.jpg', '1783662316688-990320400.jpg', 'image/jpeg', 56188, 'http://localhost:3000/uploads/1783662316688-990320400.jpg', '2026-07-10 12:45:16', 'USR-ADMIN'),
+	(7, 'TA000013', 55, 'a93ef1d601416decfe7b2bf86b059cf1.jpg', '1783662568769-143701860.jpg', 'image/jpeg', 74713, 'http://localhost:3000/uploads/1783662568769-143701860.jpg', '2026-07-10 12:49:28', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_severity
 CREATE TABLE IF NOT EXISTS `ticket_severity` (
@@ -404,7 +446,7 @@ CREATE TABLE IF NOT EXISTS `ticket_severity` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.ticket_severity: ~5 rows (approximately)
 INSERT INTO `ticket_severity` (`id`, `name`, `duration`, `color`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -432,8 +474,8 @@ CREATE TABLE IF NOT EXISTS `ticket_status` (
 
 -- Dumping data for table thinktank-ticket.ticket_status: ~9 rows (approximately)
 INSERT INTO `ticket_status` (`id`, `name`, `task`, `issues`, `cr`, `finish`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(1, 'Draft', 0, 0, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(100, 'Open', 1, 1, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(1, 'Open', 0, 0, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(100, 'Open - On Review', 1, 1, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(101, 'Open - Assigned', 1, 1, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(105, 'Open - On Review', 1, 1, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(106, 'Open - Submit', 1, 1, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
@@ -524,9 +566,9 @@ CREATE TABLE IF NOT EXISTS `user_access_right` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=386 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=403 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_access_right: ~35 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_access_right: ~52 rows (approximately)
 INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`, `d`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(351, 1, 0, 0, 0, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(352, 1, 1001, 1, 1, 1, 1, 1, '2026-07-08 13:49:46', 1, '2026-07-08 14:02:18', 1),
@@ -562,7 +604,24 @@ INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`,
 	(382, 2, 5007, 1, 1, 1, 1, 1, '2026-07-08 14:02:30', 1, '2026-07-08 14:02:30', 1),
 	(383, 2, 6000, 1, 1, 1, 1, 1, '2026-07-08 14:02:30', 1, '2026-07-08 14:02:30', 1),
 	(384, 2, 6001, 1, 1, 1, 1, 1, '2026-07-08 14:02:30', 1, '2026-07-08 14:02:30', 1),
-	(385, 2, 6002, 1, 1, 1, 1, 1, '2026-07-08 14:02:30', 1, '2026-07-08 14:02:30', 1);
+	(385, 2, 6002, 1, 1, 1, 1, 1, '2026-07-08 14:02:30', 1, '2026-07-08 14:02:30', 1),
+	(386, 9, 1001, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(387, 9, 1002, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(388, 9, 1003, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(389, 9, 1004, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(390, 9, 1005, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(391, 9, 1006, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(392, 9, 1007, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(393, 9, 2001, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(394, 9, 2002, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(395, 9, 2003, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(396, 9, 2004, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(397, 9, 5005, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(398, 9, 5006, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(399, 9, 5007, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(400, 9, 6000, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(401, 9, 6001, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1),
+	(402, 9, 6002, 0, 1, 1, 0, 1, '2026-07-10 11:57:57', 1, '2026-07-10 11:57:57', 1);
 
 -- Dumping structure for table thinktank-ticket.user_auth_level
 CREATE TABLE IF NOT EXISTS `user_auth_level` (

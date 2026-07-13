@@ -24,9 +24,9 @@ const { Server } = require('socket.io');
 const { success } = require('./helpers/response');
 const authRoutes = require('./modules/auth/auth.route');
 const masterRoutes = require('./modules/master/master.route');
+const ticketCategoriesRoutes = require('./modules/ticket-categories/ticket-categories.route');
 const clientRoutes = require('./modules/client/client.route');
 const projectRoutes = require('./modules/project/project.route');
-const projectMasterRoutes = require('./modules/project-master/project-master.route');
 const ticketRoutes = require('./modules/ticket/ticket.route');
 const caseRoutes = require('./modules/cases/case.route');
 const userRoutes = require('./modules/user/user.route');
@@ -65,9 +65,9 @@ app.get(`${PREFIX_SERVER}`, (req, res) => {
  
 app.use(`${PREFIX_SERVER}/auth`, authRoutes);
 app.use(`${PREFIX_SERVER}/master`, masterRoutes);
+app.use(`${PREFIX_SERVER}/ticket-categories`, ticketCategoriesRoutes);
 app.use(`${PREFIX_SERVER}/client`, clientRoutes);
-app.use(`${PREFIX_SERVER}/project`, projectRoutes);
-app.use(`${PREFIX_SERVER}/project-master`, projectMasterRoutes);
+app.use(`${PREFIX_SERVER}/project`, projectRoutes); 
 app.use(`${PREFIX_SERVER}/ticket`, ticketRoutes);
 app.use(`${PREFIX_SERVER}/cases`, caseRoutes);
 app.use(`${PREFIX_SERVER}/user`, userRoutes);

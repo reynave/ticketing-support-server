@@ -177,17 +177,6 @@ const tableMap = {
     allowUpdate: true,
     allowDelete: false,
   },
-   'ticket-categories': {
-    tableName: 'ticket_categories',
-    hasStatus: false,
-    hasPresence: false,
-    requiredFields: ['name', 'id', 'weight'],
-    editableFields: ['name', 'id', 'weight'],
-    numericFields: ['weight'],
-    allowCreate: false,
-    allowUpdate: true,
-    allowDelete: false,
-  },
   'ticket-severities': {
     tableName: 'ticket_severity',
     orderBy: 'id ASC',

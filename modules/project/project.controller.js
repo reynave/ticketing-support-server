@@ -1,4 +1,4 @@
-const projectService = require('./project.service');
+const projectMasterService = require('./project.service');
 const { success } = require('../../helpers/response');
 
 function parseId(id) {
@@ -13,8 +13,8 @@ function parseId(id) {
 
 async function list(req, res, next) {
   try {
-    const data = await projectService.listProjects(req.query);
-    return res.json(success('Project list fetched', data));
+    const data = await projectMasterService.listProjects(req.query || {});
+    return res.json(success('Project master list fetched', data));
   } catch (error) {
     return next(error);
   }
@@ -23,8 +23,8 @@ async function list(req, res, next) {
 async function detail(req, res, next) {
   try {
     const id = parseId(req.params.id);
-    const data = await projectService.getProjectDetail(id);
-    return res.json(success('Project detail fetched', data));
+    const data = await projectMasterService.getProjectDetail(id);
+    return res.json(success('Project master detail fetched', data));
   } catch (error) {
     return next(error);
   }
@@ -32,8 +32,9 @@ async function detail(req, res, next) {
 
 async function create(req, res, next) {
   try {
-    const data = await projectService.createProject(req.body || {});
-    return res.status(201).json(success('Project created', data));
+    const actorId = req.user?.id ? String(req.user.id) : '1';
+    const data = await projectMasterService.createProject(req.body || {}, actorId);
+    return res.status(201).json(success('Project master created', data));
   } catch (error) {
     return next(error);
   }
@@ -42,8 +43,9 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   try {
     const id = parseId(req.params.id);
-    const data = await projectService.updateProject(id, req.body || {});
-    return res.json(success('Project updated', data));
+    const actorId = req.user?.id ? String(req.user.id) : '1';
+    const data = await projectMasterService.updateProject(id, req.body || {}, actorId);
+    return res.json(success('Project master updated', data));
   } catch (error) {
     return next(error);
   }
@@ -52,8 +54,9 @@ async function update(req, res, next) {
 async function remove(req, res, next) {
   try {
     const id = parseId(req.params.id);
-    const data = await projectService.deleteProject(id);
-    return res.json(success('Project deleted', data));
+    const actorId = req.user?.id ? String(req.user.id) : '1';
+    const data = await projectMasterService.deleteProject(id, actorId);
+    return res.json(success('Project master deleted', data));
   } catch (error) {
     return next(error);
   }
