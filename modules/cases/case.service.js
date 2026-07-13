@@ -387,11 +387,11 @@ async function createTicketLog_VER1(payload) {
   const data = payload;
   const q = `
       INSERT INTO ticket_logs (
-        ticketId,   description, parentId,
+        ticketId, description, parentId, starDateTime, closeDateTime,
         presence, inputDate, inputBy, updateDate, updateBy
       )
       VALUES (
-        ?, ?, ?,
+        ?, ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
         1, NOW(),  '${data.submitBy}', NOW(),  '${data.submitBy}'
       )
     `;
@@ -399,6 +399,8 @@ async function createTicketLog_VER1(payload) {
     data.ticketId,
     data.description,
     data.parentId == null ? '' : data.parentId,
+    data.starDateTime || null,
+    data.clsoeDateTime || null,
   ];
   console.log(q, obj)
 
@@ -411,6 +413,12 @@ async function createTicketLog(payload, files = [], req) {
   console.log('createTicketLog payload', payload);
   const data = payload;
 
+  if (!String(data.starDateTime || '').trim() || !String(data.closeDateTime || '').trim()) {
+    const error = new Error('starDateTime and closeDateTime are required');
+    error.statusCode = 400;
+    throw error;
+  }
+
   const conn = await pool.getConnection();
 
   try {
@@ -419,11 +427,11 @@ async function createTicketLog(payload, files = [], req) {
     // 1. Insert ticket_logs
     const logQuery = `
       INSERT INTO ticket_logs (
-        ticketId, description, parentId,
+        ticketId, description, parentId, starDateTime, closeDateTime,
         presence, inputDate, inputBy, updateDate, updateBy
       )
       VALUES (
-        ?, ?, ?,
+        ?, ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
         1, NOW(), ?, NOW(), ?
       )
     `;
@@ -432,6 +440,8 @@ async function createTicketLog(payload, files = [], req) {
       data.ticketId,
       data.description,
       data.parentId || '',
+      data.starDateTime,
+      data.closeDateTime,
       data.submitBy,
       data.submitBy,
     ];
@@ -539,17 +549,19 @@ async function updateTicket(id, payload) {
 
       const q = `
       INSERT INTO ticket_logs (
-        ticketId,   description,  
+        ticketId, description, starDateTime, closeDateTime,
         presence, inputDate, inputBy, updateDate, updateBy
       )
       VALUES (
-        ?, ?,  
+        ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
         1, NOW(),  '${payload.submitBy}', NOW(),  '${payload.submitBy}'
       )
     `;
   const obj = [
     id,
     description
+    , null
+    , null
   ];
 
 

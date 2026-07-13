@@ -145,7 +145,7 @@ async function assertEmailUnique(email, exceptUserId = null) {
 }
 
 async function listUsers(filters = {}) {
-  const conditions = ['presence = 1'];
+  const conditions = ['u.presence = 1'];
   const params = [];
 
   if (filters.status !== undefined) {
@@ -154,34 +154,33 @@ async function listUsers(filters = {}) {
   }
 
   if (filters.userAuthLevelId !== undefined) {
-    conditions.push('userAuthLevelId = ?');
+    conditions.push('u.userAuthLevelId = ?');
     params.push(Number(filters.userAuthLevelId));
   }
 
   if (filters.clientId !== undefined) {
-    conditions.push('clientId = ?');
+    conditions.push('u.clientId = ?');
     params.push(Number(filters.clientId));
   }
 
   if (filters.userTypeId !== undefined) {
-    conditions.push('userTypeId = ?');
+    conditions.push('u.userTypeId = ?');
     params.push(Number(filters.userTypeId));
   }
 
   if (filters.keyword) {
-    conditions.push('(id LIKE ? OR email LIKE ? OR firstName LIKE ? OR lastName LIKE ?)');
+    conditions.push('(u.id LIKE ? OR u.email LIKE ? OR u.firstName LIKE ? OR u.lastName LIKE ?)');
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
   }
 
   const whereClause = `WHERE ${conditions.join(' AND ')}`;
   const [rows] = await pool.execute(
     `
-      SELECT
-        id, email, clientId, userTypeId, userAuthLevelId, firstName, lastName, phone, mobile,
-        birthday, status, presence, inputDate, inputBy, updateDate, updateBy
-      FROM user
+      SELECT u.*, a.name AS 'userAuthLevel'
+      FROM user AS u
+      LEFT JOIN user_auth_level AS a ON u.userAuthLevelId = a.id
       ${whereClause}
-      ORDER BY inputDate DESC
+      ORDER BY u.inputDate DESC
     `,
     params
   );

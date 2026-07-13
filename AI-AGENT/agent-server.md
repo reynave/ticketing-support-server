@@ -3,6 +3,7 @@
 ## Current Scope (Tahap Sekarang)
 - Fokus implementasi: LOGIN + MASTER DATA saja.
 - Source master data: tabel existing dari `master-table.sql`.
+- `Project Master` dipisahkan dari global master data dan dikelola via modul/API mandiri.
 - Modul transaksi ticket (ticket, detail, comment, attachment, socket realtime) ditunda ke tahap berikutnya.
 
 ## Tech Stack
@@ -51,6 +52,10 @@ server/
 │   │   ├── project.route.js
 │   │   ├── project.controller.js
 │   │   └── project.service.js
+│   ├── project-master/
+│   │   ├── project-master.route.js
+│   │   ├── project-master.controller.js
+│   │   └── project-master.service.js
 │   ├── ticket/
 │   │   ├── ticket.route.js
 │   │   ├── ticket.controller.js
@@ -153,6 +158,15 @@ Untuk user_access_right.moduleId
 | GET | /api/master/project-categories | List project categories |
 | GET | /api/master/user-auth-level | List auth level |
 
+### Project Master (Standalone)
+| Method | Endpoint | Keterangan |
+|--------|----------|------------|
+| GET | /api/project-master | List project master (tabel `project`) |
+| GET | /api/project-master/:id | Detail project master |
+| POST | /api/project-master | Create project master |
+| PUT | /api/project-master/:id | Update project master |
+| DELETE | /api/project-master/:id | Soft delete project master |
+
 ### User
 | Method | Endpoint | Keterangan |
 |--------|----------|------------|
@@ -222,6 +236,7 @@ Untuk user_access_right.moduleId
 - Semua response pakai wrapper: `{ status: true/false, message: '', data: null }`
 - Soft delete: set `presence = 0`, jangan DELETE dari DB
 - Auto number: gunakan helper `autoNumber.js` dengan tabel `auto_number`
+- `Project Master` tidak lewat endpoint `/api/master/:masterKey`; gunakan endpoint mandiri `/api/project-master`
 - Error handling: semua async pakai try/catch → forward ke `errorHandler` middleware
 - JWT payload: `{ id, email, authlevelId, clientId, userType }`
 - Password: bcrypt hash dengan saltRounds = 4
@@ -235,3 +250,16 @@ Untuk user_access_right.moduleId
 1. Tabel `user` tambah field `userTypeId` (FK → user_type.id)
 2. Tabel `project` ubah `clientId` dari `varchar(50)` ke `int(11)` agar sesuai dengan `client.id`
 3. Buat tabel `module` untuk referensi `user_access_right.moduleId`
+
+---
+
+## Instruksi Eksekusi AI Agent
+
+1. Untuk semua perubahan master data project, prioritaskan modul `modules/project-master/*`.
+2. Jangan menambahkan key `project` ke endpoint generic `/api/master/:masterKey`.
+3. Jika ada perubahan field pada tabel `project`, sinkronkan langsung ke:
+	- `project-master.service.js` (validasi + query)
+	- `project-master.controller.js` (request/response)
+	- dokumentasi endpoint pada file ini.
+4. Pertahankan pola soft delete (`presence = 0`) dan timestamp `NOW()`.
+5. Semua response tetap pakai wrapper standar `{ status, message, data }`.
