@@ -104,8 +104,8 @@ async function createRelatedTask(caseId, payload) {
   const generatedId = await buildTaskId(payload.id);
   const ticketCategoryId =
     payload.ticketCategoryId === undefined ||
-    payload.ticketCategoryId === null ||
-    payload.ticketCategoryId === ''
+      payload.ticketCategoryId === null ||
+      payload.ticketCategoryId === ''
       ? null
       : parseOptionalNumber(payload.ticketCategoryId, 'ticketCategoryId');
 
@@ -224,15 +224,15 @@ async function listTickets(filters = {}) {
   const whereClause = `WHERE (t.ratesBy = '' and t.presence = 1 and t.ticketTypeId = 2) OR  ${conditions.join(' AND ')}`;
 
   let whereTicketStatus = '';
-  if(filters.ticketStatusId  == 1){
+  if (filters.ticketStatusId == 1) {
     whereTicketStatus = ' and t.ticketStatusId < 900 ';
   }
-  else{
-whereTicketStatus = ' and t.ticketStatusId =  '+filters.ticketStatusId;
+  else {
+    whereTicketStatus = ' and t.ticketStatusId =  ' + filters.ticketStatusId;
   }
 
   // CASES
-  const q =  `
+  const q = `
       SELECT t.*,
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
@@ -253,9 +253,9 @@ whereTicketStatus = ' and t.ticketStatusId =  '+filters.ticketStatusId;
       ${whereTicketStatus}
       ORDER BY t.inputDate DESC
     `;
-    console.log(q,[TASK_TYPE_ID, ...params])
+  console.log(q, [TASK_TYPE_ID, ...params])
   const [rows] = await pool.execute(
-   q,
+    q,
     [TASK_TYPE_ID, ...params]
   );
 
@@ -350,19 +350,22 @@ async function createTicket(payload) {
   const data = normalizeCreatePayload(payload);
   const generatedId = await buildTicketId(payload.id);
   console.log('createTicket payload', data, 'generatedId:', generatedId);
-  await pool.execute(
-    `
+  const q = `
       INSERT INTO ticket (
         id, ticketTypeId,  title, description, projectId,
         submitBy, submitDate, targetCompletionDate, assignTo, 
         actualCompletionDate, ticketStatusId, ticketCategoryId,
         ticketSeverityId,
-        presence, inputDate, inputBy, updateDate, updateBy
+        presence, inputDate, inputBy, updateDate, updateBy,
+        deadlineDateTime
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,
-      1, NOW(), '1', NOW(), '1')
-    `,
-    [
+      VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,
+        1, NOW(), '1', NOW(), '1',
+        ?
+      )
+    `;
+    const arr =  [
       generatedId,
       data.ticketTypeId,
       data.title,
@@ -376,8 +379,13 @@ async function createTicket(payload) {
       data.ticketStatusId,
       data.ticketCategoryId,
       data.severityId,
-    ]
+      payload.deadlineDateTime
+    ];
+  await pool.execute(
+    q ,
+   arr
   );
+  console.log('query',q, 'params', arr)
 
   return getTicketDetail(generatedId);
 }
@@ -510,7 +518,8 @@ async function updateTicket(id, payload) {
     taskSolution = ?,
     title = ?,
     updateDate = NOW(),
-    updateBy = ?
+    updateBy = ?,
+    deadlineDateTime = ?
   WHERE id = ? AND presence = 1 AND ticketTypeId = ?
 `;
 
@@ -524,30 +533,29 @@ async function updateTicket(id, payload) {
     String(payload.taskSolution || '').trim(),
     String(payload.title || '').trim(),
     payload.submitBy,
+    payload.deadlineDateTime || null,
     id,
     CASE_TYPE_ID,
   ];
 
 
- 
+
   console.log('updateTicket query:', q, 'params:', params);
   const [result] = await pool.execute(q, params);
 
-  if(payload.wasTicketStatusId != payload.ticketStatusId){
-
-
-    const [history] = await pool.execute(
-    `
-      SELECT id, name FROM ticket_status WHERE id = ?
+   if (payload.wasAssignTo !== payload.assignTo) {
+     const [history] = await pool.execute(
+      `
+      SELECT id, concat(firstName, ' ', lastName) AS name FROM user WHERE id = ?
       UNION 
-      SELECT id,name FROM ticket_status WHERE id = ?
+       SELECT id, concat(firstName, ' ', lastName) AS name FROM user WHERE id = ?
     `,
-    [payload.wasTicketStatusId, payload.ticketStatusId]
-  );
+      [payload.wasAssignTo, payload.assignTo]
+    );
 
-  const description = 'Update Status from <strong>'+history[0]['name']+ '</strong> To  <strong>'+history[1]['name']+'</strong>';
+    const description = 'Update Assignee from <strong>' + history[0]['name'] + '</strong> To  <strong>' + history[1]['name'] + '</strong> ';
 
-      const q = `
+    const q = `
       INSERT INTO ticket_logs (
         ticketId, description, starDateTime, closeDateTime,
         presence, inputDate, inputBy, updateDate, updateBy
@@ -557,17 +565,55 @@ async function updateTicket(id, payload) {
         1, NOW(),  '${payload.submitBy}', NOW(),  '${payload.submitBy}'
       )
     `;
-  const obj = [
-    id,
-    description
-    , null
-    , null
-  ];
+    const obj = [
+      id,
+      description
+      , null
+      , null
+    ];
 
 
-  console.log(q, obj)
+    console.log(q, obj)
 
-  await pool.execute(q, obj);
+    await pool.execute(q, obj);
+  }
+
+
+  if (payload.wasTicketStatusId != payload.ticketStatusId) {
+
+
+    const [history] = await pool.execute(
+      `
+      SELECT id, name FROM ticket_status WHERE id = ?
+      UNION 
+      SELECT id,name FROM ticket_status WHERE id = ?
+    `,
+      [payload.wasTicketStatusId, payload.ticketStatusId]
+    );
+
+    const description = 'Update Status from <strong>' + history[0]['name'] + '</strong> To  <strong>' + history[1]['name'] + '</strong>';
+
+    const q = `
+      INSERT INTO ticket_logs (
+        ticketId, description, starDateTime, closeDateTime,
+        presence, inputDate, inputBy, updateDate, updateBy
+      )
+      VALUES (
+        ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
+        1, NOW(),  '${payload.submitBy}', NOW(),  '${payload.submitBy}'
+      )
+    `;
+    const obj = [
+      id,
+      description
+      , null
+      , null
+    ];
+
+
+    console.log(q, obj)
+
+    await pool.execute(q, obj);
   }
 
   if (!result.affectedRows) {
@@ -593,7 +639,7 @@ async function submitRateService(id, payload) {
   WHERE id = ? AND presence = 1 AND ticketTypeId = ?
 `;
 
-  const params = [ 
+  const params = [
     String(payload.taskSolution || '').trim(),
     String(payload.rating || '').trim(),
     payload.updateBy,
@@ -601,10 +647,10 @@ async function submitRateService(id, payload) {
     id,
     CASE_TYPE_ID,
   ];
- 
+
   console.log('updateTicket query:', q, 'params:', params);
   const [result] = await pool.execute(q, params);
- 
+
   if (!result.affectedRows) {
     const error = new Error('Ticket not found');
     error.statusCode = 404;

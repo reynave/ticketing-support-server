@@ -131,21 +131,26 @@ async function listProjects(filters = {}) {
         params.push(Number(filters.projectTypeId));
     }
 
+    if (filters.id !== undefined) {
+        conditions.push('p.id = ?');
+        params.push(String(filters.id));
+    }
+
     if (filters.keyword) {
         conditions.push('(p.id LIKE ? OR p.name LIKE ? OR c.name LIKE ?)');
         params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
     }
 
     const whereClause = `WHERE ${conditions.join(' AND ')}`;
-
-    const [rows] = await pool.execute(
-        `
+const q =   `
       SELECT
         p.*,
         c.name AS clientName,
         pt.name AS projectTypeName,
         pb.name AS projectBilleableName,
-        pr.name AS productName
+        pr.name AS productName,
+        '' as users
+        
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
@@ -153,9 +158,41 @@ async function listProjects(filters = {}) {
       LEFT JOIN product pr ON pr.id = p.productId
       ${whereClause}
       ORDER BY p.inputDate DESC
-    `,
+    `;
+    console.log('Executing query:', q, 'with params:', params);
+    const [rows] = await pool.execute(
+      q,
         params
     );
+
+
+    const queryUser = `
+        SELECT
+        p.projectId,  p.userId, CONCAT( c.firstName, ' ',c.lastName) AS 'name', p.asManager 
+        FROM project_users p
+        LEFT JOIN user c ON c.id = p.userId
+        WHERE p.presence = 1
+    `; 
+    const [users] = await pool.execute(queryUser);
+
+
+    // Map users to their respective projects
+    const projectUsersMap = {};
+    for (const user of users) {
+        if (!projectUsersMap[user.projectId]) {
+            projectUsersMap[user.projectId] = [];
+        }
+        projectUsersMap[user.projectId].push({
+            id: user.userId,
+            name: user.name,
+            asManager: user.asManager === 1,
+        });
+    }
+
+    // Attach users to their respective projects
+    for (const project of rows) {
+        project.users = projectUsersMap[project.id] || [];
+    }
 
     return rows;
 }
