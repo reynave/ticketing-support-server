@@ -328,9 +328,9 @@ async function updateProject(id, payload, actorId = '1') {
         fields.push('templateMaster = ?');
         params.push(String(payload.templateMaster));
     }
- if (payload.ticketCategoriesParentId !== undefined) {
+ if (payload.ticketCategoriesId !== undefined) {
         fields.push('ticketCategoriesParentId = ?');
-        params.push(Number(payload.ticketCategoriesParentId));
+        params.push(Number(payload.ticketCategoriesId));
     }
     if (!fields.length) {
         const error = new Error('No valid fields provided');

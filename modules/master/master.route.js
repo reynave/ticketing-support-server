@@ -4,6 +4,11 @@ const masterController = require('./master.controller');
 
 const router = express.Router();
 
+
+router.get('/status/task', authMiddleware, masterController.statusTask);
+router.get('/status/cases', authMiddleware, masterController.statusCases);
+router.get('/status/cr', authMiddleware, masterController.statusCr);
+
 router.get('/loadbBadge', authMiddleware, masterController.loadbBadge);
 router.get('/:masterKey', authMiddleware, masterController.list);
 router.get('/:masterKey/:id', authMiddleware, masterController.detail);

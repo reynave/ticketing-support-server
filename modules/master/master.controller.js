@@ -1,6 +1,6 @@
 const masterService = require('./master.service');
 const { success } = require('../../helpers/response');
-
+const { pool } = require('../../config/db');
 function parseId(id) {
   const parsed = Number(id);
 
@@ -71,6 +71,35 @@ async function loadbBadge(req, res, next) {
   }
 }
 
+async function statusTask(req, res, next) {
+  try {
+    const q = ` SELECT id, name from ticket_status Where task = 1 and presence = 1 order by id ASC`;
+    const [data] = await pool.execute(q); 
+    return res.json(success('Task status fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function statusCases(req, res, next) {
+  try {
+    const q = ` SELECT id, name from ticket_status Where issues = 1 and presence = 1 order by id ASC`;
+    const [data] = await pool.execute(q); 
+    return res.json(success('Cases status fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function statusCr(req, res, next) {
+  try {
+    const q = ` SELECT id, name from ticket_status Where cr = 1 and presence = 1 order by id ASC`;
+    const [data] = await pool.execute(q); 
+    return res.json(success('CR status fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
 
 module.exports = {
   list,
@@ -79,4 +108,7 @@ module.exports = {
   update,
   remove,
   loadbBadge,
+  statusTask,
+  statusCases,
+  statusCr,
 };

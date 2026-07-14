@@ -108,30 +108,31 @@ async function listTickets(filters = {}) {
   const hasIssueNoFilter =
     filters.issueNo !== undefined && String(filters.issueNo).trim() !== '';
   const whereClause = hasIssueNoFilter
-    ? `WHERE ${conditions.join(' AND ')}`
-    : `WHERE  (t.ratesBy = '' and t.presence = 1 and t.ticketTypeId = 1) OR  ${conditions.join(' AND ')}`;
+    ? ` ${conditions.join(' AND ')}`
+    : `  (t.ratesBy = '' and t.ticketTypeId = 1) OR  ${conditions.join(' AND ')}`;
 
   let whereTicketStatus = '';
-  if(filters.ticketStatusId  == 1){
+  if (filters.ticketStatusId == 1) {
     whereTicketStatus = ' and t.ticketStatusId < 900 ';
   }
-  else{
-whereTicketStatus = ' and t.ticketStatusId =  '+filters.ticketStatusId;
+  else {
+    whereTicketStatus = ' and t.ticketStatusId =  ' + filters.ticketStatusId;
   }
-  const q =  `
+  const q = `
       SELECT t.*,
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
-      LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
+      LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
+      WHERE t.presence = 1  AND (
       ${whereClause}
-      ${whereTicketStatus}
+      ${whereTicketStatus} ) AND t.ticketStatusId <900
       ORDER BY t.inputDate DESC
     `;
-    console.log(q,params)
+  console.log(q, params)
   const [rows] = await pool.execute(
-   q,
+    q,
     params
   );
 
@@ -397,29 +398,27 @@ async function updateTicket(id, payload) {
     String(payload.taskSolution || '').trim(),
     String(payload.title || '').trim(),
     payload.submitBy,
-      id,
+    id,
   ];
 
 
- 
+
   console.log('updateTicket query:', q, 'params:', params);
   const [result] = await pool.execute(q, params);
 
-  if(payload.wasTicketStatusId != payload.ticketStatusId){
-
-
-    const [history] = await pool.execute(
-    `
-      SELECT id, name FROM ticket_status WHERE id = ?
+  if (payload.wasAssignTo !== payload.assignTo) {
+     const [history] = await pool.execute(
+      `
+      SELECT id, concat(firstName, ' ', lastName) AS name FROM user WHERE id = ?
       UNION 
-      SELECT id,name FROM ticket_status WHERE id = ?
+       SELECT id, concat(firstName, ' ', lastName) AS name FROM user WHERE id = ?
     `,
-    [payload.wasTicketStatusId, payload.ticketStatusId]
-  );
+      [payload.wasAssignTo, payload.assignTo]
+    );
 
-  const description = 'Update Status from <strong>'+history[0]['name']+ '</strong> To  <strong>'+history[1]['name']+'</strong>';
+    const description = 'Update Assignee from <strong>' + history[0]['name'] + '</strong> To  <strong>' + history[1]['name'] + '</strong> ';
 
-      const q = `
+    const q = `
       INSERT INTO ticket_logs (
         ticketId, description, starDateTime, closeDateTime,
         presence, inputDate, inputBy, updateDate, updateBy
@@ -429,17 +428,52 @@ async function updateTicket(id, payload) {
         1, NOW(),  '${payload.submitBy}', NOW(),  '${payload.submitBy}'
       )
     `;
-  const obj = [
-    id,
-    description
-    , null
-    , null
-  ];
+    const obj = [
+      id,
+      description
+      , null
+      , null
+    ];
 
 
-  console.log(q, obj)
+    console.log(q, obj)
 
-  await pool.execute(q, obj);
+    await pool.execute(q, obj);
+  }
+
+  if (payload.wasTicketStatusId != payload.ticketStatusId) {
+    const [history] = await pool.execute(
+      `
+      SELECT id, name FROM ticket_status WHERE id = ?
+      UNION 
+      SELECT id,name FROM ticket_status WHERE id = ?
+    `,
+      [payload.wasTicketStatusId, payload.ticketStatusId]
+    );
+
+    const description = 'Update Status from <strong>' + history[0]['name'] + '</strong> To  <strong>' + history[1]['name'] + '</strong> ';
+
+    const q = `
+      INSERT INTO ticket_logs (
+        ticketId, description, starDateTime, closeDateTime,
+        presence, inputDate, inputBy, updateDate, updateBy
+      )
+      VALUES (
+        ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
+        1, NOW(),  '${payload.submitBy}', NOW(),  '${payload.submitBy}'
+      )
+    `;
+    const obj = [
+      id,
+      description
+      , null
+      , null
+    ];
+
+
+    console.log(q, obj)
+
+    await pool.execute(q, obj);
   }
 
   if (!result.affectedRows) {
@@ -448,7 +482,7 @@ async function updateTicket(id, payload) {
     throw error;
   }
 
-  return getTicketDetail(id);
+  return true;
 }
 
 async function submitRateService(id, payload) {
@@ -465,17 +499,17 @@ async function submitRateService(id, payload) {
   WHERE id = ? AND presence = 1
 `;
 
-  const params = [ 
+  const params = [
     String(payload.taskSolution || '').trim(),
     String(payload.rating || '').trim(),
     payload.updateBy,
     payload.updateBy,
     id,
   ];
- 
+
   console.log('updateTicket query:', q, 'params:', params);
   const [result] = await pool.execute(q, params);
- 
+
   if (!result.affectedRows) {
     const error = new Error('Ticket not found');
     error.statusCode = 404;
