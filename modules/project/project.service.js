@@ -142,7 +142,7 @@ async function listProjects(filters = {}) {
     }
 
     const whereClause = `WHERE ${conditions.join(' AND ')}`;
-const q =   `
+    const q = `
       SELECT
         p.*,
         c.name AS clientName,
@@ -161,7 +161,7 @@ const q =   `
     `;
     console.log('Executing query:', q, 'with params:', params);
     const [rows] = await pool.execute(
-      q,
+        q,
         params
     );
 
@@ -172,7 +172,7 @@ const q =   `
         FROM project_users p
         LEFT JOIN user c ON c.id = p.userId
         WHERE p.presence = 1
-    `; 
+    `;
     const [users] = await pool.execute(queryUser);
 
 
@@ -206,7 +206,9 @@ async function getProjectDetail(id) {
         pt.name AS projectTypeName,
         pb.name AS projectBilleableName,
         pr.name AS productName,
-        '' as users
+        '' as users,
+        '' as ticketCategories,
+        '' as ticketBalance
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
@@ -219,12 +221,12 @@ async function getProjectDetail(id) {
     );
 
     const row = rows[0];
-    
-    
- const [users] = await pool.execute(
+
+
+    const [users] = await pool.execute(
         `
       SELECT
-        p.userId, p.asManager , true as checkbox 
+        p.userId, p.asManager , true as checkbox , CONCAT( c.firstName, ' ',c.lastName) AS 'name'
       FROM project_users p
       LEFT JOIN user c ON c.id = p.userId 
       WHERE   p.presence = 1 and projectId = ?
@@ -233,6 +235,32 @@ async function getProjectDetail(id) {
     );
 
     row.users = users;
+
+    const [ticketCategories] = await pool.execute(
+        `
+        SELECT id, name
+        FROM ticket_categories      
+        WHERE presence = 1 and parentId = ? and status = 1 
+        order by name asc
+        `,
+        [row.ticketCategoriesParentId]
+    );
+    row.ticketCategories = ticketCategories;
+
+
+    
+    const [ticketBalance] = await pool.execute(
+        `
+       SELECT 
+           IFNULL(SUM(ticketIn), 0) AS 'ticketIn' , 
+            IFNULL(SUM(ticketOut), 0) AS 'ticketOut' ,  
+            IFNULL(SUM(ticketIn - ticketOut), 0)  AS 'balance'
+        FROM ticket_balance WHERE projectId =  ? AND presence = 1
+        `,
+        [id]
+    );
+    row.ticketBalance = ticketBalance[0];
+
 
     if (!row) {
         const error = new Error('Project not found');
@@ -244,7 +272,7 @@ async function getProjectDetail(id) {
 }
 
 async function createProject(payload, actorId = '1') {
- 
+
 
     const id = buildProjectId(payload.id);
 
@@ -287,9 +315,9 @@ async function createProject(payload, actorId = '1') {
 
     console.log('payload.projectUsers:', payload.projectUsers);
     for (const pu of payload.projectUsers) {
-       
-        if(pu.checkbox == true){
-            const q =  `
+
+        if (pu.checkbox == true) {
+            const q = `
             INSERT INTO project_users (
                 projectId, userId, asManager,
                 presence, inputDate, inputBy, updateDate, updateBy
@@ -300,9 +328,9 @@ async function createProject(payload, actorId = '1') {
             console.log('Executing query:', q);
             await pool.execute(q);
         }
-       
+
     }
-  
+
 
 
 
@@ -365,7 +393,7 @@ async function updateProject(id, payload, actorId = '1') {
         fields.push('templateMaster = ?');
         params.push(String(payload.templateMaster));
     }
- if (payload.ticketCategoriesId !== undefined) {
+    if (payload.ticketCategoriesId !== undefined) {
         fields.push('ticketCategoriesParentId = ?');
         params.push(Number(payload.ticketCategoriesId));
     }
@@ -384,14 +412,14 @@ async function updateProject(id, payload, actorId = '1') {
         [...params, String(actorId), id]
     );
 
-    const q =  `
+    const q = `
     DELETE FROM project_users
     WHERE projectId = '${id}'`;
-  
-    await pool.execute(q); 
+
+    await pool.execute(q);
     for (const pu of payload.users) {
-       
-        const q =  `
+
+        const q = `
         INSERT INTO project_users (
             projectId, userId, asManager,
             presence, inputDate, inputBy, updateDate, updateBy
@@ -400,8 +428,8 @@ async function updateProject(id, payload, actorId = '1') {
             '${id}', '${pu.id}', ${pu.asManager === true ? 1 : 0}, 
             1, NOW(), '${String(actorId)}', NOW(), '${String(actorId)}')
         `;
- 
-        await pool.execute(q); 
+
+        await pool.execute(q);
     }
 
 

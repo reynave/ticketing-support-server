@@ -65,13 +65,11 @@ async function listClientProjects(clientId) {
       SELECT
         p.*, 
         pt.name AS projectTypeName,
-        pb.name AS projectBilleableName,
-        pc.name AS projectCategoryName,
+        pb.name AS projectBilleableName, 
         pr.name AS productName
       FROM project p 
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
-      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId
-      LEFT JOIN project_categories pc ON pc.id = p.projectCategoryId
+      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId 
       LEFT JOIN product pr ON pr.id = p.productId
       WHERE p.clientId = ? AND p.presence = 1
       ORDER BY p.id ASC
@@ -87,7 +85,8 @@ async function getClientDetail(id) {
     `
       SELECT 
         c.*, 
-        i.name as industryName
+        i.name as industryName,
+        '' as projects
       FROM client c
       LEFT JOIN industry i ON c.industryId = i.id
       WHERE c.id = ? AND c.presence = 1

@@ -221,7 +221,7 @@ async function listTickets(filters = {}) {
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
   }
 
-  const whereClause = `WHERE (t.ratesBy = '' and t.presence = 1 and t.ticketTypeId = 2) OR  ${conditions.join(' AND ')}`;
+  const whereClause = ` (t.ratesBy = '' and t.presence = 1 and t.ticketTypeId = 2) OR  ${conditions.join(' AND ')}`;
 
   let whereTicketStatus = '';
   if (filters.ticketStatusId == 1) {
@@ -249,8 +249,8 @@ async function listTickets(filters = {}) {
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
       LEFT JOIN ticket_severity ts2 ON ts2.id = t.ticketSeverityId
-      ${whereClause}
-      ${whereTicketStatus}
+    WHERE ticketStatusId < 900 AND (   ${whereClause}
+      ${whereTicketStatus} )
       ORDER BY t.inputDate DESC
     `;
   console.log(q, [TASK_TYPE_ID, ...params])
@@ -269,9 +269,10 @@ async function getTicketDetail(id) {
       SELECT t.*,
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
-        d.name AS productName, c.name AS clientName, pt.name AS projectType,
+        d.name AS productName, c.name AS clientName, pt.name AS projectType, pt.ticketBased,
         CONCAT(u.firstName, ' ',u.lastName) AS 'submitByName',
-        tc.name as 'ticketCategory'
+        tc.name as 'ticketCategory',
+        0 as taskCount
         FROM ticket t
         LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
         LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
@@ -288,6 +289,18 @@ async function getTicketDetail(id) {
   );
 
   const row = rows[0];
+
+  // tolong query taskCount nya diambil dari table ticket dengan kondisi presence = 1, ticketTypeId = 1, issueNo = id
+  const [taskCountRows] = await pool.execute(
+    `
+      SELECT COUNT(1) AS taskCount
+      FROM ticket
+      WHERE presence = 1 AND ticketTypeId = 1 AND issueNo = ? and ticketStatusId < 900
+    `,
+    [id]
+  );
+  row.taskCount = taskCountRows[0].taskCount;
+
 
   if (!row) {
     const error = new Error('Ticket not found');
@@ -519,7 +532,8 @@ async function updateTicket(id, payload) {
     title = ?,
     updateDate = NOW(),
     updateBy = ?,
-    deadlineDateTime = ?
+    deadlineDateTime = ?,
+    ticketEstimationCost = ?
   WHERE id = ? AND presence = 1 AND ticketTypeId = ?
 `;
 
@@ -534,13 +548,13 @@ async function updateTicket(id, payload) {
     String(payload.title || '').trim(),
     payload.submitBy,
     payload.deadlineDateTime || null,
+    payload.ticketEstimationCost || null,
     id,
     CASE_TYPE_ID,
   ];
 
 
-
-  console.log('updateTicket query:', q, 'params:', params);
+ 
   const [result] = await pool.execute(q, params);
 
    if (payload.wasAssignTo !== payload.assignTo) {
@@ -571,10 +585,7 @@ async function updateTicket(id, payload) {
       , null
       , null
     ];
-
-
-    console.log(q, obj)
-
+ 
     await pool.execute(q, obj);
   }
 
@@ -610,11 +621,33 @@ async function updateTicket(id, payload) {
       , null
     ];
 
-
-    console.log(q, obj)
+ 
 
     await pool.execute(q, obj);
   }
+
+    if(payload.ticketStatusId >= 900 && payload.ticketStatusId < 990){
+      // ticketEstimationCost di input ke table ticket_balanace
+      const q2 = `
+        INSERT INTO ticket_balance (
+          projectId, ticketId, ticketOut, date,  
+          inputDate, inputBy
+        )
+        VALUES (
+          ?, ?, ?, NOW(), 
+          NOW(), ?
+        )
+      `;
+      const obj2 = [
+        payload.projectId, 
+        id, 
+        payload.ticketEstimationCost,
+        payload.submitBy
+      ]; 
+      await pool.execute(q2, obj2);
+    }
+
+
 
   if (!result.affectedRows) {
     const error = new Error('Ticket not found');

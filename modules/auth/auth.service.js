@@ -13,7 +13,7 @@ function buildUserPayload(user) {
   };
 }
 
-async function login(email, password) {
+async function login(email, password, ipAddress, userAgent) {
   const [rows] = await pool.execute(
     `
       SELECT id, email, clientId, userTypeId, password, userAuthLevelId, firstName, lastName
@@ -40,6 +40,16 @@ async function login(email, password) {
     throw error;
   }
 
+  const loginTime = new Date();
+
+  await pool.execute(
+    `
+      INSERT INTO user_login_history (userId, loginTime, ipAddress, userAgent)
+      VALUES (?, ?, ?, ?)
+    `,
+    [user.id, loginTime, ipAddress, userAgent]
+  );
+
   const payload = buildUserPayload(user);
   const token = jwt.sign(payload, process.env.JWT_SECRET || 'change-this-secret', {
     expiresIn: process.env.JWT_EXPIRES_IN || '8h',
@@ -61,7 +71,7 @@ async function getMe(userId) {
     `,
     [userId]
   );
-  
+
   const user = rows[0];
 
   if (!user) {
