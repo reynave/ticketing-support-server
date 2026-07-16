@@ -198,8 +198,7 @@ async function listTickets(filters = {}) {
   const conditions = ['t.presence = 1'];
   const params = [];
 
-  conditions.push('t.ticketTypeId = ?');
-  params.push(CASE_TYPE_ID);
+  conditions.push('t.ticketTypeId = 2'); 
 
   if (filters.projectId !== undefined) {
     conditions.push('t.projectId = ?');
@@ -221,19 +220,39 @@ async function listTickets(filters = {}) {
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
   }
 
-  const whereClause = ` (t.ratesBy = '' and t.presence = 1 and t.ticketTypeId = 2) OR  ${conditions.join(' AND ')}`;
+  const whereClause = conditions.join(' AND ');
 
   let whereTicketStatus = '';
-  if (filters.ticketStatusId == 1) {
-    whereTicketStatus = ' and t.ticketStatusId < 900 ';
-  }
-  else {
-    whereTicketStatus = ' and t.ticketStatusId =  ' + filters.ticketStatusId;
+  const isClosedFilter = String(filters.closed || '').trim().toLowerCase() === 'true';
+  if (
+    filters.ticketStatusId !== undefined &&
+    filters.ticketStatusId !== null &&
+    String(filters.ticketStatusId).trim() !== ''
+  ) {
+    const ticketStatusId = Number(filters.ticketStatusId);
+
+    if (!Number.isFinite(ticketStatusId)) {
+      const error = new Error('ticketStatusId must be a valid number');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (isClosedFilter || ticketStatusId === 1) {
+      whereTicketStatus = ' and t.ticketStatusId < ? ';
+      params.push(900);
+    } else {
+      whereTicketStatus = ' and t.ticketStatusId = ? ';
+      params.push(ticketStatusId);
+    }
+  } else if (isClosedFilter) {
+    whereTicketStatus = ' and t.ticketStatusId < ? ';
+    params.push(900);
   }
 
   // CASES
   const q = `
-      SELECT t.*,
+    SELECT t.id, t.title, t.projectId, t.submitDate, t.targetCompletionDate, t.ticketStatusId, t.ticketCategoryId,
+     
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
         ts2.name AS ticketSeverityName,
@@ -249,8 +268,8 @@ async function listTickets(filters = {}) {
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
       LEFT JOIN ticket_severity ts2 ON ts2.id = t.ticketSeverityId
-    WHERE ticketStatusId < 900 AND (   ${whereClause}
-      ${whereTicketStatus} )
+      WHERE ${whereClause}
+      ${whereTicketStatus}
       ORDER BY t.inputDate DESC
     `;
   console.log(q, [TASK_TYPE_ID, ...params])

@@ -10,6 +10,15 @@ async function listByProject(req, res, next) {
   }
 }
 
+async function history(req, res, next) {
+  try {
+    const data = await ticketBalanceService.listHistory(req.query || {});
+    return res.json(success('Ticket balance history fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function summaryByProject(req, res, next) {
   try {
     const data = await ticketBalanceService.getSummaryByProject(req.params.projectId);
@@ -30,6 +39,7 @@ async function createTransaction(req, res, next) {
 
 module.exports = {
   listByProject,
+  history,
   summaryByProject,
   createTransaction,
 };

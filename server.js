@@ -31,6 +31,7 @@ const ticketRoutes = require('./modules/ticket/ticket.route');
 const caseRoutes = require('./modules/cases/case.route');
 const ratingRoutes = require('./modules/rating/rating.route');
 const userRoutes = require('./modules/user/user.route');
+const userLoginHistoryRoutes = require('./modules/user-login-history/user-login-history.route');
 const ticketBalanceRoutes = require('./modules/ticket-balance/ticket-balance.route');
 const errorHandler = require('./middlewares/errorHandler');
 const { testConnection } = require('./config/db');
@@ -73,6 +74,7 @@ app.use(`${PREFIX_SERVER}/ticket`, ticketRoutes);
 app.use(`${PREFIX_SERVER}/cases`, caseRoutes);
 app.use(`${PREFIX_SERVER}/rating`, ratingRoutes);
 app.use(`${PREFIX_SERVER}/user`, userRoutes);
+app.use(`${PREFIX_SERVER}/user-login-history`, userLoginHistoryRoutes);
 app.use(`${PREFIX_SERVER}/ticket-balance`, ticketBalanceRoutes);
 
 app.use(errorHandler);

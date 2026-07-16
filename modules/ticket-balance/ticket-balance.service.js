@@ -37,12 +37,76 @@ async function listByProject(projectId) {
 
   const [rows] = await pool.execute(
     `
-      SELECT id, projectId, date, ticketIn, ticketOut, presence, inputDate, inputBy, updateDate, updateBy
-      FROM ticket_balance
-      WHERE projectId = ? AND presence = 1
-      ORDER BY date DESC, id DESC
+      SELECT tb.id, tb.projectId, tb.date, tb.ticketIn, tb.ticketOut, 0 as balance, t.title , tb.note
+      FROM ticket_balance as tb
+      left join ticket as t on tb.ticketId = t.id
+      WHERE tb.projectId = ? AND tb.presence = 1
+      ORDER BY tb.date ASC
+      limit 100 
     `,
     [normalizedProjectId]
+  );
+
+
+  let balance = 0;
+  for (const row of rows) {
+    balance += row.ticketIn - row.ticketOut;
+    row.balance = balance;
+  }
+ 
+  rows.reverse();
+
+
+  return rows;
+}
+
+async function listHistory(filters = {}) {
+  const conditions = ['tb.presence = 1'];
+  const params = [];
+
+  if (filters.projectId !== undefined && String(filters.projectId).trim() !== '') {
+    conditions.push('tb.projectId = ?');
+    params.push(String(filters.projectId).trim());
+  }
+
+  if (filters.keyword) {
+    conditions.push('(tb.projectId LIKE ? OR tb.ticketId LIKE ? OR tb.note LIKE ? OR t.title LIKE ? OR p.name LIKE ?)');
+    params.push(
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`
+    );
+  }
+
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        tb.id,
+        tb.projectId,
+        p.name AS projectName,
+        tb.ticketId,
+        t.title AS ticketTitle,
+        tb.date,
+        tb.ticketIn,
+        tb.ticketOut,
+        (tb.ticketIn - tb.ticketOut) AS balanceChange,
+        tb.note,
+        tb.inputDate,
+        tb.inputBy,
+        tb.updateDate,
+        tb.updateBy
+      FROM ticket_balance tb
+      LEFT JOIN project p ON p.id = tb.projectId
+      LEFT JOIN ticket t ON t.id = tb.ticketId
+      ${whereClause}
+      ORDER BY tb.date DESC, tb.id DESC
+      LIMIT 500
+    `,
+    params
   );
 
   return rows;
@@ -107,6 +171,7 @@ async function createTransaction(payload) {
 
 module.exports = {
   listByProject,
+  listHistory,
   getSummaryByProject,
   createTransaction,
 };

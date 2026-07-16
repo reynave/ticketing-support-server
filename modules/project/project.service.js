@@ -208,7 +208,8 @@ async function getProjectDetail(id) {
         pr.name AS productName,
         '' as users,
         '' as ticketCategories,
-        '' as ticketBalance
+        '' as ticketBalance,
+        '' as contacts
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
@@ -233,8 +234,19 @@ async function getProjectDetail(id) {
     `,
         [id]
     );
-
     row.users = users;
+
+    const [contacts] = await pool.execute(
+        `
+      SELECT
+         *,  
+         CONCAT(  firstName, ' ', lastName) AS 'name'
+      FROM user  
+      WHERE    presence = 1 and clientId = ?
+    `,
+        [id]
+    );
+    row.contacts = contacts;
 
     const [ticketCategories] = await pool.execute(
         `
@@ -248,7 +260,7 @@ async function getProjectDetail(id) {
     row.ticketCategories = ticketCategories;
 
 
-    
+
     const [ticketBalance] = await pool.execute(
         `
        SELECT 

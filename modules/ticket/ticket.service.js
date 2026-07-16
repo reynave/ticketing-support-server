@@ -75,20 +75,28 @@ async function listTickets(filters = {}) {
   const conditions = ['t.presence = 1'];
   const params = [];
 
+  let ticketTypeId = 1;
+  if (
+    filters.ticketTypeId !== undefined &&
+    filters.ticketTypeId !== null &&
+    String(filters.ticketTypeId).trim() !== ''
+  ) {
+    ticketTypeId = Number(filters.ticketTypeId);
+
+    if (!Number.isFinite(ticketTypeId)) {
+      const error = new Error('ticketTypeId must be a valid number');
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
+  conditions.push('t.ticketTypeId = ?');
+  params.push(ticketTypeId);
+
   if (filters.projectId !== undefined) {
     conditions.push('t.projectId = ?');
     params.push(String(filters.projectId));
   }
-
-  if (filters.ticketTypeId !== undefined) {
-    conditions.push('t.ticketTypeId = ?');
-    params.push(Number(filters.ticketTypeId));
-  }
-
-  // if (filters.ticketStatusId !== undefined) {
-  //   conditions.push('t.ticketStatusId = ?');
-  //   params.push(Number(filters.ticketStatusId));
-  // }
 
   if (filters.assignTo !== undefined) {
     conditions.push('t.assignTo = ?');
@@ -105,29 +113,48 @@ async function listTickets(filters = {}) {
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
   }
 
-  const hasIssueNoFilter =
-    filters.issueNo !== undefined && String(filters.issueNo).trim() !== '';
-  const whereClause = hasIssueNoFilter
-    ? ` ${conditions.join(' AND ')}`
-    : `  (t.ratesBy = '' and t.ticketTypeId = 1) OR  ${conditions.join(' AND ')}`;
+  const whereClause = conditions.join(' AND ');
 
   let whereTicketStatus = '';
-  if (filters.ticketStatusId == 1) {
-    whereTicketStatus = ' and t.ticketStatusId < 900 ';
-  }
-  else {
-    whereTicketStatus = ' and t.ticketStatusId =  ' + filters.ticketStatusId;
+  const isClosedFilter = String(filters.closed || '').trim().toLowerCase() === 'true';
+  if (
+    filters.ticketStatusId !== undefined &&
+    filters.ticketStatusId !== null &&
+    String(filters.ticketStatusId).trim() !== ''
+  ) {
+    const ticketStatusId = Number(filters.ticketStatusId);
+
+    if (!Number.isFinite(ticketStatusId)) {
+      const error = new Error('ticketStatusId must be a valid number');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (isClosedFilter || ticketStatusId === 1) {
+      whereTicketStatus = ' AND t.ticketStatusId < ? ';
+      params.push(900);
+    } else {
+      whereTicketStatus = ' AND t.ticketStatusId = ? ';
+      params.push(ticketStatusId);
+    }
+  } else if (isClosedFilter) {
+    whereTicketStatus = ' AND t.ticketStatusId < ? ';
+    params.push(900);
   }
   const q = `
-      SELECT t.*,
+      SELECT t.id, t.title, t.projectId, t.submitDate, t.targetCompletionDate, t.ticketStatusId, t.ticketCategoryId,
         tt.name AS ticketTypeName,
-        ts.name AS ticketStatusName
+        ts.name AS ticketStatusName,
+        p.name AS projectName,
+        tc.name AS ticketCategoryName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
+      left join project AS p ON p.id = t.projectId
+      left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
       WHERE t.presence = 1  AND (
       ${whereClause}
-      ${whereTicketStatus} ) AND t.ticketStatusId <900
+      ${whereTicketStatus} ) 
       ORDER BY t.inputDate DESC
     `;
   console.log(q, params)
