@@ -240,6 +240,27 @@ INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence
 	(35, 't3', 'USR-8C76A791', 1, 1, '2026-07-15 16:13:53', 'USR-ADMIN', '2026-07-15 16:13:53', 'USR-ADMIN'),
 	(36, 't3', 'USR-CLIENT', 0, 1, '2026-07-15 16:13:53', 'USR-ADMIN', '2026-07-15 16:13:53', 'USR-ADMIN');
 
+-- Dumping structure for table thinktank-ticket.rating
+CREATE TABLE IF NOT EXISTS `rating` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL,
+  `status` tinyint(4) NOT NULL DEFAULT 1,
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` smallint(6) NOT NULL DEFAULT 1,
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` smallint(6) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table thinktank-ticket.rating: ~5 rows (approximately)
+INSERT INTO `rating` (`id`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(10, 'Secara keseluruhan, seberapa puas Anda dengan produk/layanan kami hari ini?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(11, 'Bagaimana Anda menilai kualitas dari produk/layanan yang Anda terima?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(12, 'Seberapa mudah bagi Anda untuk menyelesaikan transaksi/menemukan apa yang Anda butuhkan?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(13, 'Bagaimana penilaian Anda terhadap keramahan dan kecepatan tim kami dalam membantu Anda?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(14, 'Seberapa besar kemungkinan Anda merekomendasikan [Nama Bisnis/Produk] kepada teman atau kolega Anda?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
+
 -- Dumping structure for table thinktank-ticket.ticket
 CREATE TABLE IF NOT EXISTS `ticket` (
   `id` varchar(50) NOT NULL DEFAULT '',
@@ -324,7 +345,7 @@ INSERT INTO `ticket_balance` (`id`, `projectId`, `note`, `ticketId`, `date`, `ti
 	(6, 'PRJ-FA50EC5D', '', 'IS000016', '2026-07-14 16:43:12', 0, 14, 1, '2026-07-15 16:43:12', 0, '2025-01-01 00:00:00', 1),
 	(7, 'PRJ-FA50EC5D', '', 'IS000016', '2026-07-12 16:43:12', 0, 4, 1, '2026-07-15 16:43:12', 0, '2025-01-01 00:00:00', 1),
 	(8, 'PRJ-FA50EC5D', '', 'IS000016', '2026-07-11 16:43:12', 0, 2, 1, '2026-07-15 16:43:12', 0, '2025-01-01 00:00:00', 1),
-	(9, 'PRJ-FA50EC5D', 'top up balance', '', '2026-07-10 21:43:12', 100, 0, 1, '2026-07-15 16:43:12', 0, '2025-01-01 00:00:00', 1);
+	(9, '', 'top up balance', '', '2026-07-10 21:43:12', 100, 0, 1, '2026-07-15 16:43:12', 0, '2025-01-01 00:00:00', 1);
 
 -- Dumping structure for table thinktank-ticket.ticket_categories
 CREATE TABLE IF NOT EXISTS `ticket_categories` (
@@ -476,6 +497,23 @@ INSERT INTO `ticket_logs_attachments` (`id`, `ticketId`, `ticketLogId`, `origina
 	(10, 'TA000014', 62, 'crma2118_s03.sql', '1784014389528-697700106.sql', 'application/octet-stream', 175571, 'http://localhost:3000/uploads/1784014389528-697700106.sql', '2026-07-14 14:33:09', 'USR-ADMIN'),
 	(11, 'IS000009', 71, 'crma2118_s03.sql', '1784024413516-827964197.sql', 'application/octet-stream', 175571, 'http://localhost:3000/uploads/1784024413516-827964197.sql', '2026-07-14 17:20:13', 'USR-ADMIN'),
 	(12, 'IS000009', 71, 'tungart7-man-8458549_1280.jpg', '1784024413519-526635932.jpg', 'image/jpeg', 93451, 'http://localhost:3000/uploads/1784024413519-526635932.jpg', '2026-07-14 17:20:13', 'USR-ADMIN');
+
+-- Dumping structure for table thinktank-ticket.ticket_rating
+CREATE TABLE IF NOT EXISTS `ticket_rating` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ticketId` varchar(250) NOT NULL,
+  `value` int(11) NOT NULL DEFAULT 0,
+  `ratingId` int(11) NOT NULL DEFAULT 0,
+  `date` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` smallint(6) NOT NULL DEFAULT 1,
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` smallint(6) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table thinktank-ticket.ticket_rating: ~0 rows (approximately)
 
 -- Dumping structure for table thinktank-ticket.ticket_severity
 CREATE TABLE IF NOT EXISTS `ticket_severity` (
@@ -697,13 +735,14 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.user_login_history: ~3 rows (approximately)
 INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `userAgent`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-ADMIN', '2026-07-15 12:39:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(6, 'USR-ADMIN', '2026-07-15 17:50:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
-	(7, 'USR-ADMIN', '2026-07-16 11:37:15', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
+	(7, 'USR-ADMIN', '2026-07-16 11:37:15', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(8, 'USR-ADMIN', '2026-07-17 15:37:00', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
 
 -- Dumping structure for table thinktank-ticket.user_type
 CREATE TABLE IF NOT EXISTS `user_type` (

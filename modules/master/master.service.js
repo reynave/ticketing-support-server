@@ -237,6 +237,17 @@ const tableMap = {
     allowUpdate: true,
     allowDelete: true,
   },
+  rating: {
+    tableName: 'rating',
+    hasStatus: true,
+    hasPresence: true,
+    requiredFields: ['name'],
+    editableFields: ['name', 'status'],
+    numericFields: ['status'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
 };
 
 function getMasterConfig(masterKey) {
