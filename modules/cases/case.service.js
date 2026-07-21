@@ -263,11 +263,14 @@ async function listTickets(filters = {}) {
           WHERE tk.presence = 1
             AND tk.ticketTypeId = ?
             AND tk.issueNo = t.id
-        ) AS taskCount
+        ) AS taskCount, p.name AS projectName,
+         t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
       LEFT JOIN ticket_severity ts2 ON ts2.id = t.ticketSeverityId
+      left join project as p on p.id = t.projectId
+      LEFT JOIN user AS u ON u.id = t.assignTo
       WHERE ${whereClause}
       ${whereTicketStatus}
       ORDER BY t.inputDate DESC
