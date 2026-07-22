@@ -12,17 +12,6 @@ const tableMap = {
     allowUpdate: true,
     allowDelete: true,
   },
-  product: {
-    tableName: 'product',
-    hasStatus: true,
-    hasPresence: true,
-    requiredFields: ['name'],
-    editableFields: ['name', 'status'],
-    numericFields: ['status'],
-    allowCreate: true,
-    allowUpdate: true,
-    allowDelete: true,
-  },
   'project-type': {
     tableName: 'project_type',
     hasStatus: true,

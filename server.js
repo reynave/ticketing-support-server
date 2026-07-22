@@ -25,6 +25,7 @@ const { success } = require('./helpers/response');
 const authRoutes = require('./modules/auth/auth.route');
 const masterRoutes = require('./modules/master/master.route');
 const ticketCategoriesRoutes = require('./modules/ticket-categories/ticket-categories.route');
+const productMasterRoutes = require('./modules/product-master/product-master.route');
 const clientRoutes = require('./modules/client/client.route');
 const projectRoutes = require('./modules/project/project.route');
 const ticketRoutes = require('./modules/ticket/ticket.route');
@@ -68,6 +69,7 @@ app.get(`${PREFIX_SERVER}`, (req, res) => {
 app.use(`${PREFIX_SERVER}/auth`, authRoutes);
 app.use(`${PREFIX_SERVER}/master`, masterRoutes);
 app.use(`${PREFIX_SERVER}/ticket-categories`, ticketCategoriesRoutes);
+app.use(`${PREFIX_SERVER}/product-master`, productMasterRoutes);
 app.use(`${PREFIX_SERVER}/client`, clientRoutes);
 app.use(`${PREFIX_SERVER}/project`, projectRoutes); 
 app.use(`${PREFIX_SERVER}/ticket`, ticketRoutes);
