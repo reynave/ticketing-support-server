@@ -83,6 +83,21 @@ function normalizeUpdatePayload(payload) {
   return data;
 }
 
+async function listTicketChildCategories() {
+
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        tc.id, tc.name, tc.parentId, tc.weight, tc.status
+      FROM ticket_categories  tc
+      WHERE tc.presence = 1 and tc.parentId > 0
+      ORDER BY tc.parentId ASC, tc.weight ASC, tc.id ASC
+    `
+  );  
+  return rows;
+}
+  
+
 async function listTicketCategories(filters = {}) {
   const conditions = ['tc.presence = 1'];
   const params = [];
@@ -249,4 +264,5 @@ module.exports = {
   createTicketCategory,
   updateTicketCategory,
   deleteTicketCategory,
+  listTicketChildCategories
 };

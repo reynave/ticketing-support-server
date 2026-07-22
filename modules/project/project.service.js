@@ -149,7 +149,8 @@ async function listProjects(filters = {}) {
         pt.name AS projectTypeName,
         pb.name AS projectBilleableName,
         pr.name AS productName,
-        '' as users
+        '' as users,
+        '' as modules
         
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
@@ -164,6 +165,8 @@ async function listProjects(filters = {}) {
         q,
         params
     );
+    
+    
 
 
     const queryUser = `
@@ -192,6 +195,19 @@ async function listProjects(filters = {}) {
     // Attach users to their respective projects
     for (const project of rows) {
         project.users = projectUsersMap[project.id] || [];
+    }
+
+
+    const [products] = await pool.execute(
+        `
+        SELECT p.parentId AS 'productId', p.id, p.name 
+        FROM product AS p
+        WHERE p.presence = 1 AND p.status = 1 AND p.parentId > 0
+    `
+    );
+
+    for (const project of rows) {
+        project.modules = products.filter(product => product.productId === project.productId);
     }
 
     return rows;
@@ -225,12 +241,18 @@ async function getProjectDetail(id) {
 
 
     const [users] = await pool.execute(
-        `
-      SELECT
-        p.userId, p.asManager , true as checkbox , CONCAT( c.firstName, ' ',c.lastName) AS 'name'
-      FROM project_users p
-      LEFT JOIN user c ON c.id = p.userId 
-      WHERE   p.presence = 1 and projectId = ?
+        ` 
+         SELECT u.id, CONCAT(u.firstName, ' ',u.lastName) AS 'name', u.email,
+        l.name AS 'userAuthLevel',
+        IFNULL(t.asManager,0) AS 'asManager', IFNULL(t.checked, 0) AS 'checked'
+        FROM user u
+        LEFT JOIN (
+            SELECT p.userId AS id, p.asManager, 1 AS 'checked'
+            FROM project_users p
+            WHERE p.presence = 1 AND p.projectId = ?
+        ) AS t ON t.id = u.id
+        LEFT JOIN user_auth_level AS l ON l.id = u.userAuthLevelId
+        WHERE u.presence = 1 AND u.userTypeId = 1
     `,
         [id]
     );
@@ -238,11 +260,11 @@ async function getProjectDetail(id) {
 
     const [contacts] = await pool.execute(
         `
-      SELECT
-         *,  
-         CONCAT(  firstName, ' ', lastName) AS 'name'
-      FROM user  
-      WHERE    presence = 1 and clientId = ?
+     SELECT p.id, p.userId, CONCAT(u.firstName, ' ',u.lastName) AS name ,
+    u.phone, u.email, p.projectId
+    FROM project_contact AS p
+    LEFT JOIN user AS u ON u.id = p.userId
+    where p.presence = 1 AND p.projectId = ?
     `,
         [id]
     );

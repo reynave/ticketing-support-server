@@ -138,6 +138,7 @@ async function getSummaryByProject(projectId) {
 async function createTransaction(payload) {
   const projectId = assertProjectId(payload.projectId);
   await assertProjectExists(projectId);
+  const note = String(payload.note || '').trim();
 
   const ticketIn = payload.ticketIn === undefined ? 0 : parseNonNegativeNumber(payload.ticketIn, 'ticketIn');
   const ticketOut = payload.ticketOut === undefined ? 0 : parseNonNegativeNumber(payload.ticketOut, 'ticketOut');
@@ -150,15 +151,15 @@ async function createTransaction(payload) {
 
   const [result] = await pool.execute(
     `
-      INSERT INTO ticket_balance (projectId, date, ticketIn, ticketOut, presence, inputDate, inputBy, updateDate, updateBy)
-      VALUES (?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+      INSERT INTO ticket_balance (projectId, date, ticketIn, ticketOut, note, presence, inputDate, inputBy, updateDate, updateBy)
+      VALUES (?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
     `,
-    [projectId, payload.date || new Date(), ticketIn, ticketOut]
+    [projectId, payload.date || new Date(), ticketIn, ticketOut, note]
   );
 
   const [rows] = await pool.execute(
     `
-      SELECT id, projectId, date, ticketIn, ticketOut, presence, inputDate, inputBy, updateDate, updateBy
+      SELECT id, projectId, date, ticketIn, ticketOut, note, presence, inputDate, inputBy, updateDate, updateBy
       FROM ticket_balance
       WHERE id = ?
       LIMIT 1

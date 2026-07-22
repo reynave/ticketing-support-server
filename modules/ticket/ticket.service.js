@@ -260,10 +260,11 @@ async function createTicket(payload) {
         id, ticketTypeId, issueNo, title, description, projectId,
         submitBy, submitDate, targetCompletionDate, assignTo, 
         actualCompletionDate, ticketStatusId, ticketCategoryId,
-        presence, inputDate, inputBy, updateDate, updateBy
+        presence, inputDate, inputBy, updateDate, updateBy,
+        productChildId
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-      1, NOW(), '1', NOW(), '1')
+      1, NOW(), '1', NOW(), '1',?)
     `,
     [
       generatedId,
@@ -278,7 +279,8 @@ async function createTicket(payload) {
       data.assignTo,
       data.actualCompletionDate,
       data.ticketStatusId,
-      data.ticketCategoryId
+      data.ticketCategoryId,
+      payload.productChildId
     ]
   );
 
