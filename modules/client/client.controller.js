@@ -13,6 +13,16 @@ function parseId(id) {
   return parsed;
 }
 
+function parseProjectId(projectId) {
+  if (!projectId || !String(projectId).trim()) {
+    const error = new Error('Invalid projectId parameter');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return String(projectId).trim();
+}
+
 async function list(req, res, next) {
   try {
     const data = await clientService.listClients(req.query);
@@ -101,6 +111,20 @@ async function removeProject(req, res, next) {
   }
 }
 
+async function listUsersByProject(req, res, next) {
+  try {
+    const clientId = parseId(req.params.id);
+    const projectId = parseProjectId(req.params.projectId); 
+  
+    const data = await clientService.listClientUsersByProject(clientId, projectId);
+ 
+    return res.json(success('Client users by project fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 module.exports = {
   list,
   detail,
@@ -111,4 +135,5 @@ module.exports = {
   createUser,
   listProjects,
   removeProject,
+  listUsersByProject,
 };

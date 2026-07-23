@@ -7,6 +7,9 @@ const router = express.Router();
 router.get('/', authMiddleware, clientController.list);
 router.get('/:id', authMiddleware, clientController.detail);
 router.get('/:id/users', authMiddleware, clientController.listUsers);
+router.get('/:id/project/:projectId', authMiddleware, clientController.listUsersByProject);
+
+
 router.post('/', authMiddleware, clientController.create);
 router.post('/:id/users', authMiddleware, clientController.createUser);
 router.put('/:id', authMiddleware, clientController.update);

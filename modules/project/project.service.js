@@ -165,8 +165,8 @@ async function listProjects(filters = {}) {
         q,
         params
     );
-    
-    
+
+
 
 
     const queryUser = `
@@ -495,10 +495,40 @@ async function deleteProject(id, actorId = '1') {
     return { id };
 }
 
+async function addContactToProject(payload) {
+   
+    for (const a of payload.contacts) { 
+        const q = `
+        INSERT INTO project_contact (
+            projectId, clientId, userId,  
+            presence, inputDate, inputBy, updateDate, updateBy
+        )
+        VALUES (
+            '${String(payload.projectId)}', '${String(payload.clientId)}', '${String(a.id)}',
+            1, NOW(), '${String(payload.actorId)}', NOW(), '${String(payload.actorId)}')
+        `; 
+         await pool.execute(q);
+    }
+    return true;
+}
+async function removeContactFromProject(payload) {
+    console.log('removeContactFromProject payload:', payload);
+    for (const a of payload) { 
+        const q = `
+        UPDATE project_contact
+        SET presence = 0, updateDate = NOW(), updateBy = '${String(payload.actorId)}'
+        WHERE  id = '${String(a.id)}' `;
+        await pool.execute(q);
+    }
+    return true;
+}
+
 module.exports = {
     listProjects,
     getProjectDetail,
     createProject,
     updateProject,
     deleteProject,
+    addContactToProject,
+    removeContactFromProject,
 };

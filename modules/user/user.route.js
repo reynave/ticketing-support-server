@@ -6,8 +6,10 @@ const router = express.Router();
 
 router.get('/', authMiddleware, userController.list);
 router.get('/:id', authMiddleware, userController.detail);
-router.post('/', authMiddleware, userController.create);
+router.post('/', authMiddleware, userController.create); 
+
 router.put('/:id', authMiddleware, userController.update);
+
 router.delete('/:id', authMiddleware, userController.remove);
 
 module.exports = router;

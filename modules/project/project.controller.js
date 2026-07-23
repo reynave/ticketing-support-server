@@ -62,10 +62,35 @@ async function remove(req, res, next) {
   }
 }
 
+async function addContact(req, res, next) {
+  try {
+    const actorId = req.user?.id ? String(req.user.id) : '1';
+    req.body.actorId = actorId;
+    const data = await projectMasterService.addContactToProject(req.body || {});
+    return res.status(201).json(success('Contact added to project', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function removeContact(req, res, next) {
+  try {
+    const actorId = req.user?.id ? String(req.user.id) : '1';
+    req.body.actorId = actorId;
+    const data = await projectMasterService.removeContactFromProject(req.body || {});
+    return res.json(success('Contact removed from project', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 module.exports = {
   list,
   detail,
   create,
   update,
   remove,
+  addContact,
+  removeContact,
 };

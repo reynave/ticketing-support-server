@@ -172,10 +172,11 @@ async function getTicketDetail(id) {
     `
       SELECT t.*,
         tt.name AS ticketTypeName,
-        ts.name AS ticketStatusName,
+        ts.name AS ticketStatusName,  p.name AS projectName,
         d.name AS productName, c.name AS clientName, pt.name AS projectType,
         CONCAT(u.firstName, ' ',u.lastName) AS 'submitByName',
-        tc.name as 'ticketCategory'
+        tc.name as 'ticketCategory',
+        p2.name as 'productChildName'
         FROM ticket t
         LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
         LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
@@ -185,6 +186,7 @@ async function getTicketDetail(id) {
         LEFT JOIN project_type AS pt ON pt.id = p.projectTypeId
         LEFT JOIN user AS u ON u.id = t.submitBy
         left join ticket_categories as tc on t.ticketCategoryId = tc.id
+        left join product as p2 on p2.id = t.productChildId
       WHERE t.id = ? AND t.presence = 1
       LIMIT 1
     `,
@@ -278,7 +280,7 @@ async function createTicket(payload) {
       data.targetCompletionDate,
       data.assignTo,
       data.actualCompletionDate,
-      data.ticketStatusId,
+      1,
       data.ticketCategoryId,
       payload.productChildId
     ]

@@ -275,6 +275,27 @@ async function removeClientProject(id, payload) {
   return getClientDetail(id);
 }
 
+async function listClientUsersByProject(clientId, projectId) {
+  console.log('Listing users for clientId:', clientId, 'and projectId:', projectId);
+ const [rows] = await pool.execute(
+    `
+      SELECT u.id, u.email, CONCAT(u.firstName,' ', u.lastName) AS 'name', u.phone, u.mobile,
+      IFNULL( t.existing, FALSE) AS 'existing' 
+    FROM user AS u
+    LEFT JOIN (
+    SELECT userId AS 'id', TRUE AS existing
+    FROM project_contact WHERE projectId = ? AND presence = 1
+    ) AS t ON t.id = u.id
+    WHERE u.presence = 1 AND u.clientId = ? 
+
+    `,
+    [projectId, clientId]
+  );
+
+  return rows;
+}
+
+
 module.exports = {
   listClients,
   getClientDetail,
@@ -284,5 +305,6 @@ module.exports = {
   listClientUsers,
   createClientUser,
   listClientProjects,
-  removeClientProject
+  removeClientProject,
+  listClientUsersByProject,
 };
