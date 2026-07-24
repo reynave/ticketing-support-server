@@ -225,7 +225,8 @@ async function getProjectDetail(id) {
         '' as users,
         '' as ticketCategories,
         '' as ticketBalance,
-        '' as contacts
+        '' as contacts,
+        '' as modules
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
@@ -294,6 +295,19 @@ async function getProjectDetail(id) {
         [id]
     );
     row.ticketBalance = ticketBalance[0];
+
+
+    const [products] = await pool.execute(
+        `
+        SELECT p.parentId AS 'productId', p.id, p.name 
+        FROM product AS p
+        WHERE p.presence = 1 AND p.status = 1 AND p.parentId > 0
+    `
+    );
+
+    for (const project of rows) {
+        row.modules = products.filter(product => product.productId === row.productId);
+    }
 
 
     if (!row) {

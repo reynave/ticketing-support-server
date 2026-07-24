@@ -1,0 +1,39 @@
+user:
+1 user (internal)
+bisa banyak handle clients
+diisah saja supaya ga ke campur
+
+
+Client :
+1. client bisa banyak project
+Client Detail
+
+
+projects : 
+project name 
+
+
+
+# Task
+task hanya dipakai untuk internal team saja
+
+
+### setelah create task
+ 1. Penentuan ticket value ada dimana, berdasarkan apa / berapa tiket yang berkurang dari data customer
+ 2. penentuan ticket balance
+ 3. pada saat create task, harus ada START TASK, START TASK itu adalah open, jika pembuatan awal itu harus nya masih task, pembuatan awal bisa dari customer / user
+4. pada saat task berjalan , apakah customer bisa input activities?
+5. START TIME nya pada saat status ID berapa ?
+
+
+Ticket balance
+1. penentuan berapa Ticket dan hour, ditemtukan oleh siapa, dan siapa yang berhak input
+2. setelah itu baru bisa di assign To jika project berdasarkan ticket based
+
+FLowchart
+1. perlu ada flow ticket balance
+2. kalau tiket kurang bagaimana ?
+
+
+thinkt@nk@cum@tic@s@p
+7h1nka&c7@nk

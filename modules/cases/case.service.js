@@ -291,9 +291,9 @@ async function getTicketDetail(id) {
       SELECT t.*,
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
-        d.name AS productName, c.name AS clientName, pt.name AS projectType, pt.ticketBased,
+        d.name AS productName, c.name AS clientName, pt.name AS projectType, pt.ticketBased, p.name as projectName,
         CONCAT(u.firstName, ' ',u.lastName) AS 'submitByName',
-        tc.name as 'ticketCategory',
+        tc.name as 'ticketCategory', p2.name as 'productChildName',
         0 as taskCount
         FROM ticket t
         LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
@@ -304,6 +304,7 @@ async function getTicketDetail(id) {
         LEFT JOIN project_type AS pt ON pt.id = p.projectTypeId
         LEFT JOIN user AS u ON u.id = t.submitBy
         left join ticket_categories as tc on t.ticketCategoryId = tc.id
+        left join product as p2 on p2.id = t.productChildId
       WHERE t.id = ? AND t.presence = 1 AND t.ticketTypeId = ?
       LIMIT 1
     `,
@@ -392,12 +393,13 @@ async function createTicket(payload) {
         actualCompletionDate, ticketStatusId, ticketCategoryId,
         ticketSeverityId,
         presence, inputDate, inputBy, updateDate, updateBy,
-        deadlineDateTime
+        deadlineDateTime,
+        productChildId
       )
       VALUES (
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,
         1, NOW(), '1', NOW(), '1',
-        ?
+        ?, ?
       )
     `;
     const arr =  [
@@ -411,16 +413,18 @@ async function createTicket(payload) {
       data.targetCompletionDate,
       data.assignTo,
       data.actualCompletionDate,
-      data.ticketStatusId,
+      1,
       data.ticketCategoryId,
       data.severityId,
-      payload.deadlineDateTime
+      payload.deadlineDateTime,
+      payload.productChildId
     ];
+      console.log('payload', payload, 'query', q, 'params', arr)
   await pool.execute(
     q ,
    arr
   );
-  console.log('query',q, 'params', arr)
+
 
   return getTicketDetail(generatedId);
 }
@@ -548,7 +552,7 @@ async function updateTicket(id, payload) {
     ticketSeverityId = ?,
     targetCompletionDate = ?,
     ticketStatusId = ?,
-    actualCompletionDate = ?,
+    actualCompletionDate = NOW(),
     description = ?,
     taskSolution = ?,
     title = ?,
@@ -562,9 +566,9 @@ async function updateTicket(id, payload) {
   const params = [
     String(payload.assignTo || '').trim(),
     parseOptionalNumber(payload.ticketSeverityId, 'ticketSeverityId'),
-    payload.targetCompletionDate || null,
+  payload.deadlineDateTime || null,
     parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
-    payload.actualCompletionDate || null,
+ 
     String(payload.description || '').trim(),
     String(payload.taskSolution || '').trim(),
     String(payload.title || '').trim(),
