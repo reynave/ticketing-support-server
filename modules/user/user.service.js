@@ -148,21 +148,13 @@ async function listUsers(filters = {}) {
   const conditions = ['u.presence = 1'];
   const params = [];
 
-  if (filters.status !== undefined) {
-    conditions.push('status = ?');
-    params.push(Number(filters.status));
-  }
+  // if (filters.status !== undefined) {
+  //   conditions.push('status = ?');
+  //   params.push(Number(filters.status));
+  // }
 
-  if (filters.userAuthLevelId !== undefined) {
-    conditions.push('u.userAuthLevelId = ?');
-    params.push(Number(filters.userAuthLevelId));
-  }
-
-  if (filters.clientId !== undefined) {
-    conditions.push('u.clientId = ?');
-    params.push(Number(filters.clientId));
-  }
-
+ 
+  
   if (filters.userTypeId !== undefined) {
     conditions.push('u.userTypeId = ?');
     params.push(Number(filters.userTypeId));
@@ -176,9 +168,10 @@ async function listUsers(filters = {}) {
   const whereClause = `WHERE ${conditions.join(' AND ')}`;
   const [rows] = await pool.execute(
     `
-      SELECT u.*, a.name AS 'userAuthLevel'
+      SELECT u.*, a.name AS 'userAuthLevel', c.name AS 'clientName'
       FROM user AS u
       LEFT JOIN user_auth_level AS a ON u.userAuthLevelId = a.id
+      left join client as c on u.clientId = c.id
       ${whereClause}
       ORDER BY u.inputDate DESC
     `,
@@ -215,14 +208,9 @@ async function getUserDetail(id) {
 }
 
 async function createUser(payload) {
-  const required = ['email', 'password', 'userAuthLevelId', 'firstName', 'userTypeId'];
+  const required = ['email', 'password', 'userAuthLevelId', 'firstName', 'lastName'];
   const missing = required.filter((field) => payload[field] === undefined || payload[field] === null || payload[field] === '');
-
-  if (missing.length) {
-    const error = new Error(`Missing required fields: ${missing.join(', ')}`);
-    error.statusCode = 400;
-    throw error;
-  }
+ 
 
   await assertEmailUnique(payload.email);
 
@@ -230,8 +218,8 @@ async function createUser(payload) {
   const passwordHash = await bcrypt.hash(String(payload.password), 4);
   const status = payload.status === undefined ? 1 : parseStatus(payload.status);
   const birthday = payload.birthday || '2000-01-01';
-  const userTypeId = parseUserTypeId(payload.userTypeId);
-  const clientId = await resolveClientIdByUserType(userTypeId, payload.clientId, null);
+  const userTypeId = payload.userTypeId !== undefined ? parseUserTypeId(payload.userTypeId) : INTERNAL_USER_TYPE_ID;
+  const clientId = payload.clientId !== undefined ? parseClientId(payload.clientId) : null;
 
   await pool.execute(
     `
@@ -247,7 +235,7 @@ async function createUser(payload) {
       clientId,
       userTypeId,
       passwordHash,
-      Number(payload.userAuthLevelId),
+      payload.userAuthLevelId,
       payload.firstName,
       payload.lastName || null,
       payload.phone || null,
@@ -406,12 +394,48 @@ async function listExternalUsersByClient(clientId) {
 
 async function createExternalUserForClient(clientId, payload = {}) {
   const normalizedClientId = parseClientId(clientId);
+  const required = ['email', 'password', 'userAuthLevelId', 'firstName'];
+  const missing = required.filter((field) => payload[field] === undefined || payload[field] === null || payload[field] === '');
 
-  return createUser({
-    ...payload,
-    clientId: normalizedClientId,
-    userTypeId: EXTERNAL_USER_TYPE_ID,
-  });
+  if (missing.length) {
+    const error = new Error(`Missing required fields: ${missing.join(', ')}`);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await assertEmailUnique(payload.email);
+
+  const id = buildUserId(payload.id);
+  const passwordHash = await bcrypt.hash(String(payload.password), 4);
+  const status = payload.status === undefined ? 1 : parseStatus(payload.status);
+  const birthday = payload.birthday || '2000-01-01';
+  const resolvedClientId = await resolveClientIdByUserType(EXTERNAL_USER_TYPE_ID, normalizedClientId, null);
+
+  await pool.execute(
+    `
+      INSERT INTO user (
+        id, email, clientId, userTypeId, password, userAuthLevelId, firstName, lastName,
+        phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+    `,
+    [
+      id,
+      payload.email,
+      resolvedClientId,
+      EXTERNAL_USER_TYPE_ID,
+      passwordHash,
+      Number(payload.userAuthLevelId),
+      payload.firstName,
+      payload.lastName || null,
+      payload.phone || null,
+      payload.mobile || null,
+      birthday,
+      status,
+    ]
+  );
+
+  return getUserDetail(id);
 }
 
 module.exports = {
