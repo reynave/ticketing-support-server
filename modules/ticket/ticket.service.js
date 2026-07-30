@@ -146,12 +146,14 @@ async function listTickets(filters = {}) {
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
         p.name AS projectName,
-        tc.name AS ticketCategoryName
+        tc.name AS ticketCategoryName,
+        c.name AS clientName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
       left join project AS p ON p.id = t.projectId
       left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
+      left join client AS c ON c.id = p.clientId
       WHERE t.presence = 1  AND (
       ${whereClause}
       ${whereTicketStatus} ) 
