@@ -55,6 +55,17 @@ async function removeMaster(req, res, next) {
   }
 }
 
+async function createRate(req, res, next) {
+  try {
+       const actorId = req.user?.id ? String(req.user.id) : '1';
+    const data = await ratingService.createRating(req.body || {}, actorId);
+    return res.status(201).json(success('Rating created', data));
+  }
+  catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   listMaster,
@@ -62,4 +73,5 @@ module.exports = {
   createMaster,
   updateMaster,
   removeMaster,
+  createRate
 };

@@ -187,6 +187,46 @@ async function deleteRatingMaster(id) {
   return { id: parsedId };
 }
 
+async function createRating(body, actorId) {
+  const ticketId = body.ticketId;
+  const averageRating = body.averageRating;
+  const ratings = body.ratings;
+
+  const [result] = await pool.execute(
+    `
+      UPDATE ticket
+      SET 
+        rating = ${averageRating},
+        ratesBy = '${String(actorId)}',
+        updateDate = NOW(),
+        updateBy = '${String(actorId)}'
+      WHERE id = '${ticketId}'
+    `, 
+  );
+
+  for(const rating of body.ratings) {
+    const [result] = await pool.execute(
+      `
+        INSERT INTO ticket_rating (ticketId, ratingId, value, inputDate, inputBy, updateDate, updateBy)
+        VALUES (?, ?, ?, NOW(), ?, NOW(), ?)
+      `,
+      [ticketId, rating.questionId, rating.rating, String(actorId), String(actorId)]
+    );
+  }
+
+
+
+
+
+  if (!result.affectedRows) {
+    const error = new Error('Rating master data not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return { id: ticketId };
+}
+
 module.exports = {
   listRatings,
   listRatingMaster,
@@ -194,4 +234,5 @@ module.exports = {
   createRatingMaster,
   updateRatingMaster,
   deleteRatingMaster,
+  createRating,
 };
