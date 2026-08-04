@@ -123,16 +123,18 @@ async function listTicketCategories(filters = {}) {
 
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
-  const [rows] = await pool.execute(
-    `
+  const q =  `
       SELECT
         tc.id, tc.name, tc.parentId, tc.weight, tc.status
       FROM ticket_categories  tc
-      ${whereClause} and tc.parentId = 0
+      ${whereClause}  
       ORDER BY tc.parentId ASC, tc.weight ASC, tc.id ASC
-    `,
+    `;
+  const [rows] = await pool.execute(
+   q,
     params
   );
+  console.log('listTicketCategories query:', q, params  );
 
 
   const [rows2] = await pool.execute(
@@ -160,7 +162,7 @@ async function getTicketCategoryDetail(id) {
   const [rows] = await pool.execute(
     `
       SELECT
-        tc.*,
+        tc.*, true as 'locked',
         parent.name AS parentName
       FROM ticket_categories tc
       LEFT JOIN ticket_categories parent ON parent.id = tc.parentId AND parent.presence = 1
@@ -170,7 +172,24 @@ async function getTicketCategoryDetail(id) {
     [safeId]
   );
 
+  const [total] = await pool.execute(
+    `
+      SELECT SUM(t.total) AS 'total' FROM ( 
+        SELECT COUNT(id) AS 'total' FROM ticket
+        WHERE presence = 1 and ticketStatusId < 900 AND ticketCategoryId = ?
+        UNION 
+        SELECT COUNT(id) AS 'total'  FROM project 
+        WHERE presence = 1 AND ticketCategoriesParentId = ?
+      ) t
+    `,
+    [safeId, safeId]
+  );
+
+  rows[0].total = Number(total[0].total) || 0;
+
   const row = rows[0];
+
+  
 
   if (!row) {
     const error = new Error('Ticket category not found');
