@@ -244,7 +244,7 @@ async function getProjectDetail(id) {
     const [users] = await pool.execute(
         ` 
          SELECT u.id, CONCAT(u.firstName, ' ',u.lastName) AS 'name', u.email,
-        l.name AS 'userAuthLevel',
+        l.name AS 'userAuthLevel', u.division, u.position, u.userAuthLevelId, u.userTypeId,
         IFNULL(t.asManager,0) AS 'asManager', IFNULL(t.checked, 0) AS 'checked'
         FROM user u
         LEFT JOIN (
@@ -262,7 +262,7 @@ async function getProjectDetail(id) {
     const [contacts] = await pool.execute(
         `
      SELECT p.id, p.userId, CONCAT(u.firstName, ' ',u.lastName) AS name ,
-    u.phone, u.email, p.projectId
+    u.phone, u.email, p.projectId, u.division, u.position
     FROM project_contact AS p
     LEFT JOIN user AS u ON u.id = p.userId
     where p.presence = 1 AND p.projectId = ?

@@ -186,7 +186,7 @@ async function getUserDetail(id) {
     `
       SELECT
         u.id, u.email, u.clientId, u.userTypeId, u.userAuthLevelId, u.firstName, u.lastName, u.phone, u.mobile,
-        u.birthday, u.status, u.presence, u.inputDate, u.inputBy, u.updateDate, u.updateBy,
+        u.division, u.position, u.birthday, u.status, u.presence, u.inputDate, u.inputBy, u.updateDate, u.updateBy,
         c.name as clientName
       FROM user as u
       left join client as c on u.clientId = c.id
@@ -225,9 +225,9 @@ async function createUser(payload) {
     `
       INSERT INTO user (
         id, email, clientId, userTypeId, password, userAuthLevelId, firstName, lastName,
-        phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
+        division, position, phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
     `,
     [
       id,
@@ -238,6 +238,8 @@ async function createUser(payload) {
       payload.userAuthLevelId,
       payload.firstName,
       payload.lastName || null,
+      payload.division || null,
+      payload.position || null,
       payload.phone || null,
       payload.mobile || null,
       birthday,
@@ -300,6 +302,16 @@ async function updateUser(id, payload) {
   if (payload.lastName !== undefined) {
     fields.push('lastName = ?');
     params.push(payload.lastName);
+  }
+
+  if (payload.division !== undefined) {
+    fields.push('division = ?');
+    params.push(payload.division);
+  }
+
+  if (payload.position !== undefined) {
+    fields.push('position = ?');
+    params.push(payload.position);
   }
 
   if (payload.phone !== undefined) {
@@ -381,7 +393,7 @@ async function listExternalUsersByClient(clientId) {
     `
       SELECT
         id, email, clientId, userTypeId, userAuthLevelId, firstName, lastName, phone, mobile,
-        birthday, status, presence, inputDate, inputBy, updateDate, updateBy
+        birthday, status, presence, inputDate, inputBy, updateDate, updateBy, division, position
       FROM user
       WHERE presence = 1 AND userTypeId = ? AND clientId = ?
       ORDER BY inputDate DESC
@@ -415,9 +427,9 @@ async function createExternalUserForClient(clientId, payload = {}) {
     `
       INSERT INTO user (
         id, email, clientId, userTypeId, password, userAuthLevelId, firstName, lastName,
-        phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
+        division, position, phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
     `,
     [
       id,
@@ -428,6 +440,8 @@ async function createExternalUserForClient(clientId, payload = {}) {
       Number(payload.userAuthLevelId),
       payload.firstName,
       payload.lastName || null,
+      payload.division || null,
+      payload.position || null,
       payload.phone || null,
       payload.mobile || null,
       birthday,

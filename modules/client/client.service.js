@@ -280,7 +280,7 @@ async function listClientUsersByProject(clientId, projectId) {
  const [rows] = await pool.execute(
     `
       SELECT u.id, u.email, CONCAT(u.firstName,' ', u.lastName) AS 'name', u.phone, u.mobile,
-      IFNULL( t.existing, FALSE) AS 'existing' 
+      IFNULL( t.existing, FALSE) AS 'existing' , u.division, u.position
     FROM user AS u
     LEFT JOIN (
     SELECT userId AS 'id', TRUE AS existing

@@ -49,6 +49,7 @@ function normalizeCreatePayload(payload) {
     name,
     parentId: payload.parentId === undefined ? 0 : parseNumeric(payload.parentId, 'parentId'),
     weight: payload.weight === undefined ? 0 : parseNumeric(payload.weight, 'weight'),
+    sorting: payload.sorting === undefined ? 0 : parseNumeric(payload.sorting, 'sorting'),
     status: payload.status === undefined ? 1 : parseStatus(payload.status),
   };
 }
@@ -75,6 +76,10 @@ function normalizeUpdatePayload(payload) {
   if (payload.weight !== undefined) {
     data.weight = parseNumeric(payload.weight, 'weight');
   }
+  if (payload.sorting !== undefined) {
+    data.sorting = parseNumeric(payload.sorting, 'sorting');
+  }
+    
 
   if (payload.status !== undefined) {
     data.status = parseStatus(payload.status);
@@ -125,10 +130,10 @@ async function listTicketCategories(filters = {}) {
 
   const q =  `
       SELECT
-        tc.id, tc.name, tc.parentId, tc.weight, tc.status
+        tc.id, tc.name, tc.parentId, tc.weight, tc.status, tc.sorting
       FROM ticket_categories  tc
-      ${whereClause}  
-      ORDER BY tc.parentId ASC, tc.weight ASC, tc.id ASC
+      ${whereClause} and tc.parentId = 0
+      ORDER BY tc.sorting ASC
     `;
   const [rows] = await pool.execute(
    q,
@@ -140,10 +145,10 @@ async function listTicketCategories(filters = {}) {
   const [rows2] = await pool.execute(
     `
       SELECT
-        tc.id, tc.name, tc.parentId, tc.weight, tc.status
+        tc.id, tc.name, tc.parentId, tc.weight, tc.status ,tc.sorting
       FROM ticket_categories  tc
       ${whereClause} and tc.parentId > 0
-      ORDER BY tc.parentId ASC, tc.weight ASC, tc.id ASC
+      ORDER BY tc.sorting ASC 
     `,
     params
   );
@@ -206,7 +211,7 @@ async function createTicketCategory(payload, actorId = 1) {
   const [result] = await pool.execute(
     `
       INSERT INTO ticket_categories (
-        name, parentId, weight, status,
+        name, parentId, weight, status, sorting,
         presence, inputDate, inputBy, updateDate, updateBy
       )
       VALUES (?, ?, ?, ?, 1, NOW(), ?, NOW(), ?)
@@ -216,6 +221,7 @@ async function createTicketCategory(payload, actorId = 1) {
       data.parentId,
       data.weight,
       data.status,
+      data.sorting,
       Number(actorId) || 1,
       Number(actorId) || 1,
     ]
