@@ -265,7 +265,9 @@ async function listTickets(filters = {}) {
             AND tk.issueNo = t.id
         ) AS taskCount, p.name AS projectName,
          t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName,
-         c.name AS clientName
+         c.name AS clientName, 
+          tc2.name AS parentCategoryName,
+              CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
@@ -273,6 +275,8 @@ async function listTickets(filters = {}) {
       left join project as p on p.id = t.projectId
       LEFT JOIN user AS u ON u.id = t.assignTo
       left join client AS c ON c.id = p.clientId
+      left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
+      left join ticket_categories AS tc2 ON tc2.id = p.ticketCategoriesParentId
       WHERE ${whereClause}
       ${whereTicketStatus}
       ORDER BY t.inputDate DESC
@@ -326,6 +330,22 @@ async function getTicketDetail(id) {
   );
   row.taskCount = taskCountRows[0].taskCount;
 
+
+
+  const [categoryRows] = await pool.execute(
+    `
+      SELECT p.ticketCategoriesParentId , c.name
+      FROM project AS p 
+      LEFT JOIN ticket_categories AS c ON c.id = p.ticketCategoriesParentId
+      WHERE p.id = ?
+    `,
+    [rows[0]?.projectId]
+  );
+
+  if (categoryRows.length > 0) {
+    rows[0].ParentCategoryName = categoryRows[0].name;
+    rows[0].ticketCategoriesParentId = categoryRows[0].ticketCategoriesParentId;
+  }
 
   if (!row) {
     const error = new Error('Ticket not found');
@@ -561,7 +581,8 @@ async function updateTicket(id, payload) {
     updateDate = NOW(),
     updateBy = ?,
     deadlineDateTime = ?,
-    ticketEstimationCost = ?
+    ticketEstimationCost = ?,
+    ticketCategoryId = ?
   WHERE id = ? AND presence = 1 AND ticketTypeId = ?
 `;
 
@@ -577,6 +598,7 @@ async function updateTicket(id, payload) {
     payload.submitBy,
     payload.deadlineDateTime || null,
     payload.ticketEstimationCost || null,
+    payload.ticketCategoryId !== undefined ? parseOptionalNumber(payload.ticketCategoryId, 'ticketCategoryId') : null,
     id,
     CASE_TYPE_ID,
   ];

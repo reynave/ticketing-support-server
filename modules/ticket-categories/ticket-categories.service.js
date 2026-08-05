@@ -115,16 +115,18 @@ async function listTicketCategories(filters = {}) {
   if (filters.parentId !== undefined && filters.parentId !== '') {
     conditions.push('tc.parentId = ?');
     params.push(parseNumeric(filters.parentId, 'parentId'));
+  }else{
+    conditions.push('tc.parentId = 0');
   }
 
-  if (filters.keyword) {
-    const keyword = String(filters.keyword).trim();
+  // if (filters.keyword) {
+  //   const keyword = String(filters.keyword).trim();
 
-    if (keyword) {
-      conditions.push('(tc.name LIKE ? OR parent.name LIKE ?)');
-      params.push(`%${keyword}%`, `%${keyword}%`);
-    }
-  }
+  //   if (keyword) {
+  //     conditions.push('(tc.name LIKE ? OR parent.name LIKE ?)');
+  //     params.push(`%${keyword}%`, `%${keyword}%`);
+  //   }
+  // }
 
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
@@ -132,11 +134,12 @@ async function listTicketCategories(filters = {}) {
       SELECT
         tc.id, tc.name, tc.parentId, tc.weight, tc.status, tc.sorting
       FROM ticket_categories  tc
-      ${whereClause} and tc.parentId = 0
+      ${whereClause} 
       ORDER BY tc.sorting ASC
     `;
+    
   const [rows] = await pool.execute(
-   q,
+    q,
     params
   );
   console.log('listTicketCategories query:', q, params  );
@@ -147,7 +150,7 @@ async function listTicketCategories(filters = {}) {
       SELECT
         tc.id, tc.name, tc.parentId, tc.weight, tc.status ,tc.sorting
       FROM ticket_categories  tc
-      ${whereClause} and tc.parentId > 0
+      WHERE tc.presence = 1 and tc.parentId > 0
       ORDER BY tc.sorting ASC 
     `,
     params

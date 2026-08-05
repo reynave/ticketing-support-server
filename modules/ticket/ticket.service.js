@@ -146,13 +146,14 @@ async function listTickets(filters = {}) {
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
         p.name AS projectName,
-        tc.name AS ticketCategoryName,
-        c.name AS clientName
+       CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
+        c.name AS clientName, tc2.name AS parentCategoryName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
       left join project AS p ON p.id = t.projectId
       left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
+      left join ticket_categories AS tc2 ON tc2.id = p.ticketCategoriesParentId
       left join client AS c ON c.id = p.clientId
       WHERE t.presence = 1  AND (
       ${whereClause}
@@ -178,22 +179,38 @@ async function getTicketDetail(id) {
         d.name AS productName, c.name AS clientName, pt.name AS projectType,
         CONCAT(u.firstName, ' ',u.lastName) AS 'submitByName',
         tc.name as 'ticketCategory',
-        p2.name as 'productChildName'
+        p2.name as 'productChildName' 
         FROM ticket t
-        LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
-        LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
-        LEFT JOIN project AS p ON p.id = t.projectId
-        LEFT JOIN product AS d ON d.id = p.productId
-        LEFT JOIN client AS c ON c.id = p.clientId
-        LEFT JOIN project_type AS pt ON pt.id = p.projectTypeId
-        LEFT JOIN user AS u ON u.id = t.submitBy
-        left join ticket_categories as tc on t.ticketCategoryId = tc.id
-        left join product as p2 on p2.id = t.productChildId
+          LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
+          LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
+          LEFT JOIN project AS p ON p.id = t.projectId
+          LEFT JOIN product AS d ON d.id = p.productId
+          LEFT JOIN client AS c ON c.id = p.clientId
+          LEFT JOIN project_type AS pt ON pt.id = p.projectTypeId
+          LEFT JOIN user AS u ON u.id = t.submitBy
+          left join ticket_categories as tc on t.ticketCategoryId = tc.id
+          left join product as p2 on p2.id = t.productChildId
       WHERE t.id = ? AND t.presence = 1
       LIMIT 1
     `,
     [id]
   );
+
+  const [categoryRows] = await pool.execute(
+    `
+      SELECT p.ticketCategoriesParentId , c.name
+      FROM project AS p 
+      LEFT JOIN ticket_categories AS c ON c.id = p.ticketCategoriesParentId
+      WHERE p.id = ?
+    `,
+    [rows[0]?.projectId]
+  );
+
+  if (categoryRows.length > 0) {
+    rows[0].ParentCategoryName = categoryRows[0].name;
+    rows[0].ticketCategoriesParentId = categoryRows[0].ticketCategoriesParentId;
+  }
+
 
   const row = rows[0];
 
@@ -417,6 +434,7 @@ async function updateTicket(id, payload) {
     description = ?,
     taskSolution = ?,
     title = ?,
+    ticketCategoryId = ?,
     updateDate = NOW(),
     updateBy = ?
   WHERE id = ? AND presence = 1
@@ -430,6 +448,7 @@ async function updateTicket(id, payload) {
     String(payload.description || '').trim(),
     String(payload.taskSolution || '').trim(),
     String(payload.title || '').trim(),
+    payload.ticketCategoryId,
     payload.submitBy,
     id,
   ];
