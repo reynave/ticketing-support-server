@@ -159,8 +159,7 @@ async function listProjects(filters = {}) {
       LEFT JOIN product pr ON pr.id = p.productId
       ${whereClause}
       ORDER BY p.inputDate DESC
-    `;
-    console.log('Executing query:', q, 'with params:', params);
+    `; 
     const [rows] = await pool.execute(
         q,
         params
@@ -209,6 +208,19 @@ async function listProjects(filters = {}) {
     for (const project of rows) {
         project.modules = products.filter(product => product.productId === project.productId);
     }
+
+    // jika filter.userId tidak ada di dalam array users, maka hapus project tersebut dari rows
+    if (filters.userId) {
+        for (let i = rows.length - 1; i >= 0; i--) {
+            const project = rows[i];
+            const userExists = project.users.some(user => user.id === filters.userId);
+            if (!userExists) {
+                rows.splice(i, 1);
+            }
+        }
+    }
+    
+  
 
     return rows;
 }

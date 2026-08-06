@@ -72,8 +72,16 @@ function normalizeCreatePayload(payload) {
 }
 
 async function listTickets(filters = {}) {
+  console.log('listTickets filters:', filters);
   const conditions = ['t.presence = 1'];
   const params = [];
+  if(filters.userId != '' && filters.userId != undefined) { 
+    conditions.push('t.assignTo = ?');
+    params.push(filters.userId || '');
+  }
+  
+
+
 
   let ticketTypeId = 1;
   if (
@@ -147,7 +155,8 @@ async function listTickets(filters = {}) {
         ts.name AS ticketStatusName,
         p.name AS projectName,
        CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
-        c.name AS clientName, tc2.name AS parentCategoryName
+        c.name AS clientName, tc2.name AS parentCategoryName,
+        t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
@@ -155,12 +164,12 @@ async function listTickets(filters = {}) {
       left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
       left join ticket_categories AS tc2 ON tc2.id = p.ticketCategoriesParentId
       left join client AS c ON c.id = p.clientId
+      left join user AS u ON u.id = t.assignTo
       WHERE t.presence = 1  AND (
       ${whereClause}
       ${whereTicketStatus} ) 
       ORDER BY t.inputDate DESC
-    `;
-  console.log(q, params)
+    `; 
   const [rows] = await pool.execute(
     q,
     params

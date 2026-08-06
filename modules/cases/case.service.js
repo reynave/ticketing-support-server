@@ -195,8 +195,15 @@ function normalizeCreatePayload(payload) {
 }
 
 async function listTickets(filters = {}) {
+
+  console.log('listTickets filters:', filters);
   const conditions = ['t.presence = 1'];
   const params = [];
+  if(filters.userId != '' && filters.userId != undefined) { 
+    conditions.push('t.assignTo = ?');
+    params.push(filters.userId || '');
+  }
+ 
 
   conditions.push('t.ticketTypeId = 2'); 
 

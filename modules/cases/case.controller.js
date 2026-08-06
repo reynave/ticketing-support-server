@@ -15,9 +15,13 @@ function parseId(id) {
 
 async function list(req, res, next) {
   try {
+
+    const userId = req.user?.id ? String(req.user.id) : '';
+   
     const query = {
       ...(req.query || {}),
       ticketTypeId: CASE_TYPE_ID,
+       userId,
     };
     const data = await caseService.listTickets(query);
     return res.json(success('Case list fetched', data));

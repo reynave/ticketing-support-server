@@ -13,7 +13,13 @@ function parseId(id) {
 
 async function list(req, res, next) {
   try {
-    const data = await projectMasterService.listProjects(req.query || {});
+    const userId = req.user?.id ? String(req.user.id) : '';
+    const query = {
+      ...(req.query || {}),
+      userId,
+    };
+    console.log('listProjects userId:', userId);
+    const data = await projectMasterService.listProjects(query);
     return res.json(success('Project master list fetched', data));
   } catch (error) {
     return next(error);

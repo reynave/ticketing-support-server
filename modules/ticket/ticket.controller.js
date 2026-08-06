@@ -13,8 +13,15 @@ function parseId(id) {
 }
 
 async function list(req, res, next) {
-  try {
-    const data = await ticketService.listTickets(req.query);
+  try { 
+    const userId = req.user?.id ? String(req.user.id) : '';
+  
+    const filters = {
+      ...(req.query || {}),
+      userId,
+    };
+
+    const data = await ticketService.listTickets(filters);
     return res.json(success('Ticket list fetched', data));
   } catch (error) {
     return next(error);
