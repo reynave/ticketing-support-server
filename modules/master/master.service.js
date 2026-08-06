@@ -436,23 +436,51 @@ async function deleteMasterData(masterKey, id) {
   return { id: Number(id) };
 }
 
-async function loadbBadge() {
+async function loadbBadge(query) {
+
+  const assignTo = query.userId; // Replace with the actual user identifier
+
   const q = `SELECT 'task' AS name, COUNT(id) AS 'total'  FROM ticket 
 where presence = 1 and ticketStatusId  < 900 AND ticketTypeId = 1
+ AND assignTo = ?
 
 UNION ALL
 
 SELECT 'issue' AS name, COUNT(id) AS 'total'  FROM ticket 
 where presence = 1 and ticketStatusId  < 900 AND ticketTypeId = 2
+ AND assignTo = ?
 UNION ALL
 
 SELECT 'cr' AS name, COUNT(id) AS 'total'  FROM ticket 
 where presence = 1 and ticketStatusId  < 900 AND   ticketTypeId = 3
+ AND assignTo = ?
 
 `;
-  const [rows] = await pool.execute(q);
+  const [rows] = await pool.execute(q, [assignTo, assignTo, assignTo]);
   return rows;
 }
+
+async function searchTickets(query) {
+  // minimun query.searchText length harus > 6
+  if (!query.searchText || query.searchText.length <= 6) {
+    return [];
+  }
+  const q = `
+    SELECT t.id, t.title, t.ticketTypeId, tt.name as ticketTypeName , t.ticketStatusId, 
+    t.assignTo, t.inputDate, concat(u.firstName, ' ', u.lastName) as assignToName,
+    ts.name as ticketStatusName
+      FROM ticket as t
+    left join ticket_type as tt on t.ticketTypeId = tt.id
+    left join user as u on t.assignTo = u.id
+    left join ticket_status as ts on t.ticketStatusId = ts.id
+    WHERE t.presence = 1 AND (t.id LIKE ? OR t.title LIKE ?) and t.assignTo = ?
+    ORDER BY t.id DESC 
+    limit 500
+  `;
+  const [rows] = await pool.execute(q, [`%${query.searchText}%`, `%${query.searchText}%`, query.userId]);
+  return rows;
+}
+
 
 module.exports = {
   getMasterData,
@@ -461,4 +489,5 @@ module.exports = {
   updateMasterData,
   deleteMasterData,
   loadbBadge,
+  searchTickets,
 };

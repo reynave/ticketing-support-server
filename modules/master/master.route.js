@@ -7,9 +7,10 @@ const router = express.Router();
 
 router.get('/status/task', authMiddleware, masterController.statusTask);
 router.get('/status/cases', authMiddleware, masterController.statusCases);
-router.get('/status/cr', authMiddleware, masterController.statusCr);
+router.get('/status/cr', authMiddleware, masterController.statusCR);
 
 router.get('/loadbBadge', authMiddleware, masterController.loadbBadge);
+router.get('/searchTickets', authMiddleware, masterController.searchTickets);
 router.get('/:masterKey', authMiddleware, masterController.list);
 router.get('/:masterKey/:id', authMiddleware, masterController.detail);
 router.post('/:masterKey', authMiddleware, masterController.create);

@@ -83,6 +83,14 @@ app.use(errorHandler);
 
 io.on('connection', (socket) => {
   socket.emit('connected', { status: true, message: 'Socket connected' });
+
+  socket.on('notification', (payload) => {
+    if (payload?.action !== 'reload') {
+      return;
+    }
+
+    io.emit('notification', { action: 'reload' });
+  });
 });
 
 const port = Number(process.env.PORT || 3000);

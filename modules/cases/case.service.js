@@ -197,7 +197,7 @@ function normalizeCreatePayload(payload) {
 async function listTickets(filters = {}) {
 
   console.log('listTickets filters:', filters);
-  const conditions = ['t.presence = 1'];
+  const conditions = [];
   const params = [];
   if(filters.userId != '' && filters.userId != undefined) { 
     conditions.push('t.assignTo = ?');
@@ -284,8 +284,8 @@ async function listTickets(filters = {}) {
       left join client AS c ON c.id = p.clientId
       left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
       left join ticket_categories AS tc2 ON tc2.id = p.ticketCategoriesParentId
-      WHERE ${whereClause}
-      ${whereTicketStatus}
+      WHERE t.presence = 1 and (${whereClause}
+      ${whereTicketStatus} )  AND t.ticketStatusId < 900
       ORDER BY t.inputDate DESC
     `;
   console.log(q, [TASK_TYPE_ID, ...params])

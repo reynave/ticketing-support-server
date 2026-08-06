@@ -52,19 +52,25 @@ async function update(req, res, next) {
   }
 }
 
-  async function remove(req, res, next) {
-    try {
-      const id = parseId(req.params.id);
-      const data = await masterService.deleteMasterData(req.params.masterKey, id);
-      return res.json(success('Master data deleted', data));
-    } catch (error) {
-      return next(error);
-    }
+async function remove(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await masterService.deleteMasterData(req.params.masterKey, id);
+    return res.json(success('Master data deleted', data));
+  } catch (error) {
+    return next(error);
   }
+}
 
 async function loadbBadge(req, res, next) {
   try {
-    const data = await masterService.loadbBadge();
+    const userId = req.user?.id ? String(req.user.id) : '';
+
+    const query = {
+      userId,
+    };
+
+    const data = await masterService.loadbBadge(query);
     return res.json(success('Badge data loaded', data));
   } catch (error) {
     return next(error);
@@ -73,8 +79,8 @@ async function loadbBadge(req, res, next) {
 
 async function statusTask(req, res, next) {
   try {
-    const q = ` SELECT id, name from ticket_status Where task = 1 and presence = 1 order by id ASC`;
-    const [data] = await pool.execute(q); 
+    const q = ` SELECT id, name from ticket_status Where task = 1 and presence = 1   order by id ASC`;
+    const [data] = await pool.execute(q);
     return res.json(success('Task status fetched', data));
   } catch (error) {
     return next(error);
@@ -83,19 +89,35 @@ async function statusTask(req, res, next) {
 
 async function statusCases(req, res, next) {
   try {
-    const q = ` SELECT id, name from ticket_status Where issues = 1 and presence = 1 order by id ASC`;
-    const [data] = await pool.execute(q); 
+    const q = ` SELECT id, name from ticket_status Where issues = 1 and presence = 1  order by id ASC`;
+    const [data] = await pool.execute(q);
     return res.json(success('Cases status fetched', data));
   } catch (error) {
     return next(error);
   }
 }
 
-async function statusCr(req, res, next) {
+async function statusCR(req, res, next) {
   try {
-    const q = ` SELECT id, name from ticket_status Where cr = 1 and presence = 1 order by id ASC`;
-    const [data] = await pool.execute(q); 
+    const q = ` SELECT id, name from ticket_status Where cr = 1 and presence = 1   order by id ASC`;
+    const [data] = await pool.execute(q);
     return res.json(success('CR status fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function searchTickets(req, res, next) {
+  try {
+    const userId = req.user?.id ? String(req.user.id) : '';
+    const searchText = req.query.searchText || '';
+    const query = {
+      userId,
+      searchText,
+    };
+
+    const data = await masterService.searchTickets(query);
+    return res.json(success('Search results fetched', data));
   } catch (error) {
     return next(error);
   }
@@ -110,5 +132,6 @@ module.exports = {
   loadbBadge,
   statusTask,
   statusCases,
-  statusCr,
+  statusCR,
+  searchTickets,
 };

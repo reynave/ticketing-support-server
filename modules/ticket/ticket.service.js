@@ -71,8 +71,7 @@ function normalizeCreatePayload(payload) {
   };
 }
 
-async function listTickets(filters = {}) {
-  console.log('listTickets filters:', filters);
+async function listTickets(filters = {}) { 
   const conditions = ['t.presence = 1'];
   const params = [];
   if(filters.userId != '' && filters.userId != undefined) { 
@@ -167,7 +166,7 @@ async function listTickets(filters = {}) {
       left join user AS u ON u.id = t.assignTo
       WHERE t.presence = 1  AND (
       ${whereClause}
-      ${whereTicketStatus} ) 
+      ${whereTicketStatus} )  AND t.ticketStatusId < 900
       ORDER BY t.inputDate DESC
     `; 
   const [rows] = await pool.execute(
