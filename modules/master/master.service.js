@@ -481,6 +481,26 @@ async function searchTickets(query) {
   return rows;
 }
 
+// searchAllTickets
+async function searchAllTickets(query) {
+  // minimun query.searchText length harus > 6
+  if (!query.searchText || query.searchText.length <= 6) {
+    return [];
+  }
+  const q = `
+    SELECT t.id, t.title, t.ticketTypeId, tt.name as ticketTypeName , t.ticketStatusId, 
+    t.assignTo, t.inputDate, concat(u.firstName, ' ', u.lastName) as assignToName,
+    ts.name as ticketStatusName
+      FROM ticket as t
+    left join ticket_type as tt on t.ticketTypeId = tt.id
+    left join user as u on t.assignTo = u.id
+    left join ticket_status as ts on t.ticketStatusId = ts.id
+    WHERE t.presence = 1 AND (t.id LIKE ? ) 
+    ORDER BY t.id DESC 
+  `;
+  const [rows] = await pool.execute(q, [`%${query.searchText}%`]);
+  return rows;
+}
 
 module.exports = {
   getMasterData,
@@ -490,4 +510,5 @@ module.exports = {
   deleteMasterData,
   loadbBadge,
   searchTickets,
+  searchAllTickets,
 };

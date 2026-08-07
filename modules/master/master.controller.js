@@ -108,6 +108,8 @@ async function statusCR(req, res, next) {
 }
 
 async function searchTickets(req, res, next) {
+ 
+
   try {
     const userId = req.user?.id ? String(req.user.id) : '';
     const searchText = req.query.searchText || '';
@@ -118,6 +120,23 @@ async function searchTickets(req, res, next) {
 
     const data = await masterService.searchTickets(query);
     return res.json(success('Search results fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+async function searchAllTickets(req, res, next) {
+  try {
+    const userId = req.user?.id ? String(req.user.id) : '';
+    const searchText = req.query.searchText || '';
+    const query = {
+      userId,
+      searchText,
+    };
+
+    const data = await masterService.searchAllTickets(query);
+    return res.json(success('Search all results fetched', data));
   } catch (error) {
     return next(error);
   }
@@ -134,4 +153,5 @@ module.exports = {
   statusCases,
   statusCR,
   searchTickets,
+  searchAllTickets,
 };
