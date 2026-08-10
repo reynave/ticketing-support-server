@@ -36,24 +36,7 @@ function parseStatus(value) {
   return status;
 }
 
-function normalizeCreatePayload(payload) {
-  const name = String(payload.name || '').trim();
-
-  if (!name) {
-    const error = new Error('name is required');
-    error.statusCode = 400;
-    throw error;
-  }
-
-  return {
-    name,
-    parentId: payload.parentId === undefined ? 0 : parseNumeric(payload.parentId, 'parentId'),
-    weight: payload.weight === undefined ? 0 : parseNumeric(payload.weight, 'weight'),
-    sorting: payload.sorting === undefined ? 0 : parseNumeric(payload.sorting, 'sorting'),
-    status: payload.status === undefined ? 1 : parseStatus(payload.status),
-  };
-}
-
+ 
 function normalizeUpdatePayload(payload) {
   const data = {};
 
@@ -209,22 +192,22 @@ async function getTicketCategoryDetail(id) {
 }
 
 async function createTicketCategory(payload, actorId = 1) {
-  const data = normalizeCreatePayload(payload || {});
-
+ 
+  console.log('payload:', payload, 'actorId:', actorId);
   const [result] = await pool.execute(
     `
       INSERT INTO ticket_categories (
         name, parentId, weight, status, sorting,
         presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, 1, NOW(), ?, NOW(), ?)
+      VALUES (?, ?, ?, ?, ?, 1, NOW(), ?, NOW(), ?)
     `,
     [
-      data.name,
-      data.parentId,
-      data.weight,
-      data.status,
-      data.sorting,
+      payload.name,
+      payload.parentId,
+      payload.weight,
+      payload.status,
+      payload.sorting,
       Number(actorId) || 1,
       Number(actorId) || 1,
     ]

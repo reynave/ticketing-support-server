@@ -34,6 +34,7 @@ const ratingRoutes = require('./modules/rating/rating.route');
 const userRoutes = require('./modules/user/user.route');
 const userLoginHistoryRoutes = require('./modules/user-login-history/user-login-history.route');
 const ticketBalanceRoutes = require('./modules/ticket-balance/ticket-balance.route');
+const templateRoutes = require('./modules/template/template.route');
 const errorHandler = require('./middlewares/errorHandler');
 const { testConnection } = require('./config/db');
 const path = require('path'); 
@@ -78,6 +79,7 @@ app.use(`${PREFIX_SERVER}/rating`, ratingRoutes);
 app.use(`${PREFIX_SERVER}/user`, userRoutes);
 app.use(`${PREFIX_SERVER}/user-login-history`, userLoginHistoryRoutes);
 app.use(`${PREFIX_SERVER}/ticket-balance`, ticketBalanceRoutes);
+app.use(`${PREFIX_SERVER}/template`, templateRoutes);
 
 app.use(errorHandler);
 
