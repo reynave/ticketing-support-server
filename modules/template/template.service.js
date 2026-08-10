@@ -103,7 +103,7 @@ async function listTemplates(filters = {}) {
       SELECT id, name, description, version 
       FROM template
       ${whereClause}
-      ORDER BY id DESC
+      ORDER BY name ASC, version ASC
     `,
     params
   );

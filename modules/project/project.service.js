@@ -253,6 +253,11 @@ async function getProjectDetail(id) {
 
     const row = rows[0];
 
+    if (!row) {
+        const error = new Error('Project not found');
+        error.statusCode = 404;
+        throw error;
+    }
 
     const [users] = await pool.execute(
         ` 
@@ -269,8 +274,12 @@ async function getProjectDetail(id) {
         WHERE u.presence = 1 AND u.userTypeId = 1
     `,
         [id]
-    );
-    row.users = users;
+    ); 
+    if (!users || users.length === 0) {
+        row.users = [];
+    } else {
+        row.users = users;
+    }
 
     const [contacts] = await pool.execute(
         `
@@ -374,10 +383,9 @@ async function createProject(payload, actorId = '1') {
         ]
     );
 
-    console.log('payload.projectUsers:', payload.projectUsers);
-    for (const pu of payload.projectUsers) {
-
-        if (pu.checkbox == true) {
+    //console.log('payload.projectUsers:', payload.projectUsers);
+    for (const pu of payload.projectUsers) { 
+        if (pu.checked == true) {
             const q = `
             INSERT INTO project_users (
                 projectId, userId, asManager,
@@ -391,9 +399,7 @@ async function createProject(payload, actorId = '1') {
         }
 
     }
-
-
-
+ 
 
     return getProjectDetail(id);
 }
