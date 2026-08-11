@@ -243,7 +243,7 @@ async function deleteTemplate(id, actorId = 1) {
   const [result] = await pool.execute(
     `
       UPDATE template
-      SET presence = 0, updateDate = NOW(), updateBy = ?
+      SET presence = 0, updateDate = NOW(), updateBy = ?, json = ''
       WHERE id = ? AND presence = 1
     `,
     [String(actorId || 1), safeId]

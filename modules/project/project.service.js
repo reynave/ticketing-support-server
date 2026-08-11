@@ -1,5 +1,6 @@
 const { randomUUID } = require('crypto');
 const { pool } = require('../../config/db');
+const { runningNumber } = require('../../helpers/autoNumber');
 
 function parseNumeric(value, fieldName) {
     const parsed = Number(value);
@@ -109,6 +110,186 @@ function validateCreatePayload(payload) {
         const error = new Error(`Missing required fields: ${missing.join(', ')}`);
         error.statusCode = 400;
         throw error;
+    }
+}
+
+function normalizeDateTime(value) {
+    if (!value) {
+        return null;
+    }
+
+    if (typeof value === 'object' && value !== null) {
+        if ('year' in value && 'month' in value && 'day' in value) {
+            const yyyy = String(Number(value.year)).padStart(4, '0');
+            const mm = String(Number(value.month)).padStart(2, '0');
+            const dd = String(Number(value.day)).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd} 00:00:00`;
+        }
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+        return null;
+    }
+
+    const yyyy = parsed.getFullYear();
+    const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+    const dd = String(parsed.getDate()).padStart(2, '0');
+    const hh = String(parsed.getHours()).padStart(2, '0');
+    const mi = String(parsed.getMinutes()).padStart(2, '0');
+    const ss = String(parsed.getSeconds()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+}
+
+function toNumberOrDefault(value, fallback = 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function flattenTemplateItems(collection) {
+    if (!Array.isArray(collection)) {
+        return [];
+    }
+
+    const items = [];
+
+    for (const group of collection) {
+        if (Array.isArray(group?.data)) {
+            for (const item of group.data) {
+                items.push({ item, group });
+            }
+            continue;
+        }
+
+        if (group && typeof group === 'object') {
+            items.push({ item: group, group: null });
+        }
+    }
+
+    return items;
+}
+
+async function buildTemplateTicketId(ticketTypeId) {
+    if (ticketTypeId === 2) {
+        return runningNumber('issue');
+    }
+
+    if (ticketTypeId === 3) {
+        return runningNumber('changeRequest');
+    }
+
+    return runningNumber('task');
+}
+
+async function insertTemplateTickets(connection, template, projectId, actorId) {
+    if (!template || typeof template !== 'object') {
+        return;
+    }
+
+    const ticketSources = [
+        { list: template.task, ticketTypeId: 1 },
+        { list: template.tasks, ticketTypeId: 1 },
+        { list: template.cases, ticketTypeId: 2 },
+        { list: template.cr, ticketTypeId: 3 },
+    ];
+
+    for (const source of ticketSources) {
+        const entries = flattenTemplateItems(source.list);
+
+        for (const entry of entries) {
+            const item = entry.item || {};
+            const group = entry.group || {};
+            const title = String(item.title || '').trim();
+
+            if (!title) {
+                continue;
+            }
+
+            const submitDateTime =  normalizeDateTime(new Date());
+            const targetCompletionDate = normalizeDate(item.targetCompletionDate || item.actualCompletionDate || item.submitDate || new Date(), 'targetCompletionDate');
+            const actualCompletionDate = normalizeDate(item.actualCompletionDate || item.targetCompletionDate || item.submitDate || new Date(), 'actualCompletionDate');
+            const ticketId = await buildTemplateTicketId(source.ticketTypeId);
+
+            await connection.execute(
+                `
+                INSERT INTO ticket (
+                    id, ticketTypeId, ticketCategoryId, ticketSeverityId, productChildId,
+                    crNoRef, issueNo, title, description, projectId, submitBy,
+                    submitDate, deadlineDateTime, targetCompletionDate, assignTo,
+                    taskSolution, actualCompletionDate, ticketStatusId, rating, ratesBy,
+                    ticketEstimationCost, presence, inputDate, inputBy, updateDate, updateBy
+                )
+                VALUES (
+                    ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?,
+                    ?, 1, NOW(), ?, NOW(), ?
+                )
+                `,
+                [
+                    ticketId,
+                    source.ticketTypeId,
+                    toNumberOrDefault(item.ticketCategoryId ?? group.id, 0),
+                    toNumberOrDefault(item.ticketSeverityId, 0),
+                    String(item.productChildId || ''),
+                    String(item.crNoRef || ''),
+                    String(item.issueNo || ''),
+                    title,
+                    String(item.description || ''),
+                    String(projectId),
+                    String(item.submitBy || actorId),
+                    submitDateTime,
+                    submitDateTime,
+                    targetCompletionDate,
+                    String(item.assignTo || ''),
+                    String(item.taskSolution || ''),
+                    actualCompletionDate,
+                    toNumberOrDefault(item.ticketStatusId, 1),
+                    toNumberOrDefault(item.rating, 0),
+                    String(item.ratesBy || ''),
+                    toNumberOrDefault(item.ticketEstimationCost, 0),
+                    String(actorId),
+                    String(actorId),
+                ]
+            );
+        }
+    }
+}
+
+async function insertTemplateContacts(connection, template, projectId, clientId, actorId) {
+    if (!template || typeof template !== 'object' || !Array.isArray(template.contacts)) {
+        return;
+    }
+
+    const userIds = new Set();
+
+    for (const contact of template.contacts) {
+        const userId = String(contact?.userId || contact?.id || '').trim();
+
+        if (!userId || /^\d+$/.test(userId) || userIds.has(userId)) {
+            continue;
+        }
+
+        userIds.add(userId);
+
+        await connection.execute(
+            `
+            INSERT INTO project_contact (
+                projectId, clientId, userId,
+                presence, inputDate, inputBy, updateDate, updateBy
+            )
+            VALUES (?, ?, ?, 1, NOW(), ?, NOW(), ?)
+            `,
+            [
+                String(projectId),
+                String(clientId),
+                userId,
+                String(actorId),
+                String(actorId),
+            ]
+        );
     }
 }
 
@@ -239,12 +420,14 @@ async function getProjectDetail(id) {
         '' as ticketCategories,
         '' as ticketBalance,
         '' as contacts,
-        '' as modules
+        '' as modules,
+        t.name as templateName
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId
       LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId
       LEFT JOIN product pr ON pr.id = p.productId
+      left join template as t on t.id = p.templateMaster
       WHERE p.id = ? AND p.presence = 1
       LIMIT 1
     `,
@@ -342,8 +525,7 @@ async function getProjectDetail(id) {
 }
 
 async function createProject(payload, actorId = '1') {
-
-
+    validateCreatePayload(payload || {});
     const id = buildProjectId(payload.id);
 
     const name = String(payload.name || '').trim();
@@ -355,51 +537,80 @@ async function createProject(payload, actorId = '1') {
 
     const status = payload.status === undefined ? 1 : parseStatus(payload.status);
     const templateMaster = payload.templateMaster === undefined ? '0' : String(payload.templateMaster);
+    const projectTypeId = parseNumeric(payload.projectTypeId, 'projectTypeId');
+    const projectBilleableId = parseNumeric(payload.projectBilleableId, 'projectBilleableId');
+    const productId = parseNumeric(payload.productId, 'productId');
+    const clientId = String(payload.clientId);
+    const startDate = normalizeDate(payload.startDate, 'startDate');
+    const endDate = normalizeDate(payload.endDate, 'endDate');
+    const ticketCategoriesParentId = parseNumeric(payload.ticketCategoriesParentId, 'ticketCategoriesParentId');
 
-    await pool.execute(
-        `
-      INSERT INTO project (
-        id, name, projectTypeId, projectBilleableId, productId, clientId,
-        startDate, endDate, status, templateMaster,
-        presence, inputDate, inputBy, updateDate, updateBy,
-        ticketCategoriesParentId
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), ?, NOW(), ?, ?)
-    `,
-        [
-            id,
-            name,
-            parseNumeric(payload.projectTypeId, 'projectTypeId'),
-            parseNumeric(payload.projectBilleableId, 'projectBilleableId'),
-            parseNumeric(payload.productId, 'productId'),
-            String(payload.clientId),
-            normalizeDate(payload.startDate, 'startDate'),
-            normalizeDate(payload.endDate, 'endDate'),
-            status,
-            templateMaster,
-            String(actorId),
-            String(actorId),
-            parseNumeric(payload.ticketCategoriesParentId, 'ticketCategoriesParentId'),
-        ]
-    );
+    const connection = await pool.getConnection();
 
-    //console.log('payload.projectUsers:', payload.projectUsers);
-    for (const pu of payload.projectUsers) { 
-        if (pu.checked == true) {
-            const q = `
-            INSERT INTO project_users (
-                projectId, userId, asManager,
-                presence, inputDate, inputBy, updateDate, updateBy
+    try {
+        await connection.beginTransaction();
+
+        await connection.execute(
+            `
+            INSERT INTO project (
+                id, name, projectTypeId, projectBilleableId, productId, clientId,
+                startDate, endDate, status, templateMaster,
+                presence, inputDate, inputBy, updateDate, updateBy,
+                ticketCategoriesParentId
             )
-            VALUES ( '${id}', '${pu.id}', ${pu.asManager === true ? 1 : 0}, 
-            1, NOW(), '${String(actorId)}', NOW(), '${String(actorId)}')
-            `;
-            console.log('Executing query:', q);
-            await pool.execute(q);
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), ?, NOW(), ?, ?)
+            `,
+            [
+                id,
+                name,
+                projectTypeId,
+                projectBilleableId,
+                productId,
+                clientId,
+                startDate,
+                endDate,
+                status,
+                templateMaster,
+                String(actorId),
+                String(actorId),
+                ticketCategoriesParentId,
+            ]
+        );
+
+        const projectUsers = Array.isArray(payload.projectUsers) ? payload.projectUsers : [];
+        for (const pu of projectUsers) {
+            if (pu?.checked !== true) {
+                continue;
+            }
+
+            await connection.execute(
+                `
+                INSERT INTO project_users (
+                    projectId, userId, asManager,
+                    presence, inputDate, inputBy, updateDate, updateBy
+                )
+                VALUES (?, ?, ?, 1, NOW(), ?, NOW(), ?)
+                `,
+                [
+                    String(id),
+                    String(pu.id),
+                    pu.asManager === true ? 1 : 0,
+                    String(actorId),
+                    String(actorId),
+                ]
+            );
         }
 
+        await insertTemplateTickets(connection, payload.template, id, actorId);
+        await insertTemplateContacts(connection, payload.template, id, clientId, actorId);
+
+        await connection.commit();
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
     }
- 
 
     return getProjectDetail(id);
 }
