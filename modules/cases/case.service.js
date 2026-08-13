@@ -204,7 +204,7 @@ async function listTickets(filters = {}) {
     params.push(filters.userId || '');
   }
  
-
+  // ticketTypeId = 2 artinya CASES
   conditions.push('t.ticketTypeId = 2'); 
 
   if (filters.projectId !== undefined) {
@@ -298,6 +298,75 @@ async function listTickets(filters = {}) {
   return rows;
 }
 
+async function listTicketsForClient(filters = {}) {
+
+  console.log('listTicketsForClient filters:', filters);
+
+  const conditions = ['t.ticketTypeId = 2', 't.ticketStatusId <= 900', 't.presence = 1'];
+  const params = [String(filters.userId || '')];
+
+  if (filters.keyword) {
+    conditions.push('(t.id LIKE ? OR t.title LIKE ? OR t.crNoRef LIKE ? OR t.issueNo LIKE ?)');
+    params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
+  }
+
+  const whereClause = conditions.join(' AND ');
+
+  const q = `
+    SELECT t.id, t.projectId, a.userId, t.title,   t.assignTo, CONCAT(u.firstName,' ',u.lastName) AS assignToName, 
+    a.name AS projectName, t.ticketSeverityId, 
+    s.name AS ticketSeverityName, t.ticketStatusId, ts.name AS ticketStatusName, t.submitDate
+    FROM ticket AS t
+    INNER JOIN (
+      SELECT c.id, c.userId, c.projectId, p.name AS name
+      FROM project_contact AS c
+      LEFT JOIN project AS p ON p.id = c.projectId
+      WHERE c.userId = ? AND p.presence = 1 AND c.presence = 1
+    ) AS a ON a.projectId = t.projectId
+    LEFT JOIN ticket_severity AS s ON s.id = t.ticketSeverityId
+    LEFT JOIN user AS u ON u.id = t.assignTo 
+    LEFT JOIN ticket_status AS ts ON ts.id = t.ticketStatusId 
+    WHERE ${whereClause} and t.ticketStatusId < 900
+    ORDER BY t.inputDate DESC
+  `;
+
+  console.log(q, params);
+  const [rows] = await pool.execute(q, params);
+
+  return rows;
+}
+
+async function listTicketsForClientUser(projectId, userId) {
+
+  console.log('listTicketsForClientUser projectId:', projectId, 'userId:', userId);
+
+  const conditions = ['t.ticketTypeId = 2', 't.ticketStatusId <= 900', 't.presence = 1'];
+  const params = [String(userId || '')];
+
+  const whereClause = conditions.join(' AND ');
+
+  const q = `
+    SELECT t.id, t.projectId, a.userId
+    FROM ticket AS t
+    INNER JOIN (
+      SELECT c.id, c.userId, c.projectId, p.name AS name
+      FROM project_contact AS c
+      LEFT JOIN project AS p ON p.id = c.projectId
+      WHERE c.userId = ? AND p.presence = 1 AND c.presence = 1
+    ) AS a ON a.projectId = t.projectId
+    LEFT JOIN user AS u ON u.id = t.assignTo
+    WHERE t.ticketTypeId = 2 AND t.ticketStatusId <= 900 AND t.presence = 1 and t.ticketStatusId < 900
+    ORDER BY t.inputDate DESC 
+  `;
+
+  console.log(q, params);
+  const [rows] = await pool.execute(q, params);
+
+  return rows;
+}
+
+
+
 async function getTicketDetail(id) {
   const [rows] = await pool.execute(
     `
@@ -307,7 +376,9 @@ async function getTicketDetail(id) {
         d.name AS productName, c.name AS clientName, pt.name AS projectType, pt.ticketBased, p.name as projectName,
         CONCAT(u.firstName, ' ',u.lastName) AS 'submitByName',
         tc.name as 'ticketCategory', p2.name as 'productChildName',
-        0 as taskCount
+        0 as taskCount,
+        ts2.name AS ticketSeverityName, ts2.color AS color,
+        concat(u2.firstName, ' ', u2.lastName) AS 'assignToName'
         FROM ticket t
         LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
         LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
@@ -316,8 +387,10 @@ async function getTicketDetail(id) {
         LEFT JOIN client AS c ON c.id = p.clientId
         LEFT JOIN project_type AS pt ON pt.id = p.projectTypeId
         LEFT JOIN user AS u ON u.id = t.submitBy
+        left join user as u2 on u2.id = t.assignTo
         left join ticket_categories as tc on t.ticketCategoryId = tc.id
         left join product as p2 on p2.id = t.productChildId
+        left join ticket_severity as ts2 on ts2.id = t.ticketSeverityId
       WHERE t.id = ? AND t.presence = 1 AND t.ticketTypeId = ?
       LIMIT 1
     `,
@@ -715,6 +788,82 @@ async function updateTicket(id, payload) {
   return getTicketDetail(id);
 }
 
+async function updateCaseStatusByClient(id, ticketStatusId, submitBy) {
+  const parsedStatusId = parseNonNegativeNumber(ticketStatusId, 'ticketStatusId');
+
+  const [rows] = await pool.execute(
+    `
+      SELECT id, ticketStatusId, projectId, assignTo, ticketEstimationCost
+      FROM ticket
+      WHERE id = ? AND presence = 1 AND ticketTypeId = ?
+      LIMIT 1
+    `,
+    [id, CASE_TYPE_ID]
+  );
+
+  const ticket = rows[0];
+
+  if (!ticket) {
+    const error = new Error('Case not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const [result] = await pool.execute(
+    `
+      UPDATE ticket
+      SET ticketStatusId = ?, actualCompletionDate = NOW(), updateDate = NOW(), updateBy = ?
+      WHERE id = ? AND presence = 1 AND ticketTypeId = ?
+    `,
+    [parsedStatusId, submitBy, id, CASE_TYPE_ID]
+  );
+
+  if (!result.affectedRows) {
+    const error = new Error('Case not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (ticket.ticketStatusId !== parsedStatusId) {
+    const [statusNames] = await pool.execute(
+      `
+      SELECT id, name FROM ticket_status WHERE id = ?
+      UNION
+      SELECT id, name FROM ticket_status WHERE id = ?
+    `,
+      [ticket.ticketStatusId, parsedStatusId]
+    );
+
+    const description =
+      'Update Status from <strong>' + statusNames[0]?.name + '</strong> To <strong>' + statusNames[1]?.name + '</strong>';
+
+    await pool.execute(
+      `
+        INSERT INTO ticket_logs (
+          ticketId, description, starDateTime, closeDateTime,
+          presence, inputDate, inputBy, updateDate, updateBy
+        )
+        VALUES (?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()), 1, NOW(), ?, NOW(), ?)
+      `,
+      [id, description, null, null, submitBy, submitBy]
+    );
+
+    if (parsedStatusId >= 900 && parsedStatusId < 990) {
+      await pool.execute(
+        `
+          INSERT INTO ticket_balance (
+            projectId, ticketId, ticketOut, date, inputDate, inputBy
+          )
+          VALUES (?, ?, ?, NOW(), NOW(), ?)
+        `,
+        [ticket.projectId, id, ticket.ticketEstimationCost || 0, submitBy]
+      );
+    }
+  }
+
+  return getTicketDetail(id);
+}
+
 async function submitRateService(id, payload) {
   const fields = [];
 
@@ -773,12 +922,15 @@ async function deleteTicket(id) {
 
 module.exports = {
   listTickets,
+  listTicketsForClient,
+  listTicketsForClientUser,
   listRelatedTasks,
   getTicketDetail,
   createTicket,
   createRelatedTask,
   createTicketLog,
   updateTicket,
+  updateCaseStatusByClient,
   deleteTicket,
   getTicketLogs,
   submitRateService,

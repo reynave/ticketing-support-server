@@ -4,7 +4,8 @@ const caseController = require('./case.controller');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, caseController.list);
+router.get('/', authMiddleware, caseController.list); 
+
 router.get('/:id', authMiddleware, caseController.detail);
 router.get('/:id/logs', authMiddleware, caseController.detailLogs);
 router.get('/:id/tasks', authMiddleware, caseController.listTasks);
@@ -14,6 +15,7 @@ router.post('/:id/tasks', authMiddleware, caseController.createTask);
 
 router.put('/:id', authMiddleware, caseController.update);
 router.put('/:id/submitRate', authMiddleware, caseController.submitRate);
+router.put('/:id/status', authMiddleware, caseController.updateStatusByClient);
 
 router.delete('/:id', authMiddleware, caseController.remove);
 

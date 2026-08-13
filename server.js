@@ -23,6 +23,7 @@ const helmet = require('helmet');
 const { Server } = require('socket.io');
 const { success } = require('./helpers/response');
 const authRoutes = require('./modules/auth/auth.route');
+const clientAuthRoutes = require('./modules/client-auth/client-auth.route');
 const masterRoutes = require('./modules/master/master.route');
 const ticketCategoriesRoutes = require('./modules/ticket-categories/ticket-categories.route');
 const productMasterRoutes = require('./modules/product-master/product-master.route');
@@ -68,6 +69,7 @@ app.get(`${PREFIX_SERVER}`, (req, res) => {
 });
  
 app.use(`${PREFIX_SERVER}/auth`, authRoutes);
+app.use(`${PREFIX_SERVER}/client-auth`, clientAuthRoutes);
 app.use(`${PREFIX_SERVER}/master`, masterRoutes);
 app.use(`${PREFIX_SERVER}/ticket-categories`, ticketCategoriesRoutes);
 app.use(`${PREFIX_SERVER}/product-master`, productMasterRoutes);

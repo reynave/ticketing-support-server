@@ -400,8 +400,25 @@ async function listProjects(filters = {}) {
             }
         }
     }
-    
-  
+
+    // jika filter.contactUserId ada, hanya tampilkan project di mana user tersebut terdaftar sebagai contact
+    if (filters.contactUserId) {
+        const [contacts] = await pool.execute(
+            `
+            SELECT projectId
+            FROM project_contact
+            WHERE presence = 1 AND userId = ?
+            `,
+            [String(filters.contactUserId)]
+        );
+        const allowedProjectIds = new Set(contacts.map((contact) => String(contact.projectId)));
+
+        for (let i = rows.length - 1; i >= 0; i--) {
+            if (!allowedProjectIds.has(String(rows[i].id))) {
+                rows.splice(i, 1);
+            }
+        }
+    }
 
     return rows;
 }

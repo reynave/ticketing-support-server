@@ -23,7 +23,17 @@ async function list(req, res, next) {
       ticketTypeId: CASE_TYPE_ID,
        userId,
     };
-    const data = await caseService.listTickets(query);
+   
+
+     // Client users (userTypeId = 2) can only view cases assigned to themselves.
+    let data;
+    if (req.user?.userTypeId === 1 ) {
+      data = await caseService.listTickets(query);
+    } else {
+       data = await caseService.listTicketsForClient(query);
+    }
+
+
     return res.json(success('Case list fetched', data));
   } catch (error) {
     return next(error);
@@ -33,7 +43,17 @@ async function list(req, res, next) {
 async function detail(req, res, next) {
   try {
     const id = parseId(req.params.id);
-    const data = await caseService.getTicketDetail(id);
+ 
+    const users = await caseService.listTicketsForClientUser(id, String(req.user.id) );
+    
+    console.log(' users', users);
+    // Client users (userTypeId = 2) can only view cases assigned to themselves.
+    if (req.user?.userTypeId === 2 && users[0]?.userId !== String(req.user.id)) {
+      const error = new Error('Forbidden');
+      error.statusCode = 403;
+      throw error;
+    }
+   const data = await caseService.getTicketDetail(id);
     return res.json(success('Case detail fetched', data));
   } catch (error) {
     return next(error);
@@ -103,6 +123,34 @@ async function createLog(req, res, next) {
   }
 }
 
+async function updateStatusByClient(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const submitBy = req.user?.id ? String(req.user.id) : '';
+
+    if (!submitBy) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    // Client users (userTypeId = 2) can only update cases assigned to themselves.
+    if (req.user?.userTypeId === 2) {
+      const current = await caseService.getTicketDetail(id);
+      if (String(current?.assignTo) !== submitBy) {
+        const error = new Error('Forbidden');
+        error.statusCode = 403;
+        throw error;
+      }
+    }
+
+    const data = await caseService.updateCaseStatusByClient(id, req.body?.ticketStatusId, submitBy);
+    return res.json(success('Case status updated', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function update(req, res, next) {
   try {
     const id = parseId(req.params.id);
@@ -145,6 +193,7 @@ module.exports = {
   create,
   createTask,
   update,
+  updateStatusByClient,
   remove,
   createLog,
   detailLogs,

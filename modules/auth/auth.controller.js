@@ -6,7 +6,7 @@ async function login(req, res, next) {
   try {
 
     const ipAddress = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
-const userAgent = req.headers['user-agent'] || null;
+    const userAgent = req.headers['user-agent'] || null;
 
     const errors = validationResult(req);
 
