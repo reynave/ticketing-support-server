@@ -94,7 +94,7 @@ async function listTicketCategories(filters = {}) {
    } 
 
   if(filters?.status){
-      whereParents +=  '  AND  tc.status = '+filters?.status;
+      whereParents +=  ' AND tc.status = '+filters?.status;
   } 
   const q =  `
       SELECT
@@ -107,13 +107,11 @@ async function listTicketCategories(filters = {}) {
   const [rows] = await pool.execute(
     q, 
   ); 
-
-
-
-   let whereChild = ' AND tc.parentId > 0'; 
-   if(filters?.parentId){
-      whereChild =  ' AND  tc.parentId = '+filters?.parentId;
-   } 
+ 
+  let whereChild = ' AND tc.parentId > 0'; 
+  if(filters?.parentId){
+    whereChild =  ' AND  tc.parentId = '+filters?.parentId;
+  } 
 
   if(filters?.status){
       whereChild +=  '  AND  tc.status = '+filters?.status;

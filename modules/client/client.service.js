@@ -154,32 +154,12 @@ async function updateClient(id, payload, actorId) {
     params.push(industryId);
   }
 
+   const status = Number(payload.status);
   if (payload.status !== undefined) {
-    const status = Number(payload.status);
+   
     validateStatus(status);
     fields.push('status = ?');
-    params.push(status);
-
-
-    if(status === 0) {
-      const [users] = await pool.execute(
-        `
-          UPDATE user
-          SET status = 0,   updateDate = NOW(), updateBy = ?
-          WHERE clientId = ? AND presence = 1
-        `,
-        [actorId, id]
-      );
-
-       const [projects] = await pool.execute(
-        `
-          UPDATE project
-          SET status = 0,   updateDate = NOW(), updateBy = ?
-          WHERE clientId = ? AND presence = 1
-        `,
-        [actorId, id]
-      );
-    }
+    params.push(status); 
   }
 
   if (!fields.length) {
@@ -196,6 +176,25 @@ async function updateClient(id, payload, actorId) {
     `,
     [...params, actorId, id]
   );
+
+
+   const [users] = await pool.execute(
+        `
+          UPDATE user
+          SET status = ?,   updateDate = NOW(), updateBy = ?
+          WHERE clientId = ? AND presence = 1
+        `,
+        [status, actorId, id]
+      );
+
+       const [projects] = await pool.execute(
+        `
+          UPDATE project
+          SET status = ?,   updateDate = NOW(), updateBy = ?
+          WHERE clientId = ? AND presence = 1
+        `,
+        [status, actorId, id]
+      );
 
   if (!result.affectedRows) {
     const error = new Error('Client not found');
