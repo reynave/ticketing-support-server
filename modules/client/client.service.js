@@ -129,7 +129,7 @@ async function createClient(payload) {
   return getClientDetail(result.insertId);
 }
 
-async function updateClient(id, payload) {
+async function updateClient(id, payload, actorId) {
   const fields = [];
   const params = [];
 
@@ -159,6 +159,27 @@ async function updateClient(id, payload) {
     validateStatus(status);
     fields.push('status = ?');
     params.push(status);
+
+
+    if(status === 0) {
+      const [users] = await pool.execute(
+        `
+          UPDATE user
+          SET status = 0,   updateDate = NOW(), updateBy = ?
+          WHERE clientId = ? AND presence = 1
+        `,
+        [actorId, id]
+      );
+
+       const [projects] = await pool.execute(
+        `
+          UPDATE project
+          SET status = 0,   updateDate = NOW(), updateBy = ?
+          WHERE clientId = ? AND presence = 1
+        `,
+        [actorId, id]
+      );
+    }
   }
 
   if (!fields.length) {
@@ -170,10 +191,10 @@ async function updateClient(id, payload) {
   const [result] = await pool.execute(
     `
       UPDATE client
-      SET ${fields.join(', ')}, updateDate = NOW(), updateBy = 1
+      SET ${fields.join(', ')}, updateDate = NOW(), updateBy = ?
       WHERE id = ? AND presence = 1
     `,
-    [...params, id]
+    [...params, actorId, id]
   );
 
   if (!result.affectedRows) {

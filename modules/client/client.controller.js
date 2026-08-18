@@ -62,7 +62,9 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   try {
     const id = parseId(req.params.id);
-    const data = await clientService.updateClient(id, req.body || {});
+    const actorId = req.user?.id; // Assuming you have user information in the request
+    const data = await clientService.updateClient(id, req.body || {}, actorId);
+ 
     return res.json(success('Client updated', data));
   } catch (error) {
     return next(error);
