@@ -9,6 +9,7 @@ router.get('/:id', authMiddleware, userController.detail);
 router.post('/', authMiddleware, userController.create); 
 
 router.put('/:id', authMiddleware, userController.update);
+router.put('/:id/password', authMiddleware, userController.changePassword);
 
 router.delete('/:id', authMiddleware, userController.remove);
 

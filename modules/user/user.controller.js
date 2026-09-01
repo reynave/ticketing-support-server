@@ -49,6 +49,16 @@ async function update(req, res, next) {
   }
 }
 
+async function changePassword(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    await userService.changePassword(id, req.body || {});
+    return res.json(success('Password updated'));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function remove(req, res, next) {
   try {
     const id = parseId(req.params.id);
@@ -64,5 +74,6 @@ module.exports = {
   detail,
   create,
   update,
+  changePassword,
   remove,
 };

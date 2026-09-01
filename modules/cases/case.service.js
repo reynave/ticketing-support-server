@@ -195,8 +195,7 @@ function normalizeCreatePayload(payload) {
 }
 
 async function listTickets(filters = {}) {
-
-  console.log('listTickets filters:', filters);
+ 
   const conditions = [];
   const params = [];
   if(filters.userId != '' && filters.userId != undefined) { 
@@ -287,8 +286,7 @@ async function listTickets(filters = {}) {
       WHERE t.presence = 1 and (${whereClause}
       ${whereTicketStatus} )  AND t.ticketStatusId < 900
       ORDER BY t.inputDate DESC
-    `;
-  console.log(q, [TASK_TYPE_ID, ...params])
+    `; 
   const [rows] = await pool.execute(
     q,
     [TASK_TYPE_ID, ...params]
@@ -299,8 +297,7 @@ async function listTickets(filters = {}) {
 }
 
 async function listTicketsForClient(filters = {}) {
-
-  console.log('listTicketsForClient filters:', filters);
+ 
 
   const conditions = ['t.ticketTypeId = 2', 't.ticketStatusId <= 900', 't.presence = 1'];
   const params = [String(filters.userId || '')];
@@ -328,9 +325,7 @@ async function listTicketsForClient(filters = {}) {
     LEFT JOIN ticket_status AS ts ON ts.id = t.ticketStatusId 
     WHERE ${whereClause} and t.ticketStatusId < 900
     ORDER BY t.inputDate DESC
-  `;
-
-  console.log(q, params);
+  `; 
   const [rows] = await pool.execute(q, params);
 
   return rows;
@@ -338,8 +333,7 @@ async function listTicketsForClient(filters = {}) {
 
 async function listTicketsForClientUser(projectId, userId) {
 
-  console.log('listTicketsForClientUser projectId:', projectId, 'userId:', userId);
-
+ 
   const conditions = ['t.ticketTypeId = 2', 't.ticketStatusId <= 900', 't.presence = 1'];
   const params = [String(userId || '')];
 
@@ -358,8 +352,7 @@ async function listTicketsForClientUser(projectId, userId) {
     WHERE t.ticketTypeId = 2 AND t.ticketStatusId <= 900 AND t.presence = 1 and t.ticketStatusId < 900
     ORDER BY t.inputDate DESC 
   `;
-
-  console.log(q, params);
+ 
   const [rows] = await pool.execute(q, params);
 
   return rows;
@@ -486,8 +479,7 @@ async function getTicketLogs(id) {
 
 async function createTicket(payload) {
   const data = normalizeCreatePayload(payload);
-  const generatedId = await buildTicketId(payload.id);
-  console.log('createTicket payload', data, 'generatedId:', generatedId);
+  const generatedId = await buildTicketId(payload.id); 
   const q = `
       INSERT INTO ticket (
         id, ticketTypeId,  title, description, projectId,
@@ -520,8 +512,7 @@ async function createTicket(payload) {
       data.severityId,
       payload.deadlineDateTime,
       payload.productChildId
-    ];
-      console.log('payload', payload, 'query', q, 'params', arr)
+    ]; 
   await pool.execute(
     q ,
    arr
@@ -531,35 +522,8 @@ async function createTicket(payload) {
   return getTicketDetail(generatedId);
 }
 
-async function createTicketLog_VER1(payload) {
-  console.log('createTicketLog payload', payload);
-  const data = payload;
-  const q = `
-      INSERT INTO ticket_logs (
-        ticketId, description, parentId, starDateTime, closeDateTime,
-        presence, inputDate, inputBy, updateDate, updateBy
-      )
-      VALUES (
-        ?, ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
-        1, NOW(),  '${data.submitBy}', NOW(),  '${data.submitBy}'
-      )
-    `;
-  const obj = [
-    data.ticketId,
-    data.description,
-    data.parentId == null ? '' : data.parentId,
-    data.starDateTime || null,
-    data.clsoeDateTime || null,
-  ];
-  console.log(q, obj)
-
-  await pool.execute(q, obj);
-
-  return data.ticketId;
-}
-
-async function createTicketLog(payload, files = [], req) {
-  console.log('createTicketLog payload', payload);
+ 
+async function createTicketLog(payload, files = [], req) { 
   const data = payload;
 
   if (!String(data.starDateTime || '').trim() || !String(data.closeDateTime || '').trim()) {
@@ -662,7 +626,8 @@ async function updateTicket(id, payload) {
     updateBy = ?,
     deadlineDateTime = ?,
     ticketEstimationCost = ?,
-    ticketCategoryId = ?
+    ticketCategoryId = ?,
+    hours = ?
   WHERE id = ? AND presence = 1 AND ticketTypeId = ?
 `;
 
@@ -679,6 +644,7 @@ async function updateTicket(id, payload) {
     payload.deadlineDateTime || null,
     payload.ticketEstimationCost || null,
     payload.ticketCategoryId !== undefined ? parseOptionalNumber(payload.ticketCategoryId, 'ticketCategoryId') : null,
+    payload.hours || 0,
     id,
     CASE_TYPE_ID,
   ];
@@ -886,8 +852,7 @@ async function submitRateService(id, payload) {
     id,
     CASE_TYPE_ID,
   ];
-
-  console.log('updateTicket query:', q, 'params:', params);
+ 
   const [result] = await pool.execute(q, params);
 
   if (!result.affectedRows) {

@@ -364,6 +364,35 @@ async function updateUser(id, payload) {
   return getUserDetail(id);
 }
 
+async function changePassword(id, payload) {
+  const password = String(payload.password || '');
+  const confirmPassword = String(payload.confirmPassword || '');
+
+  if (!password) {
+    const error = new Error('Password is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (password !== confirmPassword) {
+    const error = new Error('Password confirmation does not match');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await getUserForUpdate(id);
+  const passwordHash = await bcrypt.hash(password, 4);
+
+  await pool.execute(
+    `
+      UPDATE user
+      SET password = ?, updateDate = NOW(), updateBy = 1
+      WHERE id = ? AND presence = 1
+    `,
+    [passwordHash, id]
+  );
+}
+
 async function deleteUser(id) {
   const user = await getUserForUpdate(id);
   const deletedEmail = buildDeletedEmail(user.email, user.id);
@@ -459,6 +488,7 @@ module.exports = {
   getUserDetail,
   createUser,
   updateUser,
+  changePassword,
   deleteUser,
   listExternalUsersByClient,
   createExternalUserForClient,

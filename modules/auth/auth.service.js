@@ -2,7 +2,31 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../../config/db');
 
-function buildUserPayload(user) {
+async function getAccessRights(authLevelId) {
+  const q =  `
+      SELECT uar.moduleId, uar.c, uar.r, uar.u, uar.d, m.name as moduleName
+      FROM user_access_right as uar
+      left join module as m on uar.moduleId = m.id
+      WHERE uar.authLevelId = ?  AND uar.presence = 1 AND uar.moduleId > 0
+      ORDER BY m.name ASC
+    `;
+  const [rows] = await pool.execute(
+   q,
+    [Number(authLevelId) || 0]
+  );
+
+ 
+  return rows.map((row) => ({
+    name: String(row.moduleName || ''),
+    moduleId: Number(row.moduleId),
+    c: Number(row.c),
+    r: Number(row.r),
+    u: Number(row.u),
+    d: Number(row.d),
+  }));
+}
+
+async function buildUserPayload(user) {
   return {
     id: user.id,
     name: [user.firstName, user.lastName].filter(Boolean).join(' ').trim(),
@@ -10,6 +34,7 @@ function buildUserPayload(user) {
     userAuthLevelId: user.userAuthLevelId,
     clientId: user.clientId,
     userTypeId: user.userTypeId,
+    accessRights: await getAccessRights(user.userAuthLevelId),
   };
 }
 
@@ -50,7 +75,8 @@ async function login(email, password, ipAddress, userAgent) {
     [user.id, loginTime, ipAddress, userAgent]
   );
 
-  const payload = buildUserPayload(user);
+  const payload = await buildUserPayload(user);
+  console.log('User payload:', payload);
   const token = jwt.sign(payload, process.env.JWT_SECRET || 'change-this-secret', {
     expiresIn: process.env.JWT_EXPIRES_IN || '8h',
   });

@@ -542,7 +542,7 @@ async function getProjectDetail(id) {
 }
 
 async function createProject(payload, actorId = '1') {
-    validateCreatePayload(payload || {});
+    console.log(payload);
     const id = buildProjectId(payload.id);
 
     const name = String(payload.name || '').trim();
@@ -563,7 +563,7 @@ async function createProject(payload, actorId = '1') {
     const ticketCategoriesParentId = parseNumeric(payload.ticketCategoriesParentId, 'ticketCategoriesParentId');
 
     const connection = await pool.getConnection();
-
+    const ticketBaseHours = payload.ticketBaseHours; 
     try {
         await connection.beginTransaction();
 
@@ -572,26 +572,18 @@ async function createProject(payload, actorId = '1') {
             INSERT INTO project (
                 id, name, projectTypeId, projectBilleableId, productId, clientId,
                 startDate, endDate, status, templateMaster,
-                presence, inputDate, inputBy, updateDate, updateBy,
-                ticketCategoriesParentId
+                presence, 
+                inputDate, inputBy, updateDate, updateBy,
+                ticketCategoriesParentId, ticketBaseHours
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), ?, NOW(), ?, ?)
+            VALUES (
+                '${id}', '${name}', '${projectTypeId}', '${projectBilleableId}', '${productId}', '${clientId}', 
+                '${startDate}', '${endDate}', '${status}', '${templateMaster}', 
+                 1, 
+                 NOW(), '${String(actorId)}', NOW(), '${String(actorId)}',
+                 '${ticketCategoriesParentId}', '${ticketBaseHours}')
             `,
-            [
-                id,
-                name,
-                projectTypeId,
-                projectBilleableId,
-                productId,
-                clientId,
-                startDate,
-                endDate,
-                status,
-                templateMaster,
-                String(actorId),
-                String(actorId),
-                ticketCategoriesParentId,
-            ]
+           // Removed parameter array as values are directly embedded in the query
         );
 
         const projectUsers = Array.isArray(payload.projectUsers) ? payload.projectUsers : [];
@@ -629,7 +621,7 @@ async function createProject(payload, actorId = '1') {
         connection.release();
     }
 
-    return getProjectDetail(id);
+    return id;
 }
 
 async function updateProject(id, payload, actorId = '1') {
@@ -692,6 +684,7 @@ async function updateProject(id, payload, actorId = '1') {
         fields.push('ticketCategoriesParentId = ?');
         params.push(Number(payload.ticketCategoriesId));
     }
+    
     if (!fields.length) {
         const error = new Error('No valid fields provided');
         error.statusCode = 400;

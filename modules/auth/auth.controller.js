@@ -19,7 +19,8 @@ async function login(req, res, next) {
     }
 
     const result = await authService.login(req.body.email, req.body.password, ipAddress, userAgent);
-    return res.json(success('Login success', result));
+    const today = new Date();
+    return res.json(success('Login success '+today, result));
   } catch (error) {
     return next(error);
   }
