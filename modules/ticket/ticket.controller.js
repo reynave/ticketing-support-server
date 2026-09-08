@@ -22,7 +22,7 @@ async function list(req, res, next) {
     };
 
     const data = await ticketService.listTickets(filters);
-    return res.json(success('Ticket list fetched', data));
+    return res.json(success('Ticket list() fetched', data));
   } catch (error) {
     return next(error);
   }

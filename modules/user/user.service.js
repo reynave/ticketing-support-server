@@ -209,7 +209,6 @@ async function getUserDetail(id) {
 
 async function createUser(payload) {
   const required = ['email', 'password', 'userAuthLevelId', 'firstName', 'lastName'];
-  const missing = required.filter((field) => payload[field] === undefined || payload[field] === null || payload[field] === '');
  
 
   await assertEmailUnique(payload.email);
@@ -221,15 +220,14 @@ async function createUser(payload) {
   const userTypeId = payload.userTypeId !== undefined ? parseUserTypeId(payload.userTypeId) : INTERNAL_USER_TYPE_ID;
   const clientId = payload.clientId !== undefined ? parseClientId(payload.clientId) : null;
 
-  await pool.execute(
-    `
+  const q =  `
       INSERT INTO user (
         id, email, clientId, userTypeId, password, userAuthLevelId, firstName, lastName,
         division, position, phone, mobile, birthday, status, presence, inputDate, inputBy, updateDate, updateBy
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
-    `,
-    [
+    `;
+  const params =  [
       id,
       payload.email,
       clientId,
@@ -237,16 +235,21 @@ async function createUser(payload) {
       passwordHash,
       payload.userAuthLevelId,
       payload.firstName,
-      payload.lastName || null,
-      payload.division || null,
-      payload.position || null,
-      payload.phone || null,
-      payload.mobile || null,
+      payload.lastName || '',
+      payload.division || '',
+      payload.position || '',
+      payload.phone || '',
+      payload.mobile || '',
       birthday,
       status,
-    ]
-  );
+    ];
+     console.log('User created with ID:', q, params);
 
+  await pool.execute(
+    q,
+    params
+  );
+ 
   return getUserDetail(id);
 }
 

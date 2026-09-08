@@ -72,7 +72,7 @@ function normalizeCreatePayload(payload) {
 }
 
 async function listTickets(filters = {}) { 
-  const conditions = ['t.presence = 1'];
+  const conditions = [];
   const params = [];
   if(filters.userId != '' && filters.userId != undefined) { 
     conditions.push('t.assignTo = ?');
@@ -83,22 +83,9 @@ async function listTickets(filters = {}) {
 
 
   let ticketTypeId = 1;
-  if (
-    filters.ticketTypeId !== undefined &&
-    filters.ticketTypeId !== null &&
-    String(filters.ticketTypeId).trim() !== ''
-  ) {
-    ticketTypeId = Number(filters.ticketTypeId);
-
-    if (!Number.isFinite(ticketTypeId)) {
-      const error = new Error('ticketTypeId must be a valid number');
-      error.statusCode = 400;
-      throw error;
-    }
-  }
-
-  conditions.push('t.ticketTypeId = ?');
-  params.push(ticketTypeId);
+   
+ 
+  const ticketTypeCondition = 't.ticketTypeId = '+ticketTypeId;
 
   if (filters.projectId !== undefined) {
     conditions.push('t.projectId = ?');
@@ -164,7 +151,7 @@ async function listTickets(filters = {}) {
       left join ticket_categories AS tc2 ON tc2.id = p.ticketCategoriesParentId
       left join client AS c ON c.id = p.clientId
       left join user AS u ON u.id = t.assignTo
-      WHERE t.presence = 1  AND (
+      WHERE t.presence = 1 AND ${ticketTypeCondition} AND (
       ${whereClause}
       ${whereTicketStatus} )  AND t.ticketStatusId < 900
       ORDER BY t.inputDate DESC
@@ -174,6 +161,7 @@ async function listTickets(filters = {}) {
     params
   );
 
+  console.log(  q, params );
 
   return rows;
 }
