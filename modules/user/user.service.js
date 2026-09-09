@@ -148,10 +148,10 @@ async function listUsers(filters = {}) {
   const conditions = ['u.presence = 1'];
   const params = [];
 
-  // if (filters.status !== undefined) {
-  //   conditions.push('status = ?');
-  //   params.push(Number(filters.status));
-  // }
+  if (filters.status !== undefined) {
+    conditions.push('u.status = ?');
+    params.push(Number(filters.status));
+  }
 
  
   

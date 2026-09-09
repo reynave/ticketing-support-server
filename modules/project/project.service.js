@@ -330,6 +330,7 @@ async function listProjects(filters = {}) {
         pt.name AS projectTypeName,
         pb.name AS projectBilleableName,
         pr.name AS productName,
+        pt.ticketBased,
         '' as users,
         '' as modules
         

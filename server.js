@@ -38,6 +38,7 @@ const userLoginHistoryRoutes = require('./modules/user-login-history/user-login-
 const ticketBalanceRoutes = require('./modules/ticket-balance/ticket-balance.route');
 const templateRoutes = require('./modules/template/template.route');
 const adminReportRoutes = require('./modules/admin-report/admin-report.route');
+const clientTicketRoutes = require('./modules/client-ticket/client-ticket.route');
 const errorHandler = require('./middlewares/errorHandler');
 const { testConnection } = require('./config/db');
 const path = require('path'); 
@@ -86,6 +87,7 @@ app.use(`${PREFIX_SERVER}/user-login-history`, userLoginHistoryRoutes);
 app.use(`${PREFIX_SERVER}/ticket-balance`, ticketBalanceRoutes);
 app.use(`${PREFIX_SERVER}/template`, templateRoutes);
 app.use(`${PREFIX_SERVER}/adminReport`, adminReportRoutes);
+app.use(`${PREFIX_SERVER}/client-ticket`, clientTicketRoutes);
 
 app.use(errorHandler);
 
