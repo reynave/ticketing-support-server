@@ -149,12 +149,14 @@ async function createTransaction(payload) {
     throw error;
   }
 
+  const hhiiss = new Date().toISOString().slice(11, 19);
+
   const [result] = await pool.execute(
     `
       INSERT INTO ticket_balance (projectId, date, ticketIn, ticketOut, note, presence, inputDate, inputBy, updateDate, updateBy)
       VALUES (?, ?, ?, ?, ?, 1, NOW(), 1, NOW(), 1)
     `,
-    [projectId, payload.date || new Date(), ticketIn, ticketOut, note]
+    [projectId, (payload.date ? payload.date+' '+hhiiss : new Date()), ticketIn, ticketOut, note]
   );
 
   const [rows] = await pool.execute(

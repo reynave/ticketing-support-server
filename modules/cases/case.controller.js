@@ -40,6 +40,29 @@ async function list(req, res, next) {
   }
 }
 
+async function listClosed(req, res, next) {
+  try {
+    // FOR CLIENT ONLY
+    const userId = req.user?.id ? String(req.user.id) : '';
+   
+    const query = {
+      ...(req.query || {}),
+      ticketTypeId: CASE_TYPE_ID,
+       userId,
+    };
+    
+      let data;
+ 
+       data = await caseService.listTicketsForClientClosed(query);
+ 
+
+
+    return res.json(success('Case list fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function detail(req, res, next) {
   try {
     const id = parseId(req.params.id);
@@ -135,14 +158,14 @@ async function updateStatusByClient(req, res, next) {
     }
 
     // Client users (userTypeId = 2) can only update cases assigned to themselves.
-    if (req.user?.userTypeId === 2) {
-      const current = await caseService.getTicketDetail(id);
-      if (String(current?.assignTo) !== submitBy) {
-        const error = new Error('Forbidden');
-        error.statusCode = 403;
-        throw error;
-      }
-    }
+    // if (req.user?.userTypeId === 2) {
+    //   const current = await caseService.getTicketDetail(id);
+    //   if (String(current?.assignTo) !== submitBy) {
+    //     const error = new Error('Forbidden');
+    //     error.statusCode = 403;
+    //     throw error;
+    //   }
+    // }
 
     const data = await caseService.updateCaseStatusByClient(id, req.body?.ticketStatusId, submitBy);
     return res.json(success('Case status updated', data));
@@ -189,6 +212,7 @@ async function remove(req, res, next) {
 
 module.exports = {
   list,
+  listClosed,
   detail,
   create,
   createTask,

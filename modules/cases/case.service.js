@@ -330,6 +330,41 @@ async function listTicketsForClient(filters = {}) {
 
   return rows;
 }
+async function listTicketsForClientClosed(filters = {}) {
+ 
+
+  const conditions = ['t.ticketTypeId = 2',   't.presence = 1'];
+  const params = [String(filters.userId || '')];
+
+  if (filters.keyword) {
+    conditions.push('(t.id LIKE ? OR t.title LIKE ? OR t.crNoRef LIKE ? OR t.issueNo LIKE ?)');
+    params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
+  }
+
+  const whereClause = conditions.join(' AND ');
+
+  const q = `
+    SELECT t.id, t.projectId, a.userId, t.title,   t.assignTo, CONCAT(u.firstName,' ',u.lastName) AS assignToName, 
+    a.name AS projectName, t.ticketSeverityId, 
+    s.name AS ticketSeverityName, t.ticketStatusId, ts.name AS ticketStatusName, t.submitDate
+    FROM ticket AS t
+    INNER JOIN (
+      SELECT c.id, c.userId, c.projectId, p.name AS name
+      FROM project_contact AS c
+      LEFT JOIN project AS p ON p.id = c.projectId
+      WHERE c.userId = ? AND p.presence = 1 AND c.presence = 1
+    ) AS a ON a.projectId = t.projectId
+    LEFT JOIN ticket_severity AS s ON s.id = t.ticketSeverityId
+    LEFT JOIN user AS u ON u.id = t.assignTo 
+    LEFT JOIN ticket_status AS ts ON ts.id = t.ticketStatusId 
+    WHERE ${whereClause} and t.ticketStatusId >= 900
+    ORDER BY t.inputDate DESC
+  `; 
+  console.log('listTicketsForClientClosed', q);
+  const [rows] = await pool.execute(q, params);
+
+  return rows;
+}
 
 async function listTicketsForClientUser(projectId, userId) {
 
@@ -889,6 +924,7 @@ module.exports = {
   listTickets,
   listTicketsForClient,
   listTicketsForClientUser,
+  listTicketsForClientClosed,
   listRelatedTasks,
   getTicketDetail,
   createTicket,

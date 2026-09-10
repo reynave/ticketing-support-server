@@ -5,6 +5,7 @@ const caseController = require('./case.controller');
 const router = express.Router();
 
 router.get('/', authMiddleware, caseController.list); 
+router.get('/closed', authMiddleware, caseController.listClosed); 
 
 router.get('/:id', authMiddleware, caseController.detail);
 router.get('/:id/logs', authMiddleware, caseController.detailLogs);

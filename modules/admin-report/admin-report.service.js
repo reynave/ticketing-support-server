@@ -24,8 +24,8 @@ async function listClosedTickets(ticketTypeId, filters = {}) {
   }
 
   if (filters.endDate) {
-    conditions.push('t.submitDate <= ?');
-    params.push(String(filters.endDate));
+    conditions.push('t.submitDate <= ? ');
+    params.push(String(filters.endDate) + ' 23:59:59');
   }
 
   const whereClause = conditions.join(' AND ');
