@@ -198,23 +198,21 @@ async function listTickets(filters = {}) {
  
   const conditions = [];
   const params = [];
-  if(filters.userId != '' && filters.userId != undefined) { 
-    conditions.push('t.assignTo = ?');
-    params.push(filters.userId || '');
-  }
- 
+  
   // ticketTypeId = 2 artinya CASES
   conditions.push('t.ticketTypeId = 2'); 
 
   if (filters.projectId !== undefined) {
     conditions.push('t.projectId = ?');
     params.push(String(filters.projectId));
+  }else{
+    if(filters.userId != '' && filters.userId != undefined) { 
+      conditions.push('t.assignTo = ?');
+      params.push(filters.userId || '');
+    }
+ 
   }
-
-  // if (filters.ticketStatusId !== undefined) {
-  //   conditions.push('t.ticketStatusId = ?');
-  //   params.push(Number(filters.ticketStatusId));
-  // }
+ 
 
   if (filters.assignTo !== undefined) {
     conditions.push('t.assignTo = ?');
@@ -257,6 +255,7 @@ async function listTickets(filters = {}) {
 
   // CASES
   const q = `
+  -- CASES
     SELECT t.id, t.title, t.projectId, t.submitDate, t.targetCompletionDate, t.ticketStatusId, t.ticketCategoryId,
      
         tt.name AS ticketTypeName,
@@ -292,7 +291,7 @@ async function listTickets(filters = {}) {
     [TASK_TYPE_ID, ...params]
   );
 
-
+console.log(q, params);
   return rows;
 }
 

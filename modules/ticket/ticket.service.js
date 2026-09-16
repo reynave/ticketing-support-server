@@ -71,31 +71,30 @@ function normalizeCreatePayload(payload) {
   };
 }
 
-async function listTickets(filters = {}) { 
+async function listTickets(filters = {}) {
   const conditions = [];
   const params = [];
-  if(filters.userId != '' && filters.userId != undefined) { 
-    conditions.push('t.assignTo = ?');
-    params.push(filters.userId || '');
-  }
-  
+
+
 
 
 
   let ticketTypeId = 1;
-   
- 
-  const ticketTypeCondition = 't.ticketTypeId = '+ticketTypeId;
+
+
+  const ticketTypeCondition = 't.ticketTypeId = ' + ticketTypeId;
 
   if (filters.projectId !== undefined) {
     conditions.push('t.projectId = ?');
     params.push(String(filters.projectId));
+  } else {
+    if (filters.userId != '' && filters.userId != undefined) {
+      conditions.push('t.assignTo = ?');
+      params.push(filters.userId || '');
+    }
   }
 
-  if (filters.assignTo !== undefined) {
-    conditions.push('t.assignTo = ?');
-    params.push(Number(filters.assignTo));
-  }
+  
 
   if (filters.issueNo !== undefined && String(filters.issueNo).trim() !== '') {
     conditions.push('t.issueNo = ?');
@@ -155,13 +154,13 @@ async function listTickets(filters = {}) {
       ${whereClause}
       ${whereTicketStatus} )  AND t.ticketStatusId < 900
       ORDER BY t.inputDate DESC
-    `; 
+    `;
   const [rows] = await pool.execute(
     q,
     params
   );
 
-  console.log(  q, params );
+  
 
   return rows;
 }
@@ -455,7 +454,7 @@ async function updateTicket(id, payload) {
   const [result] = await pool.execute(q, params);
 
   if (payload.wasAssignTo !== payload.assignTo) {
-     const [history] = await pool.execute(
+    const [history] = await pool.execute(
       `
       SELECT id, concat(firstName, ' ', lastName) AS name FROM user WHERE id = ?
       UNION 

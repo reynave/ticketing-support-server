@@ -77,7 +77,7 @@ async function listRelatedTasks(caseId) {
 }
 
 async function createRelatedTask(caseId, payload) {
-  await assertCaseExists(caseId);
+ // await assertCaseExists(caseId);
 
   const requiredFields = [
     'title',
@@ -112,7 +112,7 @@ async function createRelatedTask(caseId, payload) {
   await pool.execute(
     `
       INSERT INTO ticket (
-        id, ticketTypeId, issueNo, title, description, projectId,
+        id, ticketTypeId, crNoRef, title, description, projectId,
         submitBy, submitDate, targetCompletionDate, assignTo,
         actualCompletionDate, ticketStatusId, ticketCategoryId,
         presence, inputDate, inputBy, updateDate, updateBy
@@ -122,7 +122,7 @@ async function createRelatedTask(caseId, payload) {
     [
       generatedId,
       TASK_TYPE_ID,
-      caseId,
+      caseId, // crNoRef corresponds to the caseId in change requests
       String(payload.title || '').trim(),
       String(payload.description || '').trim(),
       String(payload.projectId || '').trim(),
@@ -198,10 +198,6 @@ async function listTickets(filters = {}) {
  
   const conditions = [];
   const params = [];
-  if(filters.userId != '' && filters.userId != undefined) { 
-    conditions.push('t.assignTo = ?');
-    params.push(filters.userId || '');
-  }
  
   // ticketTypeId = 3 artinya CASES
   conditions.push('t.ticketTypeId = 3'); 
@@ -209,6 +205,11 @@ async function listTickets(filters = {}) {
   if (filters.projectId !== undefined) {
     conditions.push('t.projectId = ?');
     params.push(String(filters.projectId));
+  }else{
+    if(filters.userId != '' && filters.userId != undefined) { 
+      conditions.push('t.assignTo = ?');
+      params.push(filters.userId || '');
+    }
   }
 
   // if (filters.ticketStatusId !== undefined) {
