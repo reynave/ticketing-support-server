@@ -8,5 +8,7 @@ router.get('/task', authMiddleware, adminReportController.taskReport);
 router.get('/task/detail', authMiddleware, adminReportController.ticketDetail);
 router.get('/case', authMiddleware, adminReportController.caseReport);
 router.get('/case/detail', authMiddleware, adminReportController.ticketDetail);
+router.get('/cr', authMiddleware, adminReportController.cRReport);  
+router.get('/cr/detail', authMiddleware, adminReportController.ticketDetail);
 
 module.exports = router;

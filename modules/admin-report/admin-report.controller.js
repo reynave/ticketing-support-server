@@ -19,6 +19,16 @@ async function caseReport(req, res, next) {
         return next(error);
     }
 }
+
+async function cRReport(req, res, next) {
+    try {
+        const filters = { ...(req.query || {}) };
+        const data = await adminReportService.listClosedCR(filters);
+        return res.json(success('CR report fetched', data));
+    } catch (error) {
+        return next(error);
+    }
+}
 async function ticketDetail(req, res, next) {
     try {
         const ticketId = req.query.id;
@@ -33,5 +43,6 @@ async function ticketDetail(req, res, next) {
 module.exports = {
     taskReport,
     caseReport,
+    cRReport,
     ticketDetail,
 };

@@ -473,11 +473,11 @@ async function searchTickets(query) {
     left join ticket_type as tt on t.ticketTypeId = tt.id
     left join user as u on t.assignTo = u.id
     left join ticket_status as ts on t.ticketStatusId = ts.id
-    WHERE t.presence = 1 AND (t.id LIKE ? OR t.title LIKE ?) and t.assignTo = ?
+    WHERE t.presence = 1 AND (t.id LIKE ? OR t.title LIKE ?) 
     ORDER BY t.id DESC 
     limit 500
   `;
-  const [rows] = await pool.execute(q, [`%${query.searchText}%`, `%${query.searchText}%`, query.userId]);
+  const [rows] = await pool.execute(q, [`%${query.searchText}%`, `%${query.searchText}%`]);
   return rows;
 }
 
