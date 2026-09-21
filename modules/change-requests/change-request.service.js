@@ -485,14 +485,13 @@ async function createTicket(payload) {
       INSERT INTO ticket (
         id, ticketTypeId,  title, description, projectId,
         submitBy, submitDate, targetCompletionDate, assignTo, 
-        actualCompletionDate, ticketStatusId, ticketCategoryId,
-        ticketSeverityId,
+        actualCompletionDate, ticketStatusId, ticketCategoryId, 
         presence, inputDate, inputBy, updateDate, updateBy,
         deadlineDateTime,
         productChildId
       )
       VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
         1, NOW(), '1', NOW(), '1',
         ?, ?
       )
@@ -510,7 +509,6 @@ async function createTicket(payload) {
       data.actualCompletionDate,
       1,
       data.ticketCategoryId,
-      data.severityId,
       payload.deadlineDateTime,
       payload.productChildId
     ]; 

@@ -10,6 +10,7 @@ function buildUserPayload(user) {
     userAuthLevelId: user.userAuthLevelId,
     clientId: user.clientId,
     userTypeId: user.userTypeId,
+    company: user.company || '',
   };
 }
 
@@ -40,6 +41,20 @@ async function login(email, password, ipAddress, userAgent) {
     throw error;
   }
 
+  // ambil company setelah password valid, pakai parameterized query
+  const [rowCompany] = await pool.execute(
+    `
+      SELECT c.name as 'company'
+      FROM client AS c
+      LEFT JOIN project_contact AS pc ON pc.clientId = c.id
+      WHERE pc.userId = ?
+      LIMIT 1
+    `,
+    [user.id]
+  );
+
+  user.company = rowCompany[0]?.company || '';
+
   const loginTime = new Date();
 
   await pool.execute(
@@ -51,10 +66,12 @@ async function login(email, password, ipAddress, userAgent) {
   );
 
   const payload = buildUserPayload(user);
+
   const token = jwt.sign(payload, process.env.JWT_SECRET || 'change-this-secret', {
     expiresIn: process.env.JWT_EXPIRES_IN || '8h',
   });
 
+  console.log('User logged in:', user);
   return {
     token,
     user: payload,
