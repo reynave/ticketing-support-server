@@ -51,12 +51,9 @@ async function listClosed(req, res, next) {
        userId,
     };
     
-      let data;
- 
-       data = await caseService.listTicketsForClientClosed(query);
- 
-
-
+    let data; 
+    data = await caseService.listTicketsForClientClosed(query);
+  
     return res.json(success('Case list fetched', data));
   } catch (error) {
     return next(error);
@@ -65,10 +62,8 @@ async function listClosed(req, res, next) {
 
 async function detail(req, res, next) {
   try {
-    const id = parseId(req.params.id);
- 
-    const users = await caseService.listTicketsForClientUser(id, String(req.user.id) );
-    
+    const id = parseId(req.params.id); 
+    const users = await caseService.listTicketsForClientUser(id, String(req.user.id) ); 
     console.log(' users', users);
     // Client users (userTypeId = 2) can only view cases assigned to themselves.
     if (req.user?.userTypeId === 2 && users[0]?.userId !== String(req.user.id)) {
@@ -76,7 +71,7 @@ async function detail(req, res, next) {
       error.statusCode = 403;
       throw error;
     }
-   const data = await caseService.getTicketDetail(id);
+    const data = await caseService.getTicketDetail(id);
     return res.json(success('Case detail fetched', data));
   } catch (error) {
     return next(error);

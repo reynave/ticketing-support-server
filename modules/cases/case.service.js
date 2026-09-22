@@ -343,9 +343,11 @@ async function listTicketsForClientClosed(filters = {}) {
   const whereClause = conditions.join(' AND ');
 
   const q = `
-    SELECT t.id, t.projectId, a.userId, t.title,   t.assignTo, CONCAT(u.firstName,' ',u.lastName) AS assignToName, 
-    a.name AS projectName, t.ticketSeverityId, 
-    s.name AS ticketSeverityName, t.ticketStatusId, ts.name AS ticketStatusName, t.submitDate
+    SELECT 
+      t.id, t.projectId, a.userId, t.title,   t.assignTo, CONCAT(u.firstName,' ',u.lastName) AS assignToName, 
+      a.name AS projectName, t.ticketSeverityId, 
+      s.name AS ticketSeverityName, t.ticketStatusId, ts.name AS ticketStatusName, 
+      t.submitDate, t.rating, t.ratesBy
     FROM ticket AS t
     INNER JOIN (
       SELECT c.id, c.userId, c.projectId, p.name AS name
@@ -405,7 +407,8 @@ async function getTicketDetail(id) {
         tc.name as 'ticketCategory', p2.name as 'productChildName',
         0 as taskCount,
         ts2.name AS ticketSeverityName, ts2.color AS color,
-        concat(u2.firstName, ' ', u2.lastName) AS 'assignToName'
+        concat(u2.firstName, ' ', u2.lastName) AS 'assignToName',
+        '' AS 'ratesDetail'
         FROM ticket t
         LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
         LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
@@ -436,6 +439,18 @@ async function getTicketDetail(id) {
     [id]
   );
   row.taskCount = taskCountRows[0].taskCount;
+
+
+  //  ratesDetail
+  const [ratesDetail] = await pool.execute(
+    `
+      SELECT tr.value, tr.id, r.name FROM ticket_rating AS  tr
+      LEFT JOIN rating AS r ON r.id = tr.ratingId
+      WHERE tr.ticketId = ? 
+    `,
+    [id]
+  );
+  row.ratesDetail = ratesDetail;
 
 
 
