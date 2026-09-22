@@ -175,8 +175,7 @@ async function listClosedCases(filters = {}) {
 
 async function ticketDetail(ticketId) {
   const q = `
-    SELECT t.id, t.title, t.projectId, t.submitDate, t.targetCompletionDate,
-      t.actualCompletionDate, t.ticketStatusId, t.ticketCategoryId,
+    SELECT t.*,
       ts.name AS ticketStatusName,
       p.name AS projectName,
       c.name AS clientName, t.rating,
@@ -201,10 +200,33 @@ async function ticketDetail(ticketId) {
   `; 
   const [ratingRows] = await pool.execute(q2, [ticketId]);
 
+  const q3 = `
+    SELECT ta.*, '' as  'attachment'
+    FROM ticket_logs ta
+    WHERE ta.ticketId = ?
+    ORDER BY ta.inputDate DESC
+  `;
+  const [activitiesRows] = await pool.execute(q3, [ticketId]);
+
+
+  for (const activity of activitiesRows) {
+
+     const q3 = `
+      SELECT t.*
+      FROM ticket_logs_attachments t
+      WHERE t.ticketId = ?
+      ORDER BY t.inputDate DESC
+    `;
+    const [attachmentsRows] = await pool.execute(q3, [ticketId]); 
+    activity.attachment = attachmentsRows.filter(att => att.ticketId === activity.ticketId);
+  }
+ 
   const data = { 
     detail : rows[0],
-    rating : ratingRows
+    rating : ratingRows,
+    activities : activitiesRows,
   };
+  
   return data;
 }
 
