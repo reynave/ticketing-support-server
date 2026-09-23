@@ -175,20 +175,30 @@ async function listClosedCases(filters = {}) {
 
 async function ticketDetail(ticketId) {
   const q = `
-    SELECT t.*,
-      ts.name AS ticketStatusName,
-      p.name AS projectName,
-      c.name AS clientName, t.rating,
-      CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
-      t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName
-    FROM ticket t
-    LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
-    LEFT JOIN project p ON p.id = t.projectId
-    LEFT JOIN client c ON c.id = p.clientId
-    LEFT JOIN ticket_categories tc ON tc.id = t.ticketCategoryId
-    LEFT JOIN ticket_categories tc2 ON tc2.id = p.ticketCategoriesParentId
-    LEFT JOIN user u ON u.id = t.assignTo
-    WHERE t.id = ?
+     SELECT t.*,
+        tt.name AS ticketTypeName,
+        ts.name AS ticketStatusName,
+        d.name AS productName, c.name AS clientName, pt.name AS projectType, pt.ticketBased, p.name as projectName,
+        CONCAT(u.firstName, ' ',u.lastName) AS 'submitByName',
+        tc.name as 'ticketCategory', p2.name as 'productChildName',
+        0 as taskCount,
+        ts2.name AS ticketSeverityName, ts2.color AS color,
+        concat(u2.firstName, ' ', u2.lastName) AS 'assignToName',
+        '' AS 'ratesDetail'
+        FROM ticket t
+        LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
+        LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
+        LEFT JOIN project AS p ON p.id = t.projectId
+        LEFT JOIN product AS d ON d.id = p.productId
+        LEFT JOIN client AS c ON c.id = p.clientId
+        LEFT JOIN project_type AS pt ON pt.id = p.projectTypeId
+        LEFT JOIN user AS u ON u.id = t.submitBy
+        left join user as u2 on u2.id = t.assignTo
+        left join ticket_categories as tc on t.ticketCategoryId = tc.id
+        left join product as p2 on p2.id = t.productChildId
+        left join ticket_severity as ts2 on ts2.id = t.ticketSeverityId
+      WHERE t.id = ? 
+      LIMIT 1
   `; 
   const [rows] = await pool.execute(q, [ticketId]);
 
