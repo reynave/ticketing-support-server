@@ -202,15 +202,14 @@ async function listTickets(filters = {}) {
   // ticketTypeId = 3 artinya CASES
   conditions.push('t.ticketTypeId = 3'); 
 
-  if (filters.projectId !== undefined) {
-    conditions.push('t.projectId = ?');
-    params.push(String(filters.projectId));
-  }else{
-    if(filters.userId != '' && filters.userId != undefined) { 
+  if (filters.clientId !== undefined) {
+    conditions.push('p.clientId = ?');
+    params.push(String(filters.clientId));
+  } 
+  if(filters.userId != '' && filters.userId != undefined) { 
       conditions.push('t.assignTo = ?');
       params.push(filters.userId || '');
     }
-  }
 
   // if (filters.ticketStatusId !== undefined) {
   //   conditions.push('t.ticketStatusId = ?');
