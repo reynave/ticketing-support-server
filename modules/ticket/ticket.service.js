@@ -74,15 +74,19 @@ function normalizeCreatePayload(payload) {
 async function listTickets(filters = {}) {
   const conditions = [];
   const params = [];
-
-
-
-
+ 
 
   let ticketTypeId = 1;
 
 
   const ticketTypeCondition = 't.ticketTypeId = ' + ticketTypeId;
+
+
+   if (filters.projectId !== undefined) {
+    conditions.push('t.projectId = ?');
+    params.push(String(filters.projectId));
+  } 
+
 
   if (filters.clientId !== undefined) {
     conditions.push('p.clientId = ?');

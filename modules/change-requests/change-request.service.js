@@ -202,6 +202,12 @@ async function listTickets(filters = {}) {
   // ticketTypeId = 3 artinya CASES
   conditions.push('t.ticketTypeId = 3'); 
 
+     if (filters.projectId !== undefined) {
+    conditions.push('t.projectId = ?');
+    params.push(String(filters.projectId));
+  } 
+
+  
   if (filters.clientId !== undefined) {
     conditions.push('p.clientId = ?');
     params.push(String(filters.clientId));
