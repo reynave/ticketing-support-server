@@ -1,2 +1,1 @@
-ALTER TABLE `ticket`
-	ADD COLUMN `clientEditable` TINYINT NOT NULL DEFAULT 0 AFTER `ticketEstimationCost`;
+INSERT INTO `thinktank-ticket`.`module` (`id`, `name`) VALUES (1008, 'Ticket Severity');
