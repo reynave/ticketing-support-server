@@ -213,7 +213,11 @@ async function getTicketDetail(id) {
   }
 
 
+
   const row = rows[0];
+
+  row.targetCompletionDate = row.targetCompletionDate.split(" ")[0];
+
 
   if (!row) {
     const error = new Error('Ticket not found');
@@ -274,8 +278,7 @@ async function getTicketLogs(id) {
 
 async function createTicket(payload) {
   const data = normalizeCreatePayload(payload);
-  const generatedId = await buildTicketId(payload.id);
-  console.log('createTicket payload', data, 'generatedId:', generatedId);
+  const generatedId = await buildTicketId(payload.id); 
   await pool.execute(
     `
       INSERT INTO ticket (
@@ -309,35 +312,8 @@ async function createTicket(payload) {
   return getTicketDetail(generatedId);
 }
 
-async function createTicketLog_VER1(payload) {
-  console.log('createTicketLog payload', payload);
-  const data = payload;
-  const q = `
-      INSERT INTO ticket_logs (
-        ticketId, description, parentId, starDateTime, closeDateTime,
-        presence, inputDate, inputBy, updateDate, updateBy
-      )
-      VALUES (
-        ?, ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
-        1, NOW(),  '${data.submitBy}', NOW(),  '${data.submitBy}'
-      )
-    `;
-  const obj = [
-    data.ticketId,
-    data.description,
-    data.parentId == null ? '' : data.parentId,
-    data.starDateTime || null,
-    data.clsoeDateTime || null,
-  ];
-  console.log(q, obj)
-
-  await pool.execute(q, obj);
-
-  return data.ticketId;
-}
-
-async function createTicketLog(payload, files = [], req) {
-  console.log('createTicketLog payload', payload);
+ 
+async function createTicketLog(payload, files = [], req) { 
   const data = payload;
 
   if (!String(data.starDateTime || '').trim() || !String(data.closeDateTime || '').trim()) {
@@ -426,6 +402,7 @@ async function updateTicket(id, payload) {
   const fields = [];
 
   const q = `
+ 
   UPDATE ticket
   SET   
     assignTo = ?, 
@@ -453,10 +430,9 @@ async function updateTicket(id, payload) {
     payload.submitBy,
     id,
   ];
+ 
 
-
-
-  console.log('updateTicket query:', q, 'params:', params);
+ 
   const [result] = await pool.execute(q, params);
 
   if (payload.wasAssignTo !== payload.assignTo) {
@@ -489,8 +465,6 @@ async function updateTicket(id, payload) {
     ];
 
 
-    console.log(q, obj)
-
     await pool.execute(q, obj);
   }
 
@@ -521,10 +495,7 @@ async function updateTicket(id, payload) {
       description
       , null
       , null
-    ];
-
-
-    console.log(q, obj)
+    ]; 
 
     await pool.execute(q, obj);
   }
@@ -559,8 +530,7 @@ async function submitRateService(id, payload) {
     payload.updateBy,
     id,
   ];
-
-  console.log('updateTicket query:', q, 'params:', params);
+ 
   const [result] = await pool.execute(q, params);
 
   if (!result.affectedRows) {

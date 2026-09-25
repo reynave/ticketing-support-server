@@ -45,8 +45,7 @@ async function detail(req, res, next) {
     const id = parseId(req.params.id);
  
     const users = await changeRequestService.listTicketsForClientUser(id, String(req.user.id) );
-    
-    console.log(' users', users);
+     
     // Client users (userTypeId = 2) can only view cases assigned to themselves.
     if (req.user?.userTypeId === 2 && users[0]?.userId !== String(req.user.id)) {
       const error = new Error('Forbidden');
@@ -87,8 +86,7 @@ async function create(req, res, next) {
       ...(req.body || {}),
       ticketTypeId: CHANGE_REQUEST_TYPE_ID,
     };
-
-    console.log('create case payload', payload);
+ 
     const data = await changeRequestService.createTicket(payload);
     return res.status(201).json(success('Case created', data));
   } catch (error) {
@@ -157,8 +155,7 @@ async function update(req, res, next) {
     const payload = {
       ...(req.body || {}),
       ticketTypeId: CHANGE_REQUEST_TYPE_ID,
-    };
-    console.log('update case payload', payload);
+    }; 
     const data = await changeRequestService.updateTicket(id, payload);
     return res.json(success('Case updated', data));
   } catch (error) {
@@ -168,8 +165,7 @@ async function update(req, res, next) {
 
 async function submitRate(req, res, next) {
   try {
-    const id = parseId(req.params.id);
-    console.log('update case payload', req.body);
+    const id = parseId(req.params.id); 
     const data = await changeRequestService.submitRateService(id, req.body || {});
     return res.json(success('Case updated', data));
   } catch (error) {

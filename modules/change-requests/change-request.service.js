@@ -67,7 +67,7 @@ async function listRelatedTasks(caseId) {
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
       WHERE t.presence = 1
         AND t.ticketTypeId = ?
-        AND t.issueNo = ?
+        AND t.crNoRef = ?
       ORDER BY t.inputDate DESC
     `,
     [TASK_TYPE_ID, caseId]
@@ -426,6 +426,9 @@ async function getTicketDetail(id) {
     rows[0].ticketCategoriesParentId = categoryRows[0].ticketCategoriesParentId;
   }
 
+    row.targetCompletionDate = row.targetCompletionDate.split(" ")[0];
+
+
   if (!row) {
     const error = new Error('Ticket not found');
     error.statusCode = 404;
@@ -631,14 +634,14 @@ async function updateTicket(id, payload) {
     deadlineDateTime = ?,
     ticketEstimationCost = ?,
     ticketCategoryId = ?,
-    hours = ?
+    hours = ? 
   WHERE id = ? AND presence = 1 AND ticketTypeId = ?
 `;
 
   const params = [
     String(payload.assignTo || '').trim(),
     parseOptionalNumber(payload.ticketSeverityId, 'ticketSeverityId'),
-  payload.deadlineDateTime || null,
+     payload.targetCompletionDate || null,
     parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
  
     String(payload.description || '').trim(),
