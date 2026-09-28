@@ -531,7 +531,7 @@ async function getProjectDetail(id) {
     for (const project of rows) {
         row.modules = products.filter(product => product.productId === row.productId);
     }
-
+ 
 
     if (!row) {
         const error = new Error('Project not found');
@@ -778,6 +778,68 @@ async function removeContactFromProject(payload) {
     return true;
 }
 
+
+async function ticketList(filters = {}) {
+  const conditions = [];
+  const params = [];
+ 
+
+ 
+ if (filters.ticketTypeId !== undefined) {
+    conditions.push(' t.ticketTypeId = ? ');
+    params.push(String(filters.ticketTypeId));
+  } 
+
+  
+
+   if (filters.projectId !== undefined) {
+    conditions.push('t.projectId = ?');
+    params.push(String(filters.projectId));
+  } 
+  
+
+  if (filters.keyword) {
+    conditions.push('(t.id LIKE ? OR t.title LIKE ? OR t.crNoRef LIKE ? OR t.issueNo LIKE ?)');
+    params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
+  }
+
+  const whereClause = conditions.join(' AND ');
+
+  
+  const q = `
+      SELECT t.id, t.title, t.projectId, t.submitDate, t.targetCompletionDate, t.ticketStatusId, t.ticketCategoryId,
+        tt.name AS ticketTypeName,
+        ts.name AS ticketStatusName,
+        p.name AS projectName,
+       CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
+        c.name AS clientName, tc2.name AS parentCategoryName,
+        t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName
+      FROM ticket t
+      LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
+      LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
+      left join project AS p ON p.id = t.projectId
+      left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
+      left join ticket_categories AS tc2 ON tc2.id = p.ticketCategoriesParentId
+      left join client AS c ON c.id = p.clientId
+      left join user AS u ON u.id = t.assignTo
+      WHERE t.presence = 1 AND   (
+      ${whereClause}
+      )  AND t.ticketStatusId < 900
+      ORDER BY t.inputDate DESC
+    `;
+ console.log(q,params)
+  const [rows] = await pool.execute(
+    q,
+    params
+  );
+ 
+
+  
+
+  return rows;
+}
+
+
 module.exports = {
     listProjects,
     getProjectDetail,
@@ -786,4 +848,5 @@ module.exports = {
     deleteProject,
     addContactToProject,
     removeContactFromProject,
+    ticketList
 };

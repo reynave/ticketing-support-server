@@ -5,7 +5,17 @@ const projectController = require('./project.controller');
 const router = express.Router();
 
 router.get('/', authMiddleware, projectController.list);
-router.get('/:id', authMiddleware, projectController.detail);
+
+
+router.get('/ticketList', authMiddleware, projectController.ticketList);
+
+router.get('/detail/:id', authMiddleware, projectController.detail);
+
+//router.get('/:id/cases', authMiddleware, projectController.detail);
+//router.get('/:id/cr', authMiddleware, projectController.detail);
+
+
+
 router.post('/', authMiddleware, projectController.create);
 router.post('/contact', authMiddleware, projectController.addContact);
 

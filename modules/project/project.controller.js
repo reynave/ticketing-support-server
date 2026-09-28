@@ -58,6 +58,23 @@ async function detail(req, res, next) {
   }
 }
 
+async function ticketList(req, res, next) {
+  try { 
+    const userId = req.user?.id ? String(req.user.id) : '';
+  
+    const filters = {
+      ...(req.query || {}),
+      userId,
+    };
+
+    const data = await projectMasterService.ticketList(filters);
+    return res.json(success('Ticket list() fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 async function create(req, res, next) {
   try {
     const actorId = req.user?.id ? String(req.user.id) : '1';
@@ -121,4 +138,5 @@ module.exports = {
   remove,
   addContact,
   removeContact,
+  ticketList,
 };
