@@ -237,6 +237,22 @@ const tableMap = {
     allowUpdate: true,
     allowDelete: true,
   },
+
+  
+  'ticket-solution-time': {
+    tableName: 'ticket_solution_time',
+    orderBy: 'id ASC',
+    hasStatus: false,
+    hasPresence: true,
+      requiredFields: ['name', 'duration','color'],
+    editableFields: ['name', 'duration','color'],
+    numericFields: ['duration'],
+    allowCreate: true,
+    allowUpdate: true,
+    allowDelete: true,
+  },
+ 
+  
 };
 
 function getMasterConfig(masterKey) {
