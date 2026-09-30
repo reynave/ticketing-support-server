@@ -30,7 +30,7 @@ const productMasterRoutes = require('./modules/product-master/product-master.rou
 const clientRoutes = require('./modules/client/client.route');
 const projectRoutes = require('./modules/project/project.route');
 const ticketRoutes = require('./modules/ticket/ticket.route');
-const caseRoutes = require('./modules/cases/case.route');
+const caseRoutes = require('./modules/cases/case.route'); 
 const changeRequestRoutes = require('./modules/change-requests/change-request.route');
 const ratingRoutes = require('./modules/rating/rating.route');
 const userRoutes = require('./modules/user/user.route');
@@ -79,7 +79,7 @@ app.use(`${PREFIX_SERVER}/product-master`, productMasterRoutes);
 app.use(`${PREFIX_SERVER}/client`, clientRoutes);
 app.use(`${PREFIX_SERVER}/project`, projectRoutes); 
 app.use(`${PREFIX_SERVER}/ticket`, ticketRoutes);
-app.use(`${PREFIX_SERVER}/cases`, caseRoutes);
+app.use(`${PREFIX_SERVER}/cases`, caseRoutes); 
 app.use(`${PREFIX_SERVER}/change-requests`, changeRequestRoutes);
 app.use(`${PREFIX_SERVER}/rating`, ratingRoutes);
 app.use(`${PREFIX_SERVER}/user`, userRoutes);

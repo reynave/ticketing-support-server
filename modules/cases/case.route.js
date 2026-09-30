@@ -18,6 +18,9 @@ router.put('/:id', authMiddleware, caseController.update);
 router.put('/:id/submitRate', authMiddleware, caseController.submitRate);
 router.put('/:id/status', authMiddleware, caseController.updateStatusByClient);
 
+router.put('/:id/submitInProgress', authMiddleware, caseController.submitInProgress);
+router.put('/:id/submitVerification', authMiddleware, caseController.submitVerification);
+
 router.delete('/:id', authMiddleware, caseController.remove);
 
 router.post('/log/:id', authMiddleware, caseController.createLog);

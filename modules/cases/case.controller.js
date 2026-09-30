@@ -184,6 +184,32 @@ async function update(req, res, next) {
   }
 }
 
+async function submitInProgress(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const updateBy = req.user?.id ? String(req.user.id) : '';
+    console.log('submitInProgress payload', req.body);
+    const data = await caseService.updateCaseInProgress(id, req.body || {}, updateBy);
+    return res.json(success('Case submitted as IN-PROGRESS', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+async function submitVerification(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const updateBy = req.user?.id ? String(req.user.id) : '';
+    console.log('submitVerification payload', req.body);
+    const data = await caseService.updateCaseVerification(id, req.body || {}, updateBy);
+    return res.json(success('Case submitted as VERIFICATION', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 async function submitRate(req, res, next) {
   try {
     const id = parseId(req.params.id);
@@ -217,5 +243,7 @@ module.exports = {
   createLog,
   detailLogs,
   listTasks,
-  submitRate
+  submitRate,
+  submitInProgress,
+  submitVerification,
 };

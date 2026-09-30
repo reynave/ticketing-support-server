@@ -439,7 +439,7 @@ async function getProjectDetail(id) {
         '' as ticketBalance,
         '' as contacts,
         '' as modules,
-        t.name as templateName
+        t.name as templateName 
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
       LEFT JOIN project_type pt ON pt.id = p.projectTypeId

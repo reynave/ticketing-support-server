@@ -23,6 +23,63 @@ function parseOptionalNumber(value, fieldName) {
   return parseNonNegativeNumber(value, fieldName);
 }
 
+/**
+ * Validasi & normalisasi datetime MySQL ("YYYY-MM-DD HH:mm:ss").
+ *
+ * Sengaja TIDAK memakai `new Date(string)` untuk memvalidasi, karena JS
+ * melakukan rollover diam-diam (mis. '2026-02-31' jadi 3 Maret) sehingga
+ * tanggal tidak valid lolos. Komponennya dicocokkan ulang satu per satu.
+ */
+function parseSqlDateTime(value, fieldName) {
+  const raw = String(value ?? '').trim();
+
+  if (!raw) {
+    const error = new Error(`${fieldName} is required`);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const match = raw.match(
+    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/,
+  );
+
+  if (!match) {
+    const error = new Error(
+      `${fieldName} must use YYYY-MM-DD HH:mm:ss format`,
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const [, year, month, day, hour, minute, second = '0'] = match;
+
+  const date = new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+    Number(second),
+    0,
+  );
+
+  const isSameComponents =
+    date.getFullYear() === Number(year) &&
+    date.getMonth() === Number(month) - 1 &&
+    date.getDate() === Number(day) &&
+    date.getHours() === Number(hour) &&
+    date.getMinutes() === Number(minute) &&
+    date.getSeconds() === Number(second);
+
+  if (!isSameComponents) {
+    const error = new Error(`${fieldName} is not a valid date/time`);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return `${year}-${month}-${day} ${hour}:${minute}:${String(second).padStart(2, '0')}`;
+}
+
 async function buildTicketId(inputId) {
   if (inputId && String(inputId).trim()) {
     return String(inputId).trim();
@@ -413,7 +470,20 @@ async function getTicketDetail(id) {
         0 as taskCount,
         ts2.name AS ticketSeverityName, ts2.color AS color,
         concat(u2.firstName, ' ', u2.lastName) AS 'assignToName',
-        '' AS 'ratesDetail'
+        '' AS 'ratesDetail',
+
+        CASE t.lockTime
+           WHEN 1 THEN t.responseHour
+           ELSE (SELECT duration
+          FROM ticket_solution_time 
+          order by duration ASC
+          LIMIT 1)
+        END AS 'addHour',
+
+
+
+        '' as 'ticketSolutionTime' 
+        
         FROM ticket t
         LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
         LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
@@ -474,6 +544,18 @@ async function getTicketDetail(id) {
     rows[0].ticketCategoriesParentId = categoryRows[0].ticketCategoriesParentId;
   }
 
+
+   //  ratesDetail
+  const [ticketSolutionTime] = await pool.execute(
+    `
+     SELECT *
+        FROM ticket_solution_time 
+        order by duration ASC 
+    `,
+    [id]
+  );
+  row.ticketSolutionTime = ticketSolutionTime;
+
   if (!row) {
     const error = new Error('Ticket not found');
     error.statusCode = 404;
@@ -521,6 +603,10 @@ async function getTicketLogs(id) {
     ...log,
     attachments: rowsImgs.filter((img) => img.ticketLogId === log.id),
   }));
+
+
+  
+    
 
   if (!row) {
     const error = new Error('Ticket not found');
@@ -884,6 +970,210 @@ async function updateCaseStatusByClient(id, ticketStatusId, submitBy) {
   return getTicketDetail(id);
 }
 
+/**
+ * Submit IN-PROGRESS: menyimpan Response DateTime, Target Completion DateTime,
+ * Ticket Solution Time, Response Hour, dan Assign To untuk sebuah case.
+ */
+async function updateCaseInProgress(id, payload, actorId = '1') {
+  const data = payload || {};
+
+  // Frontend mengirim `responseDateTIme` (mengikuti nama kolom di DB).
+  // `responseDateTime` juga diterima agar tidak silent gagal kalau typo.
+  const responseDateTime = parseSqlDateTime(
+    data.responseDateTIme ?? data.responseDateTime,
+    'responseDateTIme',
+  );
+  const targetCompletationDateTime = parseSqlDateTime(
+    data.targetCompletationDateTime,
+    'targetCompletationDateTime',
+  );
+
+  if (
+    new Date(targetCompletationDateTime.replace(' ', 'T')) <=
+    new Date(responseDateTime.replace(' ', 'T'))
+  ) {
+    const error = new Error(
+      'targetCompletationDateTime must be greater than responseDateTIme',
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const ticketSolutionTimeId = parseNonNegativeNumber(
+    data.ticketSolutionTimeId,
+    'ticketSolutionTimeId',
+  );
+  const responseHour = parseNonNegativeNumber(
+    data.responseHour,
+    'responseHour',
+  );
+  const assignTo = String(data.assignTo ?? '').trim();
+
+  if (!assignTo) {
+    const error = new Error('assignTo is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const updateBy = String(data.updateBy || actorId || '1');
+
+  const conn = await pool.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    const q =  `
+      UPDATE ticket
+      SET
+        responseDateTIme = ?,
+        targetCompletationDateTime = ?,
+        ticketSolutionTimeId = ?,
+        responseHour = ?,
+        assignTo = ?,
+        updateDate = NOW(),
+        updateBy = ?,
+        lockTime = 1,
+        ticketStatusId = 100
+      WHERE id = ? 
+    `;
+    const qd =  [
+        responseDateTime,
+        targetCompletationDateTime,
+        ticketSolutionTimeId,
+        responseHour,
+        assignTo,
+        updateBy,
+        id
+      ];
+    const [result] = await conn.execute(q,qd,
+    );
+    console.log(q,qd)
+
+    if (!result.affectedRows) {
+      const error = new Error('Case not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Jejak audit, konsisten dengan updateTicket() yang juga menulis ticket_logs.
+    await conn.execute(
+      `
+      INSERT INTO ticket_logs (
+        ticketId, description, starDateTime, closeDateTime,
+        presence, inputDate, inputBy, updateDate, updateBy
+      )
+      VALUES (
+        ?, ?, ?, ?,
+        1, NOW(), ?, NOW(), ?
+      )
+    `,
+      [
+        id,
+        'Submit IN-PROGRESS: response <strong>' +
+          responseDateTime +
+          '</strong>, target completion <strong>' +
+          targetCompletationDateTime +
+          '</strong>, response hour <strong>' +
+          responseHour +
+          '</strong>, ticket solution time id <strong>' +
+          ticketSolutionTimeId +
+          '</strong>',
+        responseDateTime,
+        targetCompletationDateTime,
+        updateBy,
+        updateBy,
+      ],
+    );
+
+    await conn.commit();
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
+
+  return getTicketDetail(id);
+}
+
+async function updateCaseVerification(id, payload, actorId = '1') {
+  const data = payload || {};
+ 
+  const assignTo = String(data.assignTo ?? '').trim();
+
+  if (!assignTo) {
+    const error = new Error('assignTo is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const updateBy = String(data.updateBy || actorId || '1');
+
+  const conn = await pool.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    const q =  `
+      UPDATE ticket
+      SET 
+        verificationDateTime = NOW(),
+        actualWorkingDateTime = NOW(),
+        assignTo = ?,
+        updateDate = NOW(),
+        updateBy = ?,
+        lockTime = 1,
+        ticketStatusId = 400
+      WHERE id = ? 
+    `;
+    const qd =  [
+        
+        assignTo,
+        updateBy,
+        id
+      ];
+    const [result] = await conn.execute(q,qd,
+    );
+    console.log(q,qd)
+
+    if (!result.affectedRows) {
+      const error = new Error('Case not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Jejak audit, konsisten dengan updateTicket() yang juga menulis ticket_logs.
+    await conn.execute(
+      `
+      INSERT INTO ticket_logs (
+        ticketId, description, starDateTime, closeDateTime,
+        presence, inputDate, inputBy, updateDate, updateBy
+      )
+      VALUES (
+        ?, ?,  NOW(),  NOW(),
+        1, NOW(), ?, NOW(), ?
+      )
+    `,
+      [
+        id,
+        'Submit Verification: assign to <strong>' + assignTo +
+          '</strong>' ,
+        updateBy,
+        updateBy,
+      ],
+    );
+
+    await conn.commit();
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
+
+  return getTicketDetail(id);
+}
+
 async function submitRateService(id, payload) {
   const fields = [];
 
@@ -950,8 +1240,10 @@ module.exports = {
   createRelatedTask,
   createTicketLog,
   updateTicket,
+  updateCaseInProgress,
   updateCaseStatusByClient,
   deleteTicket,
   getTicketLogs,
   submitRateService,
+  updateCaseVerification,
 };
