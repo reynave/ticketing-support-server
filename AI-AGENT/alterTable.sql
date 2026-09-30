@@ -24,3 +24,7 @@ ALTER TABLE `ticket`
 	ADD COLUMN `Column 15` FLOAT NOT NULL AFTER `verificationHour`;
 ALTER TABLE `ticket`
 	DROP COLUMN `Column 15`;
+
+
+ALTER TABLE `ticket`
+	ADD COLUMN `actualWorkingHour` FLOAT NOT NULL AFTER `verificationHour`;

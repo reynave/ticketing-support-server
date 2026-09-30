@@ -1132,15 +1132,37 @@ async function updateCaseVerification(id, payload, actorId = '1') {
         updateBy,
         id
       ];
-    const [result] = await conn.execute(q,qd,
-    );
-    console.log(q,qd)
+    const [result] = await conn.execute(q,qd,);
+    
 
     if (!result.affectedRows) {
       const error = new Error('Case not found');
       error.statusCode = 404;
       throw error;
     }
+
+  
+     const [getData] = await pool.execute(
+      `
+        select  verificationDateTime, responseDateTime , TIMESTAMPDIFF(SECOND,  responseDateTime, verificationDateTime) / 3600 AS totalHour
+        from ticket where id = ? 
+      `,
+      [id]
+    );
+
+    let totalHour = getWorkingHours(getData[0].responseDateTime, getData[0].verificationDateTime) 
+   const q2 =  `
+      UPDATE ticket
+      SET 
+        actualWorkingHour = ? 
+      WHERE id = ? 
+    `;
+    const qd2 =  [ 
+        totalHour,
+        id
+      ];
+    const [result2] = await conn.execute(q2,qd2,);
+
 
     // Jejak audit, konsisten dengan updateTicket() yang juga menulis ticket_logs.
     await conn.execute(
@@ -1173,6 +1195,29 @@ async function updateCaseVerification(id, payload, actorId = '1') {
 
   return getTicketDetail(id);
 }
+
+const toDate = (v) => (v instanceof Date ? v : new Date(String(v).replace(' ', 'T')));
+
+const getWorkingHours = (startValue, endValue) => {
+  const start = toDate(startValue);
+  const end = toDate(endValue);
+
+  if (isNaN(start) || isNaN(end) || end <= start) return 0;
+
+  const diffHours = (end - start) / (1000 * 60 * 60);
+
+  let weekendDays = 0;
+  const cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+
+  while (cursor < end) {
+    const day = cursor.getDay(); // 0 = Minggu, 6 = Sabtu
+    if (day === 0 || day === 6) weekendDays++;
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return Math.max(0, Math.round((diffHours - weekendDays * 24) * 100) / 100);
+};
+
 
 async function submitRateService(id, payload) {
   const fields = [];
