@@ -1107,6 +1107,13 @@ async function updateCaseVerification(id, payload, actorId = '1') {
     throw error;
   }
 
+  const taskSolution = String(data.taskSolution ?? '').trim();
+   if (!taskSolution) {
+    const error = new Error('Case Solution is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
   const updateBy = String(data.updateBy || actorId || '1');
 
   const conn = await pool.getConnection();

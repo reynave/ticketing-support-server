@@ -31,7 +31,7 @@ INSERT INTO `auto_number` (`id`, `name`, `prefix`, `digit`, `runningNumber`, `la
 	(324, 'project', 'P', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(325, 'client', 'C', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(326, 'task', 'TA', 6, 59, 'TA000059', '2026-09-28 13:33:59'),
-	(327, 'issue', 'IS', 6, 70, 'IS000070', '2026-09-30 12:15:38'),
+	(327, 'issue', 'IS', 6, 73, 'IS000073', '2026-09-30 22:36:11'),
 	(328, 'cr', 'CR', 6, 7, 'CR000007', '2026-09-28 15:47:59');
 
 -- Dumping structure for table thinktank-ticket.client
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `module` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6003 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table thinktank-ticket.module: ~19 rows (approximately)
+-- Dumping data for table thinktank-ticket.module: ~22 rows (approximately)
 INSERT INTO `module` (`id`, `name`) VALUES
 	(1001, 'Industri'),
 	(1002, 'Product'),
@@ -140,6 +140,7 @@ INSERT INTO `module` (`id`, `name`) VALUES
 	(5005, 'Task'),
 	(5006, 'Case'),
 	(5007, 'Change Request'),
+	(5106, 'Case Verification'),
 	(6000, 'Login'),
 	(6001, 'Ticket Balance'),
 	(6002, 'log activities');
@@ -268,7 +269,7 @@ CREATE TABLE IF NOT EXISTS `project_contact` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.project_contact: ~28 rows (approximately)
 INSERT INTO `project_contact` (`id`, `clientId`, `projectId`, `userId`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -299,7 +300,8 @@ INSERT INTO `project_contact` (`id`, `clientId`, `projectId`, `userId`, `presenc
 	(67, '364', 'PRJ-1F4322E6', 'USR-3C793021', 0, '2026-09-21 13:04:00', 'USR-ADMIN', '2026-09-21 13:56:10', 'USR-ADMIN'),
 	(68, '364', 'PRJ-1F4322E6', 'USR-0E23DF09', 0, '2026-09-21 13:57:30', 'USR-ADMIN', '2026-09-21 14:02:34', 'USR-ADMIN'),
 	(69, '364', 'PRJ-1F4322E6', 'USR-00DE1AE8', 0, '2026-09-21 14:05:08', 'USR-ADMIN', '2026-09-21 14:12:28', 'USR-ADMIN'),
-	(70, '364', 'PRJ-6628F029', 'USR-06F9BB55', 1, '2026-09-21 14:14:58', 'USR-ADMIN', '2026-09-21 14:14:58', 'USR-ADMIN');
+	(70, '364', 'PRJ-6628F029', 'USR-06F9BB55', 1, '2026-09-21 14:14:58', 'USR-ADMIN', '2026-09-21 14:14:58', 'USR-ADMIN'),
+	(71, '364', 'PRJ-6628F029', 'USR-A9F434EE', 1, '2026-09-30 22:43:34', 'USR-ADMIN', '2026-09-30 22:43:34', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.project_type
 CREATE TABLE IF NOT EXISTS `project_type` (
@@ -486,8 +488,13 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   `issueNo` varchar(50) NOT NULL DEFAULT '',
   `title` varchar(250) NOT NULL DEFAULT '',
   `description` text NOT NULL,
-  `responseDateTIme` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `responseDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `lockTime` tinyint(4) NOT NULL DEFAULT 0,
   `targetCompletationDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `actualWorkingDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `verificationDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `verificationHour` float NOT NULL DEFAULT 0,
+  `actualWorkingHour` float NOT NULL,
   `ticketSolutionTimeId` smallint(6) NOT NULL DEFAULT 0,
   `responseHour` float NOT NULL DEFAULT 0,
   `projectId` varchar(50) NOT NULL DEFAULT '',
@@ -511,20 +518,13 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket: ~12 rows (approximately)
-INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTIme`, `targetCompletationDateTime`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	('CR000004', 3, 132, 0, '4', '', '', 'test 123', '123', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-25 16:44:46', '2026-09-25 16:44:46', '2026-09-25 16:44:46', 'USR-ADMIN', '', '2026-09-25 16:44:46', 1, 0, '', 0, 0, 1, '2026-09-25 16:44:46', '1', '2026-09-25 16:44:46', '1'),
-	('CR000005', 3, 131, 0, '4', '', '', '123', '<p>123</p>', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-25 16:45:20', '2026-09-25 16:45:20', '2026-10-17 00:00:00', 'USR-ADMIN', '', '2026-09-25 17:21:38', 1, 0, '', 0, 0, 1, '2026-09-25 16:45:20', '1', '2026-09-25 17:21:38', 'USR-ADMIN'),
-	('CR000006', 3, 132, 0, '11', '', '', '2027-02-20', '2027-02-20', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-F222CBA8', 'USR-ADMIN', '2026-09-25 17:02:10', '2026-09-25 17:02:10', '2027-02-20 17:02:10', 'USR-ADMIN', '', '2027-02-20 17:02:10', 1, 0, '', 0, 0, 1, '2026-09-25 17:02:11', '1', '2026-09-25 17:02:11', '1'),
-	('CR000007', 3, 105, 0, '4', '', '', 'CE123', '<p>CE123</p>', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-049D3645', 'DEMO1', '2026-09-28 15:47:59', '2026-09-28 15:47:59', '2026-10-06 00:00:00', 'DEMO2', '', '2026-09-28 15:54:19', 400, 0, '', 0, 0, 1, '2026-09-28 15:47:59', '1', '2026-09-28 15:54:19', 'DEMO1'),
-	('IS000067', 2, 132, 30, '4', '', '', 'Sep 25, 2026, 5:27:35 PM', '<p>Sep 25, 2026, 5:27:35 PM</p>', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-25 15:27:42', '2026-09-25 19:27:42', '2026-09-25 19:27:42', 'USR-ADMIN', '', '2026-09-25 16:24:35', 1, 0, '', 0, 0, 1, '2026-09-25 15:27:42', '1', '2026-09-25 16:24:35', 'USR-ADMIN'),
-	('IS000068', 2, 132, 10, '4', '', '', 'Sep 30, 2026, 3:31:24 PM', 'Sep 30, 2026, 3:31:24 PM', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-25 15:31:33', '2026-09-30 15:31:33', '2026-09-30 15:31:33', 'USR-ADMIN', '', '2026-09-30 15:31:33', 1, 0, '', 0, 0, 1, '2026-09-25 15:31:33', '1', '2026-09-25 15:31:33', '1'),
-	('IS000069', 2, 132, 10, '5', '', '', 'AAAA', 'AAAA', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-28 13:02:20', '2026-10-03 13:02:20', '2026-10-03 13:02:20', 'USR-8E476F10', '', '2026-10-03 13:02:20', 1, 0, '', 0, 0, 1, '2026-09-28 13:02:20', '1', '2026-09-28 13:02:20', '1'),
-	('IS000070', 2, 131, 30, '4', '', '', 'AA', '<p>AA</p>', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-30 12:15:38', '2026-09-30 16:15:38', '2026-09-30 16:15:38', 'USR-ADMIN', '<p>abc</p>', '2026-09-30 17:26:32', 1, 0, '', 4, 8, 1, '2026-09-30 12:15:38', '1', '2026-09-30 17:26:32', 'USR-ADMIN'),
-	('TA000056', 1, 132, 0, '5', '', '', 'test123', '<p>123123</p>', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-E99C795A', 'USR-ADMIN', '2026-09-25 00:00:00', '2026-01-01 00:00:00', '2026-09-27 00:00:00', 'USR-8E476F10', '', '0000-00-00 00:00:00', 100, 0, '', 0, 0, 1, '2026-09-25 16:47:17', '1', '2026-09-28 13:34:17', 'USR-ADMIN'),
-	('TA000057', 1, 131, 0, '', 'CR000005', '', '123', 'Follow up from case CR000005', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-25 00:00:00', '2026-01-01 00:00:00', '2026-10-02 00:00:00', 'USR-ADMIN', '', '2026-10-02 00:00:00', 100, 0, '', 0, 0, 1, '2026-09-25 16:47:55', 'USR-ADMIN', '2026-09-25 16:47:55', 'USR-ADMIN'),
-	('TA000058', 1, 132, 0, '4', '', '', '2026-10-01', '<p>2026-10-01</p>', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 23.14, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-25 00:00:00', '2026-01-01 00:00:00', '2026-10-02 00:00:00', 'USR-ADMIN', '', '0000-00-00 00:00:00', 900, 0, '', 0, 0, 1, '2026-09-25 16:53:38', '1', '2026-09-28 16:44:16', 'USR-ADMIN'),
-	('TA000059', 1, 132, 0, '5', '', '', 'te23', '123', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-28 00:00:00', '2026-01-01 00:00:00', '2026-09-28 00:00:00', 'USR-8E476F10', '', '2026-09-28 00:00:00', 1, 0, '', 0, 0, 1, '2026-09-28 13:33:59', '1', '2026-09-28 13:33:59', '1');
+-- Dumping data for table thinktank-ticket.ticket: ~5 rows (approximately)
+INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('IS000070', 2, 131, 30, '4', '', '', 'AA', '<p>AA</p>', '2026-10-02 18:08:00', 1, '2026-10-02 21:08:00', '2026-09-30 23:33:19', '2026-09-30 23:33:19', 0, 0, 104, 27, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-30 12:15:38', '2026-09-30 16:15:38', '2026-09-30 16:15:38', 'USR-ADMIN', '<p>abc</p>', '2026-10-01 15:22:53', 900, 0, '', 4, 8, 1, '2026-09-30 12:15:38', '1', '2026-10-01 15:22:53', 'USR-ADMIN'),
+	('IS000071', 2, 132, 20, '4', '', '', 'new case', 'new case', '2026-10-02 18:28:00', 1, '2026-10-07 21:28:00', '2026-09-30 19:50:19', '2026-09-30 19:50:19', 0, 0, 105, 75, 'PRJ-E99C795A', 'USR-ADMIN', '2026-09-30 18:28:53', '2026-10-02 18:28:53', '2026-10-02 18:28:53', 'USR-E9BCC37C', '', '2026-10-01 15:22:53', 900, 0, '', 0, 0, 1, '2026-09-30 18:28:53', '1', '2026-10-01 15:22:53', 'USR-ADMIN'),
+	('IS000072', 2, 131, 20, '4', '', '', '123', '123', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-03 18:54:07', '2026-10-05 18:54:07', '2026-10-05 18:54:07', 'USR-8E476F10', '', '2026-10-05 18:54:07', 100, 0, '', 0, 0, 1, '2026-09-30 18:54:07', '1', '2026-09-30 18:54:07', '1'),
+	('IS000073', 2, 127, 30, '12', '', '', 'te1', 'te1', '2026-09-29 09:00:00', 1, '2026-10-01 13:41:00', '2026-09-30 23:12:27', '2026-09-30 23:12:27', 0, 38.11, 102, 4.68, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-30 22:36:11', '2026-10-01 02:36:11', '2026-10-01 02:36:11', 'USR-A9F434EE', '', '2026-10-01 15:22:53', 900, 3, 'USR-ADMIN', 0, 0, 1, '2026-09-30 22:36:11', '1', '2026-10-01 15:22:53', 'USR-ADMIN'),
+	('TA000059', 1, 132, 0, '5', '', '', 'te23', '123', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-09-28 00:00:00', '2026-01-01 00:00:00', '2026-09-28 00:00:00', 'USR-8E476F10', '', '2026-09-28 00:00:00', 100, 0, '', 0, 0, 1, '2026-09-28 13:33:59', '1', '2026-09-28 13:33:59', '1');
 
 -- Dumping structure for table thinktank-ticket.ticket_balance
 CREATE TABLE IF NOT EXISTS `ticket_balance` (
@@ -542,7 +542,7 @@ CREATE TABLE IF NOT EXISTS `ticket_balance` (
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `projectId` (`projectId`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.ticket_balance: ~40 rows (approximately)
 INSERT INTO `ticket_balance` (`id`, `projectId`, `note`, `ticketId`, `date`, `ticketIn`, `ticketOut`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -589,7 +589,10 @@ INSERT INTO `ticket_balance` (`id`, `projectId`, `note`, `ticketId`, `date`, `ti
 	(44, 'PRJ-FA50EC5D', '', 'IS000031', '2026-09-21 16:29:04', 0, 0, 1, '2026-09-21 16:29:04', 0, '2025-01-01 00:00:00', 1),
 	(45, 'PRJ-FA50EC5D', '', 'IS000031', '2026-09-21 16:33:14', 0, 2, 1, '2026-09-21 16:33:14', 0, '2025-01-01 00:00:00', 1),
 	(46, 'PRJ-FA50EC5D', '', 'IS000015', '2026-09-21 17:21:19', 0, 0, 1, '2026-09-21 17:21:19', 0, '2025-01-01 00:00:00', 1),
-	(47, 'PRJ-6628F029', '', 'CR000003', '2026-09-22 14:44:07', 0, 0, 1, '2026-09-22 14:44:07', 0, '2025-01-01 00:00:00', 1);
+	(47, 'PRJ-6628F029', '', 'CR000003', '2026-09-22 14:44:07', 0, 0, 1, '2026-09-22 14:44:07', 0, '2025-01-01 00:00:00', 1),
+	(51, 'PRJ-6628F029', '', 'IS000070', '2026-10-01 15:22:53', 0, 4, 1, '2026-10-01 15:22:53', 0, '2025-01-01 00:00:00', 1),
+	(52, 'PRJ-E99C795A', '', 'IS000071', '2026-10-01 15:22:53', 0, 0, 1, '2026-10-01 15:22:53', 0, '2025-01-01 00:00:00', 1),
+	(53, 'PRJ-6628F029', '', 'IS000073', '2026-10-01 15:22:53', 0, 0, 1, '2026-10-01 15:22:53', 0, '2025-01-01 00:00:00', 1);
 
 -- Dumping structure for table thinktank-ticket.ticket_categories
 CREATE TABLE IF NOT EXISTS `ticket_categories` (
@@ -660,9 +663,9 @@ CREATE TABLE IF NOT EXISTS `ticket_logs` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=239 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=284 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_logs: ~208 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_logs: ~246 rows (approximately)
 INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeDateTime`, `description`, `presence`, `inputBySystem`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(8, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '1231231 23 123', 1, 0, '2026-06-17 14:51:46', '1', '2026-06-17 14:51:46', '1'),
 	(9, 0, 'TS000002', '2026-01-01 00:00:00', '2026-01-01 00:00:00', '1231231 23 123', 1, 0, '2026-06-17 14:51:53', '1', '2026-06-17 14:51:53', '1'),
@@ -891,7 +894,43 @@ INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeD
 	(235, 0, 'CR000007', '2026-09-28 15:54:19', '2026-09-28 15:54:19', 'Update Status from <strong>Open</strong> To  <strong>Verified</strong>', 1, 0, '2026-09-28 15:54:19', 'DEMO1', '2026-09-28 15:54:19', 'DEMO1'),
 	(236, 0, 'TA000058', '2026-09-28 16:44:16', '2026-09-28 16:44:16', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong> ', 1, 0, '2026-09-28 16:44:16', 'USR-ADMIN', '2026-09-28 16:44:16', 'USR-ADMIN'),
 	(237, 0, 'IS000070', '2026-09-30 13:00:39', '2026-09-30 13:00:39', 'Update Status from <strong>Open</strong> To  <strong>In Progress</strong>', 1, 0, '2026-09-30 13:00:39', 'USR-ADMIN', '2026-09-30 13:00:39', 'USR-ADMIN'),
-	(238, 0, 'IS000070', '2026-09-30 13:46:57', '2026-09-30 13:46:57', 'Update Status from <strong>In Progress</strong> To  <strong>Open</strong>', 1, 0, '2026-09-30 13:46:57', 'USR-ADMIN', '2026-09-30 13:46:57', 'USR-ADMIN');
+	(238, 0, 'IS000070', '2026-09-30 13:46:57', '2026-09-30 13:46:57', 'Update Status from <strong>In Progress</strong> To  <strong>Open</strong>', 1, 0, '2026-09-30 13:46:57', 'USR-ADMIN', '2026-09-30 13:46:57', 'USR-ADMIN'),
+	(241, 0, 'IS000070', '2026-09-30 17:58:00', '2026-09-30 20:58:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 17:58:00</strong>, target completion <strong>2026-09-30 20:58:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-09-30 17:58:11', 'USR-ADMIN', '2026-09-30 17:58:11', 'USR-ADMIN'),
+	(242, 0, 'IS000070', '2026-09-30 17:58:00', '2026-10-03 20:58:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 17:58:00</strong>, target completion <strong>2026-10-03 20:58:00</strong>, response hour <strong>54.03</strong>, ticket solution time id <strong>105</strong>', 1, 0, '2026-09-30 17:58:33', 'USR-ADMIN', '2026-09-30 17:58:33', 'USR-ADMIN'),
+	(243, 0, 'IS000070', '2026-09-30 17:58:00', '2026-10-03 20:58:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 17:58:00</strong>, target completion <strong>2026-10-03 20:58:00</strong>, response hour <strong>54.03</strong>, ticket solution time id <strong>105</strong>', 1, 0, '2026-09-30 17:58:47', 'USR-ADMIN', '2026-09-30 17:58:47', 'USR-ADMIN'),
+	(244, 0, 'IS000070', '2026-09-30 17:58:00', '2026-10-03 20:58:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 17:58:00</strong>, target completion <strong>2026-10-03 20:58:00</strong>, response hour <strong>54.03</strong>, ticket solution time id <strong>105</strong>', 1, 0, '2026-09-30 17:58:55', 'USR-ADMIN', '2026-09-30 17:58:55', 'USR-ADMIN'),
+	(245, 0, 'IS000070', '2026-10-01 17:58:00', '2026-10-03 20:58:00', 'Submit IN-PROGRESS: response <strong>2026-10-01 17:58:00</strong>, target completion <strong>2026-10-03 20:58:00</strong>, response hour <strong>30.03</strong>, ticket solution time id <strong>104</strong>', 1, 0, '2026-09-30 17:59:03', 'USR-ADMIN', '2026-09-30 17:59:03', 'USR-ADMIN'),
+	(246, 0, 'IS000070', '2026-10-02 17:59:00', '2026-10-16 20:59:00', 'Submit IN-PROGRESS: response <strong>2026-10-02 17:59:00</strong>, target completion <strong>2026-10-16 20:59:00</strong>, response hour <strong>243</strong>, ticket solution time id <strong>105</strong>', 1, 0, '2026-09-30 18:00:01', 'USR-ADMIN', '2026-09-30 18:00:01', 'USR-ADMIN'),
+	(247, 0, 'IS000070', '2026-09-30 18:00:00', '2026-09-30 21:00:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 18:00:00</strong>, target completion <strong>2026-09-30 21:00:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-09-30 18:00:35', 'USR-ADMIN', '2026-09-30 18:00:35', 'USR-ADMIN'),
+	(248, 0, 'IS000070', '2026-09-30 18:00:00', '2026-10-02 21:00:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 18:00:00</strong>, target completion <strong>2026-10-02 21:00:00</strong>, response hour <strong>51</strong>, ticket solution time id <strong>105</strong>', 1, 0, '2026-09-30 18:00:59', 'USR-ADMIN', '2026-09-30 18:00:59', 'USR-ADMIN'),
+	(249, 0, 'IS000070', '2026-09-30 18:04:00', '2026-09-30 21:04:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 18:04:00</strong>, target completion <strong>2026-09-30 21:04:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-09-30 18:06:40', 'USR-ADMIN', '2026-09-30 18:06:40', 'USR-ADMIN'),
+	(250, 0, 'IS000070', '2026-09-30 18:04:00', '2026-09-30 21:04:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 18:04:00</strong>, target completion <strong>2026-09-30 21:04:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-09-30 18:07:09', 'USR-ADMIN', '2026-09-30 18:07:09', 'USR-ADMIN'),
+	(251, 0, 'IS000070', '2026-09-30 18:08:00', '2026-09-30 21:08:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 18:08:00</strong>, target completion <strong>2026-09-30 21:08:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-09-30 18:08:08', 'USR-ADMIN', '2026-09-30 18:08:08', 'USR-ADMIN'),
+	(252, 0, 'IS000070', '2026-09-30 18:08:00', '2026-09-30 21:08:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 18:08:00</strong>, target completion <strong>2026-09-30 21:08:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-09-30 18:08:12', 'USR-ADMIN', '2026-09-30 18:08:12', 'USR-ADMIN'),
+	(253, 0, 'IS000070', '2026-09-29 18:08:00', '2026-09-30 21:08:00', 'Submit IN-PROGRESS: response <strong>2026-09-29 18:08:00</strong>, target completion <strong>2026-09-30 21:08:00</strong>, response hour <strong>27</strong>, ticket solution time id <strong>104</strong>', 1, 0, '2026-09-30 18:08:17', 'USR-ADMIN', '2026-09-30 18:08:17', 'USR-ADMIN'),
+	(254, 0, 'IS000070', '2026-09-29 18:08:00', '2026-09-30 21:08:00', 'Submit IN-PROGRESS: response <strong>2026-09-29 18:08:00</strong>, target completion <strong>2026-09-30 21:08:00</strong>, response hour <strong>27</strong>, ticket solution time id <strong>104</strong>', 1, 0, '2026-09-30 18:12:31', 'USR-ADMIN', '2026-09-30 18:12:31', 'USR-ADMIN'),
+	(255, 0, 'IS000071', '2026-09-30 18:28:00', '2026-10-01 21:28:00', 'Submit IN-PROGRESS: response <strong>2026-09-30 18:28:00</strong>, target completion <strong>2026-10-01 21:28:00</strong>, response hour <strong>27</strong>, ticket solution time id <strong>104</strong>', 1, 0, '2026-09-30 18:29:38', 'USR-ADMIN', '2026-09-30 18:29:38', 'USR-ADMIN'),
+	(256, 0, 'IS000071', '2026-10-02 18:28:00', '2026-10-07 21:28:00', 'Submit IN-PROGRESS: response <strong>2026-10-02 18:28:00</strong>, target completion <strong>2026-10-07 21:28:00</strong>, response hour <strong>75</strong>, ticket solution time id <strong>105</strong>', 1, 0, '2026-09-30 19:20:06', 'USR-ADMIN', '2026-09-30 19:20:06', 'USR-ADMIN'),
+	(257, 0, 'IS000071', '2026-09-30 19:46:50', '2026-09-30 19:46:50', 'Submit Verification: assign to <strong>USR-E9BCC37C</strong>', 1, 0, '2026-09-30 19:46:50', 'USR-ADMIN', '2026-09-30 19:46:50', 'USR-ADMIN'),
+	(258, 0, 'IS000071', '2026-09-30 19:50:19', '2026-09-30 19:50:19', 'Submit Verification: assign to <strong>USR-E9BCC37C</strong>', 1, 0, '2026-09-30 19:50:19', 'USR-ADMIN', '2026-09-30 19:50:19', 'USR-ADMIN'),
+	(259, 0, 'IS000073', '2026-10-01 09:00:00', '2026-10-01 13:41:00', 'Submit IN-PROGRESS: response <strong>2026-10-01 09:00:00</strong>, target completion <strong>2026-10-01 13:41:00</strong>, response hour <strong>4.68</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-09-30 22:42:06', 'USR-ADMIN', '2026-09-30 22:42:06', 'USR-ADMIN'),
+	(260, 0, 'IS000073', '2026-09-30 22:42:36', '2026-09-30 22:42:36', 'Submit Verification: assign to <strong>USR-ADMIN</strong>', 1, 0, '2026-09-30 22:42:36', 'USR-ADMIN', '2026-09-30 22:42:36', 'USR-ADMIN'),
+	(261, 0, 'IS000073', '2026-09-30 22:44:22', '2026-09-30 22:44:22', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:44:22', 'USR-ADMIN', '2026-09-30 22:44:22', 'USR-ADMIN'),
+	(262, 0, 'IS000073', '2026-09-30 22:47:39', '2026-09-30 22:47:39', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:47:39', 'USR-ADMIN', '2026-09-30 22:47:39', 'USR-ADMIN'),
+	(263, 0, 'IS000073', '2026-09-30 22:52:57', '2026-09-30 22:52:57', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:52:57', 'USR-ADMIN', '2026-09-30 22:52:57', 'USR-ADMIN'),
+	(264, 0, 'IS000073', '2026-09-30 22:53:22', '2026-09-30 22:53:22', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:53:22', 'USR-ADMIN', '2026-09-30 22:53:22', 'USR-ADMIN'),
+	(265, 0, 'IS000073', '2026-09-30 22:54:53', '2026-09-30 22:54:53', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:54:53', 'USR-ADMIN', '2026-09-30 22:54:53', 'USR-ADMIN'),
+	(266, 0, 'IS000073', '2026-09-30 22:57:28', '2026-09-30 22:57:28', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:57:28', 'USR-ADMIN', '2026-09-30 22:57:28', 'USR-ADMIN'),
+	(267, 0, 'IS000073', '2026-09-30 22:58:28', '2026-09-30 22:58:28', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:58:28', 'USR-ADMIN', '2026-09-30 22:58:28', 'USR-ADMIN'),
+	(268, 0, 'IS000073', '2026-09-30 22:59:20', '2026-09-30 22:59:20', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:59:20', 'USR-ADMIN', '2026-09-30 22:59:20', 'USR-ADMIN'),
+	(269, 0, 'IS000073', '2026-09-30 22:59:39', '2026-09-30 22:59:39', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 22:59:39', 'USR-ADMIN', '2026-09-30 22:59:39', 'USR-ADMIN'),
+	(270, 0, 'IS000073', '2026-09-30 23:02:34', '2026-09-30 23:02:34', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 23:02:34', 'USR-ADMIN', '2026-09-30 23:02:34', 'USR-ADMIN'),
+	(271, 0, 'IS000073', '2026-09-30 23:06:21', '2026-09-30 23:06:21', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 23:06:21', 'USR-ADMIN', '2026-09-30 23:06:21', 'USR-ADMIN'),
+	(272, 0, 'IS000073', '2026-09-30 23:12:27', '2026-09-30 23:12:27', 'Submit Verification: assign to <strong>USR-A9F434EE</strong>', 1, 0, '2026-09-30 23:12:27', 'USR-ADMIN', '2026-09-30 23:12:27', 'USR-ADMIN'),
+	(273, 0, 'IS000070', '2026-09-30 23:33:19', '2026-09-30 23:33:19', 'Submit Verification: assign to <strong>USR-ADMIN</strong>', 1, 0, '2026-09-30 23:33:19', 'USR-ADMIN', '2026-09-30 23:33:19', 'USR-ADMIN'),
+	(281, 0, 'IS000070', '2026-10-01 15:22:53', '2026-10-01 15:22:53', 'Verification: case <strong>IS000070</strong> Closed by <strong>USR-ADMIN</strong> (from <strong>Verified</strong>)', 1, 1, '2026-10-01 15:22:53', 'USR-ADMIN', '2026-10-01 15:22:53', 'USR-ADMIN'),
+	(282, 0, 'IS000071', '2026-10-01 15:22:53', '2026-10-01 15:22:53', 'Verification: case <strong>IS000071</strong> Closed by <strong>USR-ADMIN</strong> (from <strong>Verified</strong>)', 1, 1, '2026-10-01 15:22:53', 'USR-ADMIN', '2026-10-01 15:22:53', 'USR-ADMIN'),
+	(283, 0, 'IS000073', '2026-10-01 15:22:53', '2026-10-01 15:22:53', 'Verification: case <strong>IS000073</strong> Closed by <strong>USR-ADMIN</strong> (from <strong>Verified</strong>)', 1, 1, '2026-10-01 15:22:53', 'USR-ADMIN', '2026-10-01 15:22:53', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_logs_attachments
 CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
@@ -942,7 +981,7 @@ CREATE TABLE IF NOT EXISTS `ticket_rating` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.ticket_rating: ~91 rows (approximately)
 INSERT INTO `ticket_rating` (`id`, `ticketId`, `value`, `ratingId`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -1050,7 +1089,12 @@ INSERT INTO `ticket_rating` (`id`, `ticketId`, `value`, `ratingId`, `presence`, 
 	(111, 'IS000009', 1, 11, 1, '2026-09-22 13:22:23', 'DEMO1', '2026-09-22 13:22:23', 'DEMO1'),
 	(112, 'IS000009', 1, 12, 1, '2026-09-22 13:22:23', 'DEMO1', '2026-09-22 13:22:23', 'DEMO1'),
 	(113, 'IS000009', 1, 13, 1, '2026-09-22 13:22:23', 'DEMO1', '2026-09-22 13:22:23', 'DEMO1'),
-	(114, 'IS000009', 1, 14, 1, '2026-09-22 13:22:23', 'DEMO1', '2026-09-22 13:22:23', 'DEMO1');
+	(114, 'IS000009', 1, 14, 1, '2026-09-22 13:22:23', 'DEMO1', '2026-09-22 13:22:23', 'DEMO1'),
+	(115, 'IS000073', 3, 10, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
+	(116, 'IS000073', 3, 11, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
+	(117, 'IS000073', 3, 12, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
+	(118, 'IS000073', 3, 13, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
+	(119, 'IS000073', 3, 14, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_severity
 CREATE TABLE IF NOT EXISTS `ticket_severity` (
@@ -1212,6 +1256,7 @@ INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAu
 	('USR-9A0C9A66', 'ag@jagoan.com', 351, 2, '$2b$04$t6JkvhF.VwNjlHMPf37JU.eiQ.PNiv/rCONn3d4Nr..9/j9cifIXG', 0, 'Abang', 'Abang', '234234', NULL, '2000-01-01', 'Division', 'Position', 1, 1, '2026-08-04 17:36:59', 1, '2026-08-04 17:36:59', 1),
 	('USR-9B2C12BE', 'Admin2@cuan.com', 0, 1, '$2b$04$aslHPBHvUeZRS204lU5WG.RYN4W8sFuEgEEaxtF0/eSvT8Rqh.m0O', 14, 'admin2', 'Cuam', NULL, NULL, '2000-01-01', 'Divisi', 'Position', 1, 1, '2026-08-26 16:11:10', 1, '2026-08-26 16:17:43', 1),
 	('USR-9B8746FD', 'ext.1781164821.2@thinktank.local', 353, 2, '$2b$04$HtnLpRDw4ChNT73Uh26.s.GaDhDAKk2sWx03N2a2r6LDHYIhoT94O', 2, 'External', 'Two', NULL, NULL, '2000-01-01', '', '', 0, 1, '2026-06-11 15:00:21', 1, '2026-06-11 15:00:21', 1),
+	('USR-A9F434EE', 'baba@yayahocl.com', 364, 2, '$2b$04$c4ZHzod6q688eWqX2rlXEeOBbsEsYoRsrMEAcXqAkSG/MB9/jtmGS', 0, 'baba', '', '', '', '2000-01-01', '', '', 1, 1, '2026-09-30 22:43:32', 1, '2026-09-30 22:43:32', 1),
 	('USR-ACF74981', 'ABC3@admin.com', 0, 1, '$2b$04$nVrh9kgDLXkDYoexz4Kovu3vl64TkGYhS5/OR27I0ADyzR/260cZ2', 14, 'Admin3', 'ABC', NULL, NULL, '2000-01-01', 'Divisi', 'Posisi', 1, 1, '2026-08-14 15:29:22', 1, '2026-08-14 15:33:22', 1),
 	('USR-ADMIN', 'admin@thinktank.local', 0, 1, '$2b$04$pBuL95VqIupLzvuvu399huQEYeuC5bJbEfAU.6uo58Xq3xVIs6BLS', 1, 'System', 'Admin', '021000000', '081200000001', '1990-01-01', '', '', 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
 	('USR-B910B246', 'anggie@crm.co.id', 357, 2, '$2b$04$uVlvlM8yXEfyYFcyBSOHI.FwJXTrmFh0LYKikmYxRJ8.LvSBnKp/y', 0, 'abc', 'abc', '123', NULL, '2000-01-01', '', '', 1, 1, '2026-07-30 15:03:04', 1, '2026-07-30 15:03:04', 1),
@@ -1243,7 +1288,7 @@ CREATE TABLE IF NOT EXISTS `user_access_right` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=445 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=446 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.user_access_right: ~92 rows (approximately)
 INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`, `d`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -1340,7 +1385,8 @@ INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`,
 	(441, 1, 1010, 1, 1, 1, 1, 0, 1, '2026-09-11 17:52:59', 1, '2026-09-11 17:52:59', 1),
 	(442, 1, 2005, 1, 1, 1, 1, 0, 1, '2026-09-11 17:53:00', 1, '2026-09-11 17:53:00', 1),
 	(443, 1, 1008, 1, 1, 1, 1, 0, 1, '2026-09-25 13:23:23', 1, '2026-09-25 13:23:23', 1),
-	(444, 1, 1009, 1, 1, 0, 1, 0, 1, '2026-09-29 15:43:20', 1, '2026-09-29 15:43:20', 1);
+	(444, 1, 1009, 1, 1, 1, 1, 0, 1, '2026-09-29 15:43:20', 1, '2026-10-01 13:02:30', 1),
+	(445, 1, 5106, 1, 1, 1, 1, 0, 1, '2026-10-01 13:02:30', 1, '2026-10-01 13:02:30', 1);
 
 -- Dumping structure for table thinktank-ticket.user_auth_level
 CREATE TABLE IF NOT EXISTS `user_auth_level` (
@@ -1380,9 +1426,9 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=284 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=291 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_login_history: ~259 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_login_history: ~258 rows (approximately)
 INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `userAgent`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-ADMIN', '2026-07-15 12:39:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(6, 'USR-ADMIN', '2026-07-15 17:50:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
@@ -1662,7 +1708,14 @@ INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `use
 	(280, 'USR-ADMIN', '2026-09-29 15:43:22', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(281, 'USR-ADMIN', '2026-09-29 15:50:22', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(282, 'USR-ADMIN', '2026-09-30 11:58:16', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
-	(283, 'USR-ADMIN', '2026-09-30 16:49:58', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
+	(283, 'USR-ADMIN', '2026-09-30 16:49:58', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(284, 'USR-ADMIN', '2026-09-30 18:04:29', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(285, 'USR-ADMIN', '2026-09-30 22:35:55', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(286, 'USR-ADMIN', '2026-09-30 23:33:02', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(287, 'USR-ADMIN', '2026-10-01 12:33:14', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(288, 'USR-ADMIN', '2026-10-01 13:00:10', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(289, 'USR-ADMIN', '2026-10-01 13:05:20', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(290, 'USR-ADMIN', '2026-10-01 13:10:33', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
 
 -- Dumping structure for table thinktank-ticket.user_type
 CREATE TABLE IF NOT EXISTS `user_type` (

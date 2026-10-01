@@ -628,6 +628,39 @@ Health check: `GET /api` → `{ status: true, message: 'Server is running', data
 > Filter yang didukung: `projectId`, `keyword`, `startDate`, `endDate`.
 > ⚠️ Ketiga endpoint `*/detail` menunjuk ke **controller function yang sama** (`ticketDetail`) — kemungkinan belum membedakan tipe.
 
+### Verification (`modules/verification`)
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/verification` | Antrean verifikasi client: `ticketStatusId = 400`, `ticketTypeId = 2` |
+| GET | `/api/verification/:id` | Detail case + rating + activity log (per-log attachment) + related tasks |
+| PUT | `/api/verification/:id/status` | Close (`ticketStatusId = 900`) / Cancel (`990`) satu case |
+| PUT | `/api/verification/bulk-status` | Update status banyak case sekaligus ("Update All Selected") |
+
+> Filter yang didukung (list): `keyword`, `clientId`, `startDate`, `endDate`.
+> Response `/:id` berbentuk `{ detail, rating, activities, tasks }` — sama dengan `adminReport/*/detail`.
+> `activities[].attachment` dikelompokkan per `ticketLogId` (bukan per `ticketId` seperti `adminReport`).
+>
+> **Body `PUT /:id/status`** (wajib): `{ "action": "close" }` atau `{ "action": "cancel" }`.
+> - `action` selain itu → `400`.
+> - Hanya case yang **masih** `ticketStatusId = 400` yang bisa diproses → selain itu `404` (anti double-process).
+> - `close` mengisi `actualCompletionDate = NOW()` + insert `ticket_balance` (potong saldo).
+> - `cancel` **tidak** mengisi `actualCompletionDate` dan **tidak** menyentuh `ticket_balance`.
+> - Keduanya menandai `ticket_logs` dengan `inputBySystem = 1`.
+> - Semua langkah dalam satu transaction (lock `FOR UPDATE` + `rollback` bila gagal).
+>
+> Module untuk access right: `5106` — `Case Verification` (butuh permission `u` untuk aksi ini).
+>
+> **Body `PUT /bulk-status`** (wajib): `{ "ids": ["IS000001", "IS000002"], "action": 900 }`.
+> - `action` menerima **id status** (`900` / `990`) **atau** string (`"close"` / `"cancel"`).
+> - `ids` wajib array non-kosong, divalidasi max `200` item, didedup otomatis.
+> - `ids` bukan array / kosong → `400`.
+> - Semua case diproses dalam **SATU transaction** dengan `FOR UPDATE` di semua baris terpilih.
+>   Bila satu baris gagal → **seluruhnya rollback** (tidak ada update setengah jalan).
+> - Case yang tidak lagi `ticketStatusId = 400` (mis. sudah diproses user lain) **dilewati**,
+>   bukan error — dikembalikan di `skippedIds`.
+> - Response: `{ ticketStatusId, ticketStatusName, total, updated, updatedIds[], skippedIds[] }`.
+> - ⚠️ Route `/bulk-status` **wajib didaftarkan sebelum `/:id`** agar tidak tertangkap sbg `id = "bulk"`.
+
 ### Client Ticket — Portal Client (`modules/client-ticket`)
 | Method | Endpoint | Keterangan |
 |---|---|---|
