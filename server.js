@@ -62,11 +62,11 @@ app.use(cors());
 app.use(express.json());
 
 // Tambahkan ini khusus untuk folder uploads
-app.use('/uploads', (req, res, next) => {
+app.use(`${PREFIX_SERVER}/uploads`, (req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   next();
 });
-app.use('/uploads', express.static(uploadDir));
+app.use(`${PREFIX_SERVER}/uploads`, express.static(uploadDir));
 
 app.get(`${PREFIX_SERVER}`, (req, res) => {
   res.json(success('Server is running', { uptime: process.uptime() }));

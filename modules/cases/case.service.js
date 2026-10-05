@@ -1,5 +1,6 @@
 const { pool } = require('../../config/db');
 const { runningNumber } = require('../../helpers/autoNumber');
+const PREFIX_SERVER = process.env.PREFIX_SERVER || '/api';
 const CASE_TYPE_ID = 2;
 const TASK_TYPE_ID = 1;
 
@@ -119,9 +120,13 @@ async function listRelatedTasks(caseId) {
 
   const [rows] = await pool.execute(
     `
-      SELECT t.*, ts.name AS ticketStatusName
+      SELECT t.*,
+       ts.name AS ticketStatusName,  
+       concat(u.firstName, ' ', u.lastName) AS assignToName,
+       ts.color AS color
       FROM ticket t
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
+      left join user as u on u.id = t.assignTo
       WHERE t.presence = 1
         AND t.ticketTypeId = ?
         AND t.issueNo = ?
@@ -145,6 +150,7 @@ async function createRelatedTask(caseId, payload) {
     'targetCompletionDate',
     'assignTo',
     'ticketStatusId',
+    'productChildId',
   ];
 
   const missing = requiredFields.filter(
@@ -171,10 +177,10 @@ async function createRelatedTask(caseId, payload) {
       INSERT INTO ticket (
         id, ticketTypeId, issueNo, title, description, projectId,
         submitBy, submitDate, targetCompletionDate, assignTo,
-        actualCompletionDate, ticketStatusId, ticketCategoryId,
+        actualCompletionDate, ticketStatusId, ticketCategoryId, productChildId,
         presence, inputDate, inputBy, updateDate, updateBy
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), ?, NOW(), ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), ?, NOW(), ?)
     `,
     [
       generatedId,
@@ -190,6 +196,7 @@ async function createRelatedTask(caseId, payload) {
       payload.actualCompletionDate || payload.targetCompletionDate,
       parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
       ticketCategoryId,
+      (payload.productChildId),
       (payload.submitBy),
       (payload.submitBy),
     ]
@@ -481,7 +488,7 @@ async function getTicketDetail(id) {
         END AS 'addHour',
 
 
-
+        0 as 'allowVerification',
         '' as 'ticketSolutionTime' 
         
         FROM ticket t
@@ -514,6 +521,18 @@ async function getTicketDetail(id) {
     [id]
   );
   row.taskCount = taskCountRows[0].taskCount;
+
+
+   // tolong query taskCount nya diambil dari table ticket dengan kondisi presence = 1, ticketTypeId = 1, issueNo = id
+  const [allowVerificationRows] = await pool.execute(
+    `
+      SELECT COUNT(id) AS taskCount
+      FROM ticket
+      WHERE presence = 1 AND ticketTypeId = 1 AND issueNo = ? and ticketStatusId < 900
+    `,
+    [id]
+  );
+  row.allowVerification = allowVerificationRows[0].taskCount > 0 ? 0 : 1;
 
 
   //  ratesDetail
@@ -715,7 +734,7 @@ async function createTicketLog(payload, files = [], req) {
       `;
 
       for (const file of files) {
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+        const fileUrl = `${req.protocol}://${req.get('host')}${PREFIX_SERVER}/uploads/${file.filename}`;
 
         await conn.execute(attachmentQuery, [
           data.ticketId,
@@ -1170,6 +1189,14 @@ async function updateCaseVerification(id, payload, actorId = '1') {
       ];
     const [result2] = await conn.execute(q2,qd2,);
 
+ const [assignToName] = await pool.execute(
+      `
+        select  concat(firstName, ' ', lastName) as name
+        from user where id = ? 
+      `,
+      [assignTo]
+    );
+
 
     // Jejak audit, konsisten dengan updateTicket() yang juga menulis ticket_logs.
     await conn.execute(
@@ -1185,7 +1212,7 @@ async function updateCaseVerification(id, payload, actorId = '1') {
     `,
       [
         id,
-        'Submit Verification: assign to <strong>' + assignTo +
+        'Submit Verification: assign to <strong>' + assignToName[0].name +
           '</strong>' ,
         updateBy,
         updateBy,
