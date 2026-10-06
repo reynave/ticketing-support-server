@@ -332,7 +332,8 @@ async function listProjects(filters = {}) {
         pr.name AS productName,
         pt.ticketBased,
         '' as users,
-        '' as modules
+        '' as modules,
+        (  select sum(ticketIn - ticketOut) as ticketBalance from ticket_balance where projectId = p.id and presence = 1 ) as ticketBalance
         
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId

@@ -280,6 +280,7 @@ async function getTicketLogs(id) {
 async function createTicket(payload) {
   const data = normalizeCreatePayload(payload);
   const generatedId = await buildTicketId(payload.id); 
+ 
   await pool.execute(
     `
       INSERT INTO ticket (
