@@ -1,5 +1,7 @@
 const { pool } = require('../../config/db');
 const { runningNumber } = require('../../helpers/autoNumber');
+const PREFIX_SERVER = process.env.PREFIX_SERVER || '/api';
+
 const CHANGE_REQUEST_TYPE_ID = 3;
 const TASK_TYPE_ID = 1;
 
@@ -582,7 +584,7 @@ async function createTicketLog(payload, files = [], req) {
       `;
 
       for (const file of files) {
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+        const fileUrl = `${req.protocol}://${req.get('host')}${PREFIX_SERVER}/uploads/${file.filename}`;
 
         await conn.execute(attachmentQuery, [
           data.ticketId,
