@@ -431,11 +431,28 @@ async function updateTicket(id, payload) {
     payload.ticketCategoryId,
     payload.submitBy,
     id,
-  ];
- 
-
- 
+  ]; 
   const [result] = await pool.execute(q, params);
+
+
+  const qt = `
+   SELECT  TIMESTAMPDIFF(MINUTE,   submitDate, actualCompletionDate) / 60  AS totalHour
+    FROM ticket WHERE id = '${id}' 
+  `;
+
+  const [totalHour] = await pool.execute(qt);
+  
+ const qu = ` 
+  UPDATE ticket
+    SET    actualWorkingHour = ?
+    WHERE id = ?
+  `; 
+  const params2 = [
+    totalHour[0].totalHour,
+    id
+  ]; 
+  const [result2] = await pool.execute(qu, params2);
+
 
   if (payload.wasAssignTo !== payload.assignTo) {
     const [history] = await pool.execute(
