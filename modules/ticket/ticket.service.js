@@ -217,8 +217,6 @@ async function getTicketDetail(id) {
 
   const row = rows[0];
 
-  row.targetCompletionDate = row.targetCompletionDate.split(" ")[0];
-
 
   if (!row) {
     const error = new Error('Ticket not found');
