@@ -497,10 +497,10 @@ async function getProjectDetail(id) {
 
     const [ticketCategories] = await pool.execute(
         `
-        SELECT id, name
+        SELECT id, name, sorting, weight
         FROM ticket_categories      
         WHERE presence = 1 and parentId = ? and status = 1 
-        order by name asc
+        order by sorting asc, name asc
         `,
         [row.ticketCategoriesParentId]
     );
@@ -811,6 +811,7 @@ async function ticketList(filters = {}) {
       SELECT t.id, t.title, t.projectId, t.submitDate, t.targetCompletionDate, t.ticketStatusId, t.ticketCategoryId,
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
+        tc2.sorting as sorting,
         p.name AS projectName,
        CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
         c.name AS clientName, tc2.name AS parentCategoryName,
