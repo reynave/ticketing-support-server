@@ -682,7 +682,7 @@ async function createTicket(payload) {
 }
 
  
-async function createTicketLog(payload, files = [], req) { 
+async function createTicketLog(payload, files = [], req, submitBy) { 
   const data = payload;
 
   if (!String(data.starDateTime || '').trim() || !String(data.closeDateTime || '').trim()) {
@@ -714,8 +714,8 @@ async function createTicketLog(payload, files = [], req) {
       data.parentId || '',
       data.starDateTime,
       data.closeDateTime,
-      data.submitBy,
-      data.submitBy,
+      submitBy,
+      submitBy,
     ];
 
     const [logResult] = await conn.execute(logQuery, logParams);
@@ -744,7 +744,7 @@ async function createTicketLog(payload, files = [], req) {
           file.mimetype,
           file.size,
           fileUrl,
-          data.submitBy,
+          submitBy,
         ]);
       }
     }

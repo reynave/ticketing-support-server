@@ -126,7 +126,15 @@ async function createTask(req, res, next) {
 
 async function createLog(req, res, next) {
   try {
-    const id = parseId(req.params.id);
+    const id = parseId(req.params.id); 
+    const submitBy = req.user?.id ? String(req.user.id) : '';
+    console.log('create ticket log payload', req.body, 'submitBy', submitBy);
+    if (!submitBy) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
     // Handle multipart/form-data (text fields + files)
     await runMiddleware(req, res, upload.array('files', 20));
     const files = req.files || [];
@@ -134,7 +142,7 @@ async function createLog(req, res, next) {
       ...(req.body || {}),
       ticketId: id,
     };
-    const data = await caseService.createTicketLog(payload, files, req);
+    const data = await caseService.createTicketLog(payload, files, req, submitBy);
     return res.status(201).json(success('Case log created', data));
   } catch (error) {
     return next(error);
