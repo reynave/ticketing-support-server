@@ -1,0 +1,2 @@
+ALTER TABLE `ticket`
+	ADD COLUMN `sorting` MEDIUMINT NOT NULL DEFAULT '999' AFTER `hours`;

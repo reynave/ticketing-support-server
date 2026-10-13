@@ -32,6 +32,7 @@ const projectRoutes = require('./modules/project/project.route');
 const ticketRoutes = require('./modules/ticket/ticket.route');
 const caseRoutes = require('./modules/cases/case.route'); 
 const changeRequestRoutes = require('./modules/change-requests/change-request.route');
+const homeRoutes = require('./modules/home/home.route');
 const ratingRoutes = require('./modules/rating/rating.route');
 const userRoutes = require('./modules/user/user.route');
 const userLoginHistoryRoutes = require('./modules/user-login-history/user-login-history.route');
@@ -90,6 +91,7 @@ app.use(`${PREFIX_SERVER}/template`, templateRoutes);
 app.use(`${PREFIX_SERVER}/adminReport`, adminReportRoutes);
 app.use(`${PREFIX_SERVER}/client-ticket`, clientTicketRoutes);
 app.use(`${PREFIX_SERVER}/verification`, verificationRoutes);
+app.use(`${PREFIX_SERVER}/home`, homeRoutes);
 
 app.use(errorHandler);
 
