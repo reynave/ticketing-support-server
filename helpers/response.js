@@ -14,7 +14,17 @@ function failure(message, data = null) {
   };
 }
 
+function warning(message, data = null) {
+  return {
+    status: false,
+    type: 'warning',
+    message,
+    data,
+  };
+}
+
 module.exports = {
   success,
   failure,
+  warning,
 };

@@ -54,7 +54,7 @@ async function create(req, res, next) {
 
     console.log('create ticket payload', req.body);
     const data = await ticketService.createTicket(req.body || {});
-    return res.status(201).json(success('Ticket created', 'data'));
+    return res.status(201).json(success('Ticket created', data));
   } catch (error) {
     return next(error);
   }
@@ -84,7 +84,16 @@ async function update(req, res, next) {
   try {
     const id = parseId(req.params.id);
     console.log('update ticket payload', req.body);
-    const data = await ticketService.updateTicket(id, req.body || {});
+
+ const submitBy = req.user?.id ? String(req.user.id) : '';
+
+    if (!submitBy) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await ticketService.updateTicket(id, req.body || {}, submitBy);
     return res.json(success('Ticket updated', data));
   } catch (error) {
     return next(error);
@@ -95,7 +104,13 @@ async function submitRate(req, res, next) {
   try {
     const id = parseId(req.params.id);
     console.log('update ticket payload', req.body);
-    const data = await ticketService.submitRateService(id, req.body || {});
+    const submitBy = req.user?.id ? String(req.user.id) : '';
+    if (!submitBy) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+    const data = await ticketService.submitRateService(id, req.body || {}, submitBy);
     return res.json(success('Ticket updated', data));
   } catch (error) {
     return next(error);
@@ -105,7 +120,13 @@ async function submitRate(req, res, next) {
 async function remove(req, res, next) {
   try {
     const id = parseId(req.params.id);
-    const data = await ticketService.deleteTicket(id);
+    const submitBy = req.user?.id ? String(req.user.id) : '';
+    if (!submitBy) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+    const data = await ticketService.deleteTicket(id, submitBy);
     return res.json(success('Ticket deleted', data));
   } catch (error) {
     return next(error);

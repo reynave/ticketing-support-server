@@ -398,7 +398,7 @@ async function createTicketLog(payload, files = [], req,submitBy) {
 
 
 
-async function updateTicket(id, payload) {
+async function updateTicket(id, payload, submitBy) {
   const fields = [];
 
   const q = `
@@ -427,7 +427,7 @@ async function updateTicket(id, payload) {
     String(payload.taskSolution || '').trim(),
     String(payload.title || '').trim(),
     payload.ticketCategoryId,
-    payload.submitBy,
+    submitBy,
     id,
   ]; 
   const [result] = await pool.execute(q, params);
@@ -471,7 +471,7 @@ async function updateTicket(id, payload) {
       )
       VALUES (
         ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
-        1, NOW(),  '${payload.submitBy}', NOW(),  '${payload.submitBy}'
+        1, NOW(),  '${submitBy}', NOW(),  '${submitBy}'
       )
     `;
     const obj = [
@@ -504,7 +504,7 @@ async function updateTicket(id, payload) {
       )
       VALUES (
         ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
-        1, NOW(),  '${payload.submitBy}', NOW(),  '${payload.submitBy}'
+        1, NOW(),  '${submitBy}', NOW(),  '${submitBy}'
       )
     `;
     const obj = [

@@ -996,41 +996,55 @@ async function updateCaseStatusByClient(id, ticketStatusId, submitBy) {
 async function updateCaseInProgress(id, payload, actorId = '1') {
   const data = payload || {};
 
-  // Frontend mengirim `responseDateTIme` (mengikuti nama kolom di DB).
-  // `responseDateTime` juga diterima agar tidak silent gagal kalau typo.
-  const responseDateTime = parseSqlDateTime(
-    data.responseDateTIme ?? data.responseDateTime,
-    'responseDateTIme',
-  );
-  const targetCompletationDateTime = parseSqlDateTime(
-    data.targetCompletationDateTime,
-    'targetCompletationDateTime',
-  );
+  let responseDateTime;
+  let targetCompletationDateTime;
+  let ticketSolutionTimeId;
+  let responseHour;
+  let assignTo;
 
-  if (
-    new Date(targetCompletationDateTime.replace(' ', 'T')) <=
-    new Date(responseDateTime.replace(' ', 'T'))
-  ) {
-    const error = new Error(
-      'targetCompletationDateTime must be greater than responseDateTIme',
+  // Validasi input. Error validasi (mis. target < response / jam negatif)
+  // ditandai sebagai "warning" supaya frontend menampilkannya sebagai
+  // peringatan (alert-warning), bukan error yang membingungkan.
+  try {
+    // Frontend mengirim `responseDateTIme` (mengikuti nama kolom di DB).
+    // `responseDateTime` juga diterima agar tidak silent gagal kalau typo.
+    responseDateTime = parseSqlDateTime(
+      data.responseDateTIme ?? data.responseDateTime,
+      'responseDateTIme',
     );
-    error.statusCode = 400;
-    throw error;
-  }
+    targetCompletationDateTime = parseSqlDateTime(
+      data.targetCompletationDateTime,
+      'targetCompletationDateTime',
+    );
 
-  const ticketSolutionTimeId = parseNonNegativeNumber(
-    data.ticketSolutionTimeId,
-    'ticketSolutionTimeId',
-  );
-  const responseHour = parseNonNegativeNumber(
-    data.responseHour,
-    'responseHour',
-  );
-  const assignTo = String(data.assignTo ?? '').trim();
+    if (
+      new Date(targetCompletationDateTime.replace(' ', 'T')) <=
+      new Date(responseDateTime.replace(' ', 'T'))
+    ) {
+      const error = new Error(
+        'targetCompletationDateTime must be greater than responseDateTIme',
+      );
+      error.statusCode = 400;
+      throw error;
+    }
 
-  if (!assignTo) {
-    const error = new Error('assignTo is required');
-    error.statusCode = 400;
+    ticketSolutionTimeId = parseNonNegativeNumber(
+      data.ticketSolutionTimeId,
+      'ticketSolutionTimeId',
+    );
+    responseHour = parseNonNegativeNumber(
+      data.responseHour,
+      'responseHour',
+    );
+    assignTo = String(data.assignTo ?? '').trim();
+
+    if (!assignTo) {
+      const error = new Error('assignTo is required');
+      error.statusCode = 400;
+      throw error;
+    }
+  } catch (error) {
+    error.isWarning = true;
     throw error;
   }
 

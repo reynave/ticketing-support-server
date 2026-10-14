@@ -200,6 +200,7 @@ async function submitInProgress(req, res, next) {
     const data = await caseService.updateCaseInProgress(id, req.body || {}, updateBy);
     return res.json(success('Case submitted as IN-PROGRESS', data));
   } catch (error) {
+    console.error('[submitInProgress] error:', error.message, error);
     return next(error);
   }
 }
