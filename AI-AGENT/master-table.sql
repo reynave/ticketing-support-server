@@ -31,7 +31,7 @@ INSERT INTO `auto_number` (`id`, `name`, `prefix`, `digit`, `runningNumber`, `la
 	(324, 'project', 'P', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(325, 'client', 'C', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(326, 'task', 'TA', 6, 79, 'TA000079', '2026-10-07 18:18:12'),
-	(327, 'issue', 'IS', 6, 80, 'IS000080', '2026-10-12 21:49:34'),
+	(327, 'issue', 'IS', 6, 81, 'IS000081', '2026-10-14 21:47:51'),
 	(328, 'cr', 'CR', 6, 7, 'CR000007', '2026-09-28 15:47:59');
 
 -- Dumping structure for table thinktank-ticket.client
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `module` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6003 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table thinktank-ticket.module: ~19 rows (approximately)
+-- Dumping data for table thinktank-ticket.module: ~23 rows (approximately)
 INSERT INTO `module` (`id`, `name`) VALUES
 	(1001, 'Industri'),
 	(1002, 'Product'),
@@ -132,6 +132,7 @@ INSERT INTO `module` (`id`, `name`) VALUES
 	(1008, 'Ticket Duration Respond'),
 	(1009, 'Ticket Solution Time'),
 	(1010, 'template'),
+	(2000, 'Home'),
 	(2001, 'Project'),
 	(2002, 'Clients'),
 	(2003, 'Contacts'),
@@ -212,7 +213,7 @@ INSERT INTO `project` (`id`, `name`, `projectTypeId`, `projectBilleableId`, `pro
 	('PRJ-2A40B211', 'PROJECT KILAU TTS', 2, 1, 1, 123, 480, '365', '2026-09-11', '2026-09-11', 1, '0', 1, '2026-09-11 10:18:47', 'USR-EF278E46', '2026-09-21 11:03:31', 'USR-ADMIN'),
 	('PRJ-54E3A483', 'Ticketing System 2026', 2, 1, 1, 0, 0, '351', '2026-07-10', '2026-08-31', 0, '0', 1, '2026-07-10 12:00:47', '1', '2026-07-13 16:00:18', 'USR-ADMIN'),
 	('PRJ-632CB07D', 'project TOP3', 2, 1, 1, 123, 40, '360', '2026-09-08', '2026-09-08', 1, '', 1, '2026-09-08 14:47:12', 'USR-EF278E46', '2026-09-08 14:47:12', 'USR-EF278E46'),
-	('PRJ-6628F029', 'Project 01 CUCOK', 2, 1, 1, 123, 2, '364', '2026-09-21', '2026-09-21', 1, '', 1, '2026-09-21 14:14:39', 'USR-ADMIN', '2026-09-21 14:14:39', 'USR-ADMIN'),
+	('PRJ-6628F029', 'Project 01 CUCOK', 2, 1, 1, 123, 2, '364', '2026-09-21', '2026-09-21', 1, '0', 1, '2026-09-21 14:14:39', 'USR-ADMIN', '2026-10-14 21:35:48', 'USR-ADMIN'),
 	('PRJ-7229AFBE', 'Project LILY TICKET', 2, 1, 1, 123, 0.5, '361', '2026-08-26', '2026-08-26', 1, '3', 1, '2026-09-11 17:36:27', 'USR-ADMIN', '2026-09-11 17:36:27', 'USR-ADMIN'),
 	('PRJ-7492E30C', 'prject mbg123', 1, 1, 1, 0, 0, '', '2026-06-11', '2026-07-11', 0, '0', 1, '2026-06-17 17:23:19', '1', '2026-06-18 14:36:33', 'USR-ADMIN'),
 	('PRJ-822BC171', 'test 1', 1, 1, 1, 0, 0, '351', '2026-06-10', '2026-08-10', 1, 'TB-TEST', 0, '2026-06-10 16:58:11', '1', '2026-06-10 16:58:11', '1'),
@@ -338,9 +339,9 @@ CREATE TABLE IF NOT EXISTS `project_users` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=303 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=316 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_users: ~89 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_users: ~86 rows (approximately)
 INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(7, 'PRJ-54E3A483', 'USR-8C76A791', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
 	(8, 'PRJ-54E3A483', 'USR-ADMIN', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
@@ -428,9 +429,10 @@ INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence
 	(297, 'PRJ-1F4322E6', 'USR-8E476F10', 0, 1, '2026-09-21 14:12:41', 'USR-ADMIN', '2026-09-21 14:12:41', 'USR-ADMIN'),
 	(298, 'PRJ-1F4322E6', 'USR-EF278E46', 0, 1, '2026-09-21 14:12:41', 'USR-ADMIN', '2026-09-21 14:12:41', 'USR-ADMIN'),
 	(299, 'PRJ-1F4322E6', 'USR-ADMIN', 0, 1, '2026-09-21 14:12:41', 'USR-ADMIN', '2026-09-21 14:12:41', 'USR-ADMIN'),
-	(300, 'PRJ-6628F029', 'USR-8E476F10', 0, 1, '2026-09-21 14:14:39', 'USR-ADMIN', '2026-09-21 14:14:39', 'USR-ADMIN'),
-	(301, 'PRJ-6628F029', 'USR-EF278E46', 0, 1, '2026-09-21 14:14:39', 'USR-ADMIN', '2026-09-21 14:14:39', 'USR-ADMIN'),
-	(302, 'PRJ-6628F029', 'USR-ADMIN', 1, 1, '2026-09-21 14:14:39', 'USR-ADMIN', '2026-09-21 14:14:39', 'USR-ADMIN');
+	(312, 'PRJ-6628F029', 'USR-8E476F10', 0, 1, '2026-10-14 21:35:48', 'USR-ADMIN', '2026-10-14 21:35:48', 'USR-ADMIN'),
+	(313, 'PRJ-6628F029', 'USR-EF278E46', 0, 1, '2026-10-14 21:35:48', 'USR-ADMIN', '2026-10-14 21:35:48', 'USR-ADMIN'),
+	(314, 'PRJ-6628F029', 'USR-ADMIN', 0, 1, '2026-10-14 21:35:48', 'USR-ADMIN', '2026-10-14 21:35:48', 'USR-ADMIN'),
+	(315, 'PRJ-6628F029', 'USR-E5A4B811', 0, 1, '2026-10-14 21:35:48', 'USR-ADMIN', '2026-10-14 21:35:48', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.rating
 CREATE TABLE IF NOT EXISTS `rating` (
@@ -519,19 +521,20 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket: ~11 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket: ~12 rows (approximately)
 INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	('IS000078', 2, 131, 30, '5', '', '', 'ok task', '<p>Screen CASE, saat create new task dari case -&gt; target completation date TAsk belum mengikuti dari field Target completaion date CASE</p>', '2026-10-07 18:07:00', 1, '2026-10-16 21:07:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 105, 171, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:51:23', '2026-10-07 21:51:23', '2026-10-07 21:51:23', 'USR-ADMIN', '<p>123</p>', '2026-10-07 18:07:48', 100, 0, '', 2, 4, 999, 1, '2026-10-07 17:51:23', '1', '2026-10-07 18:07:59', 'USR-ADMIN'),
-	('IS000079', 2, 127, 20, '4', '', '', '123', '123', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-11 15:43:31', '2026-10-13 15:43:31', '2026-10-13 15:43:31', 'USR-ADMIN', '', '2026-10-13 15:43:31', 1, 0, '', 0, 0, 999, 1, '2026-10-11 15:43:31', '1', '2026-10-11 15:43:31', '1'),
-	('IS000080', 2, 131, 10, '4', '', '', '123', '123123', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-EF278E46', '2026-10-12 21:49:34', '2026-10-17 21:49:34', '2026-10-17 21:49:34', 'USR-ADMIN', '', '2026-10-17 21:49:34', 1, 0, '', 0, 0, 999, 1, '2026-10-12 21:49:34', '1', '2026-10-12 21:49:34', '1'),
+	('IS000078', 2, 131, 30, '5', '', '', 'ok task', '<p>Screen CASE, saat create new task dari case -&gt; target completation date TAsk belum mengikuti dari field Target completaion date CASE</p>', '2026-10-07 18:07:00', 1, '2026-10-16 21:07:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 105, 171, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:51:23', '2026-10-07 21:51:23', '2026-10-07 21:51:23', 'USR-ADMIN', '<p>123</p>', '2026-10-07 18:07:48', 100, 0, '', 2, 4, 3, 1, '2026-10-07 17:51:23', '1', '2026-10-13 23:40:56', 'USR-ADMIN'),
+	('IS000079', 2, 127, 20, '4', '', '', '123', '123', '2026-10-14 21:52:00', 1, '2026-10-14 23:56:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 102, 2.07, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-11 15:43:31', '2026-10-13 15:43:31', '2026-10-13 15:43:31', 'USR-ADMIN', '', '2026-10-13 15:43:31', 100, 0, '', 0, 0, 1, 1, '2026-10-11 15:43:31', '1', '2026-10-14 21:53:33', 'USR-E5A4B811'),
+	('IS000080', 2, 131, 10, '4', '', '', '123', '<p>123123</p>', '2026-10-14 22:08:00', 1, '2026-10-14 23:12:00', '2026-10-14 22:09:11', '2026-10-14 22:09:11', 0, 0, 102, 1.07, 'PRJ-6628F029', 'USR-EF278E46', '2026-10-12 21:49:34', '2026-10-17 21:49:34', '2026-10-17 21:49:34', 'USR-ADMIN', '<p>asdfasdf</p>', '2026-10-14 22:09:07', 400, 0, '', 3, 6, 2, 1, '2026-10-12 21:49:34', '1', '2026-10-14 22:09:11', 'USR-EF278E46'),
+	('IS000081', 2, 131, 10, '4', '', '', '123', '<p>123</p>', '2026-10-14 21:47:00', 1, '2026-10-15 04:51:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 103, 7.07, 'PRJ-6628F029', 'USR-E5A4B811', '2026-10-14 21:47:51', '2026-10-19 21:47:51', '2026-10-19 21:47:51', 'USR-EF278E46', '<p>abc</p>', '2026-10-14 21:48:34', 100, 0, '', 3, 6, 999, 1, '2026-10-14 21:47:51', '1', '2026-10-14 21:51:48', 'USR-E5A4B811'),
 	('TA000072', 1, 131, 0, '5', '', '', '123123', '<p>123123</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 4.3333, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-06 11:05:34', '2026-01-01 00:00:00', '2026-10-07 00:00:00', 'USR-ADMIN', '', '2026-10-06 15:26:15', 900, 0, '', 0, 0, 999, 1, '2026-10-06 15:25:34', '1', '2026-10-06 15:26:15', 'USR-ADMIN'),
-	('TA000073', 1, 132, 0, '4', '', '', 'jam finish 8:31 PM', '<p>jam finish 8:31 PM</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.15, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:29:43', '2026-01-01 00:00:00', '2026-10-08 21:31:00', 'USR-ADMIN', '', '2026-10-07 17:38:47', 1, 0, '', 0, 0, 999, 1, '2026-10-07 17:29:43', '1', '2026-10-07 17:38:47', 'USR-ADMIN'),
-	('TA000074', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 00:00:00', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 999, 1, '2026-10-07 18:10:51', 'USR-ADMIN', '2026-10-07 18:10:51', 'USR-ADMIN'),
-	('TA000075', 1, 131, 0, '5', '', 'IS000078', 'test baru submit', 'Follow up from case IS000078 time baryu', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:14:35', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 999, 1, '2026-10-07 18:14:35', 'USR-ADMIN', '2026-10-07 18:14:35', 'USR-ADMIN'),
-	('TA000076', 1, 127, 0, '5', '', 'IS000078', 'ok task4', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:01', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 999, 1, '2026-10-07 18:15:01', 'USR-ADMIN', '2026-10-07 18:15:01', 'USR-ADMIN'),
-	('TA000077', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:31', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 999, 1, '2026-10-07 18:15:31', 'USR-ADMIN', '2026-10-07 18:15:31', 'USR-ADMIN'),
-	('TA000078', 1, 131, 0, '5', '', 'IS000078', 'ok task 34', 'Follow up from case IS000078 3', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-08 18:17:26', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 999, 1, '2026-10-07 18:17:26', 'USR-ADMIN', '2026-10-07 18:17:26', 'USR-ADMIN'),
-	('TA000079', 1, 131, 0, '5', '', 'IS000078', 'cccc', '<p>Follow up from case IS000078</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 50.85, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-10 18:18:12', '2026-01-01 00:00:00', '2026-10-17 21:07:00', 'USR-EF278E46', '', '2026-10-12 21:09:50', 100, 0, '', 0, 0, 999, 1, '2026-10-07 18:18:12', 'USR-ADMIN', '2026-10-12 21:09:50', 'USR-ADMIN');
+	('TA000073', 1, 132, 0, '4', '', '', 'jam finish 8:31 PM', '<p>jam finish 8:31 PM</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.15, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:29:43', '2026-01-01 00:00:00', '2026-10-08 21:31:00', 'USR-ADMIN', '', '2026-10-07 17:38:47', 1, 0, '', 0, 0, 5, 1, '2026-10-07 17:29:43', '1', '2026-10-19 21:59:03', 'USR-ADMIN'),
+	('TA000074', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 00:00:00', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 4, 1, '2026-10-07 18:10:51', 'USR-ADMIN', '2026-10-19 21:59:03', 'USR-ADMIN'),
+	('TA000075', 1, 131, 0, '5', '', 'IS000078', 'test baru submit', 'Follow up from case IS000078 time baryu', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:14:35', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 6, 1, '2026-10-07 18:14:35', 'USR-ADMIN', '2026-10-19 21:59:03', 'USR-ADMIN'),
+	('TA000076', 1, 127, 0, '5', '', 'IS000078', 'ok task4', '<p>Follow up from case IS000078</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 171.5, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:01', '2026-01-01 00:00:00', '2026-10-20 21:07:00', 'USR-8E476F10', '', '2026-10-14 21:45:52', 100, 0, '', 0, 0, 2, 1, '2026-10-07 18:15:01', 'USR-ADMIN', '2026-10-19 21:59:03', 'USR-E5A4B811'),
+	('TA000077', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:31', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 3, 1, '2026-10-07 18:15:31', 'USR-ADMIN', '2026-10-19 21:59:03', 'USR-ADMIN'),
+	('TA000078', 1, 131, 0, '5', '', 'IS000078', 'ok task 34', '<p>Follow up from case IS000078 3</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 124.717, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-08 18:17:26', '2026-01-01 00:00:00', '2026-10-17 21:07:00', 'USR-8E476F10', '', '2026-10-13 23:00:48', 100, 0, '', 0, 0, 1, 1, '2026-10-07 18:17:26', 'USR-ADMIN', '2026-10-19 21:59:03', 'USR-ADMIN'),
+	('TA000079', 1, 131, 0, '5', '', 'IS000078', 'cccc', '<p>Follow up from case IS000078</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 50.85, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-10 18:18:12', '2026-01-01 00:00:00', '2026-10-17 21:07:00', 'USR-EF278E46', '', '2026-10-12 21:09:50', 100, 0, '', 0, 0, 7, 1, '2026-10-07 18:18:12', 'USR-ADMIN', '2026-10-19 21:59:03', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_balance
 CREATE TABLE IF NOT EXISTS `ticket_balance` (
@@ -670,9 +673,9 @@ CREATE TABLE IF NOT EXISTS `ticket_logs` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=338 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=349 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_logs: ~15 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_logs: ~24 rows (approximately)
 INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeDateTime`, `description`, `presence`, `inputBySystem`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(323, 0, 'TA000079', '2026-10-12 21:12:00', '2026-10-12 21:13:00', '<p>admin2@<a href="thinktank.local" target="_blank">thinktank.local</a></p>', 1, 0, '2026-10-12 21:12:43', 'USR-ADMIN', '2026-10-12 21:12:43', 'USR-ADMIN'),
 	(324, 0, 'TA000079', '2026-10-12 21:13:00', '2026-10-12 21:14:00', '<p>admin</p>', 1, 0, '2026-10-12 21:13:18', 'USR-ADMIN', '2026-10-12 21:13:18', 'USR-ADMIN'),
@@ -688,7 +691,18 @@ INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeD
 	(334, 0, 'IS000080', '2026-10-12 21:50:00', '2026-10-12 21:51:00', '<p>gagag</p>', 1, 0, '2026-10-12 21:50:11', 'USR-EF278E46', '2026-10-12 21:50:11', 'USR-EF278E46'),
 	(335, 0, 'IS000080', '2026-10-12 21:55:00', '2026-10-12 21:56:00', '<p>asdfasdf</p>', 1, 0, '2026-10-12 21:55:54', 'USR-EF278E46', '2026-10-12 21:55:54', 'USR-EF278E46'),
 	(336, 0, 'IS000080', '2026-10-12 21:56:00', '2026-10-12 21:57:00', '<p>bbbbb</p>', 1, 0, '2026-10-12 21:56:34', 'USR-EF278E46', '2026-10-12 21:56:34', 'USR-EF278E46'),
-	(337, 0, 'IS000080', '2026-10-12 21:57:00', '2026-10-12 21:58:00', '<p>qwerqwer</p>', 1, 0, '2026-10-12 21:57:41', 'USR-ADMIN', '2026-10-12 21:57:41', 'USR-ADMIN');
+	(337, 0, 'IS000080', '2026-10-12 21:57:00', '2026-10-12 21:58:00', '<p>qwerqwer</p>', 1, 0, '2026-10-12 21:57:41', 'USR-ADMIN', '2026-10-12 21:57:41', 'USR-ADMIN'),
+	(338, 0, 'TA000078', '2026-10-13 23:00:48', '2026-10-13 23:00:48', 'Update Assignee from <strong>System Admin</strong> To  <strong>QC TTS</strong> ', 1, 0, '2026-10-13 23:00:48', 'USR-ADMIN', '2026-10-13 23:00:48', 'USR-ADMIN'),
+	(339, 0, 'TA000078', '2026-10-13 23:00:48', '2026-10-13 23:00:48', 'Update Status from <strong>Open</strong> To  <strong>In Progress</strong> ', 1, 0, '2026-10-13 23:00:48', 'USR-ADMIN', '2026-10-13 23:00:48', 'USR-ADMIN'),
+	(340, 0, 'TA000076', '2026-10-14 21:36:46', '2026-10-14 21:36:46', 'Update Assignee from <strong>System Admin</strong> To  <strong>QC TTS</strong> ', 1, 0, '2026-10-14 21:36:46', 'USR-ADMIN', '2026-10-14 21:36:46', 'USR-ADMIN'),
+	(341, 0, 'TA000076', '2026-10-14 21:39:34', '2026-10-14 21:39:34', 'Update Assignee from <strong>QC TTS</strong> To  <strong>Admin2 thinktank</strong> ', 1, 0, '2026-10-14 21:39:34', 'USR-ADMIN', '2026-10-14 21:39:34', 'USR-ADMIN'),
+	(342, 0, 'TA000076', '2026-10-14 21:45:47', '2026-10-14 21:45:47', 'Update Status from <strong>Open</strong> To  <strong>In Progress</strong> ', 1, 0, '2026-10-14 21:45:47', 'USR-E5A4B811', '2026-10-14 21:45:47', 'USR-E5A4B811'),
+	(343, 0, 'TA000076', '2026-10-14 21:45:52', '2026-10-14 21:45:52', 'Update Assignee from <strong>Admin2 thinktank</strong> To  <strong>QC TTS</strong> ', 1, 0, '2026-10-14 21:45:52', 'USR-E5A4B811', '2026-10-14 21:45:52', 'USR-E5A4B811'),
+	(344, 0, 'IS000081', '2026-10-14 21:48:06', '2026-10-14 21:48:06', 'Update Assignee from <strong>anggie123 123</strong> To  <strong>QC TTS</strong> ', 1, 0, '2026-10-14 21:48:06', 'USR-E5A4B811', '2026-10-14 21:48:06', 'USR-E5A4B811'),
+	(345, 0, 'IS000081', '2026-10-14 21:47:00', '2026-10-15 04:51:00', 'Submit IN-PROGRESS: response <strong>2026-10-14 21:47:00</strong>, target completion <strong>2026-10-15 04:51:00</strong>, response hour <strong>7.07</strong>, ticket solution time id <strong>103</strong>', 1, 0, '2026-10-14 21:51:48', 'USR-E5A4B811', '2026-10-14 21:51:48', 'USR-E5A4B811'),
+	(346, 0, 'IS000079', '2026-10-14 21:52:00', '2026-10-14 23:56:00', 'Submit IN-PROGRESS: response <strong>2026-10-14 21:52:00</strong>, target completion <strong>2026-10-14 23:56:00</strong>, response hour <strong>2.07</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-10-14 21:53:33', 'USR-E5A4B811', '2026-10-14 21:53:33', 'USR-E5A4B811'),
+	(347, 0, 'IS000080', '2026-10-14 22:08:00', '2026-10-14 23:12:00', 'Submit IN-PROGRESS: response <strong>2026-10-14 22:08:00</strong>, target completion <strong>2026-10-14 23:12:00</strong>, response hour <strong>1.07</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-10-14 22:08:54', 'USR-ADMIN', '2026-10-14 22:08:54', 'USR-ADMIN'),
+	(348, 0, 'IS000080', '2026-10-14 22:09:11', '2026-10-14 22:09:11', 'Submit Verification: assign to <strong>System Admin</strong>', 1, 0, '2026-10-14 22:09:11', 'USR-EF278E46', '2026-10-14 22:09:11', 'USR-EF278E46');
 
 -- Dumping structure for table thinktank-ticket.ticket_logs_attachments
 CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
@@ -1028,7 +1042,7 @@ INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAu
 	('USR-D41E277A', 'admin@UOUO.com', 366, 2, '$2b$04$GKJDOWILCZoZMs6WMKS4x.O0vE8Vde.dmdbHi9IQ9ozg2y.i2pdnu', 0, 'admin', 'UOUO', '1111', NULL, '2000-01-01', 'Divisiion', 'Posisiton', 1, 1, '2026-09-09 17:32:43', 1, '2026-09-09 17:32:43', 1),
 	('USR-DA3007FC', 'anggid22e@crm.co.id', 0, 2, '$2b$04$pKcmM4KwbhrjX0DnK3Wm/O13OTdcMYQ1rDDvUgyLwpBu5FqN0dXgi', 13, 'aba', 'abc', NULL, NULL, '2000-01-01', '', '', 1, 1, '2026-07-30 15:28:11', 1, '2026-07-30 15:28:11', 1),
 	('USR-DCDA5ED4', 'kaka@crmkaka.co.id', 351, 2, '$2b$04$VT.TlIXQpmMFIWMNWVwnNuy5xs49hQPTFBS8Ip1R5Qh8xPrS4Jj6e', 0, 'kaka', 'kaka', '355555', NULL, '2000-01-01', 'Division', 'Position', 1, 1, '2026-08-04 17:48:37', 1, '2026-08-04 17:48:37', 1),
-	('USR-E5A4B811', 'anggie123@crm.co.id', 0, 1, '$2b$04$dQZRG6MYr1n3ip9rjWpqnenemNCqZONmIn/VrJJ0SN2NT4h0XJEjG', 1, 'abb', 'abb', NULL, NULL, '2000-01-01', 'Division 1', 'Position 2', 1, 1, '2026-07-30 15:29:13', 1, '2026-08-04 17:20:54', 1),
+	('USR-E5A4B811', 'anggie123@crm.co.id', 0, 1, '$2b$04$ZODiVR2UYFnpvqyllOQ4TeOzb4zAh5fjHxjSl1OCvixkjCqUB9/Qq', 1, 'anggie123', '123', '', '', '2000-01-01', 'Division 1', 'Position 2', 1, 1, '2026-07-30 15:29:13', 1, '2026-10-14 21:35:03', 1),
 	('USR-E9BCC37C', 'admin@KYARA.lokal', 363, 2, '$2b$04$XYP7bWlRPGR5MrR6RTYOIu2s/4XcEH1Zan6ShSaqjAZtii5CIyYsm', 0, 'KYARA', 'HARTA', '999999', NULL, '2000-01-01', 'Divisi', 'Posisi', 1, 1, '2026-09-21 11:38:18', 1, '2026-09-21 11:53:36', 0),
 	('USR-ED1702C8', 'delete.1788946351547102745.Admin@TTS.com', 365, 2, '$2b$04$MY6dHNmiDLAXkr82sMMVF.SDzAGIQ/k0SJRFQJxWiuyjwhpAyh7zW', 0, 'Admin', 'TTS', '00999999', NULL, '2000-01-01', 'Divisi', 'Posisi', 0, 0, '2026-09-09 13:51:15', 1, '2026-09-09 16:32:31', 1),
 	('USR-EF278E46', 'admin2@thinktank.local', 0, 1, '$2b$04$ZPFV0PUst.x0Pve13BXDluGJG5DMMZ1yHX7O7DMVk1IcKtdGgqqEW', 1, 'Admin2', 'thinktank', NULL, NULL, '2000-01-01', 'Divisi', 'posisi', 1, 1, '2026-08-11 14:38:42', 1, '2026-08-11 14:38:42', 1);
@@ -1049,7 +1063,7 @@ CREATE TABLE IF NOT EXISTS `user_access_right` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=446 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=447 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.user_access_right: ~92 rows (approximately)
 INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`, `d`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -1147,7 +1161,8 @@ INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`,
 	(442, 1, 2005, 1, 1, 1, 1, 0, 1, '2026-09-11 17:53:00', 1, '2026-09-11 17:53:00', 1),
 	(443, 1, 1008, 1, 1, 1, 1, 0, 1, '2026-09-25 13:23:23', 1, '2026-09-25 13:23:23', 1),
 	(444, 1, 1009, 1, 1, 1, 1, 0, 1, '2026-09-29 15:43:20', 1, '2026-10-01 13:02:30', 1),
-	(445, 1, 5106, 1, 1, 1, 1, 0, 1, '2026-10-01 13:02:30', 1, '2026-10-01 13:02:30', 1);
+	(445, 1, 5106, 1, 1, 1, 1, 0, 1, '2026-10-01 13:02:30', 1, '2026-10-01 13:02:30', 1),
+	(446, 1, 2000, 1, 1, 1, 1, 0, 1, '2026-10-19 21:46:36', 1, '2026-10-19 21:46:36', 1);
 
 -- Dumping structure for table thinktank-ticket.user_auth_level
 CREATE TABLE IF NOT EXISTS `user_auth_level` (
@@ -1187,9 +1202,9 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=299 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=302 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_login_history: ~258 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_login_history: ~257 rows (approximately)
 INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `userAgent`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-ADMIN', '2026-07-15 12:39:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(6, 'USR-ADMIN', '2026-07-15 17:50:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
@@ -1484,7 +1499,10 @@ INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `use
 	(295, 'USR-ADMIN', '2026-10-11 15:26:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(296, 'USR-ADMIN', '2026-10-12 20:56:00', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(297, 'USR-EF278E46', '2026-10-12 21:10:59', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
-	(298, 'USR-ADMIN', '2026-10-13 21:20:44', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
+	(298, 'USR-ADMIN', '2026-10-13 21:20:44', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(299, 'USR-ADMIN', '2026-10-14 21:07:00', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(300, 'USR-E5A4B811', '2026-10-14 21:35:10', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(301, 'USR-ADMIN', '2026-10-19 21:46:11', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
 
 -- Dumping structure for table thinktank-ticket.user_type
 CREATE TABLE IF NOT EXISTS `user_type` (

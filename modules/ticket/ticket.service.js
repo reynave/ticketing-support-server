@@ -146,9 +146,12 @@ async function listTickets(filters = {}) {
         tt.name AS ticketTypeName,
         ts.name AS ticketStatusName,
         p.name AS projectName,
-       CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
+        CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
         c.name AS clientName, tc2.name AS parentCategoryName,
-        t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName
+        c.id AS clientId,
+        t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName,
+        (SELECT MAX(inputDate) FROM ticket_logs WHERE ticketId = t.id) AS lastActivityDate,
+        (SELECT CONCAT(u2.firstName, ' ', u2.lastName) FROM ticket_logs AS tl LEFT JOIN user AS u2 ON u2.id = tl.inputBy WHERE tl.ticketId = t.id ORDER BY tl.inputDate DESC LIMIT 1) AS lastActivityByName
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 

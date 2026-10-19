@@ -3,12 +3,25 @@ const { success } = require('../../helpers/response');
 
 async function dashboard(req, res, next) {
   try {
+    const selectedUserId = req.query?.userId && String(req.query.userId).trim()
+      ? String(req.query.userId).trim()
+      : '';
+
     const user = {
-      userId: req.user?.id ? String(req.user.id) : '',
+      userId: selectedUserId || (req.user?.id ? String(req.user.id) : ''),
     };
 
     const data = await homeService.getDashboard(user);
     return res.json(success('Home dashboard data fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function projectUsers(req, res, next) {
+  try {
+    const data = await homeService.listProjectUsers();
+    return res.json(success('Project users fetched', data));
   } catch (error) {
     return next(error);
   }
@@ -40,5 +53,6 @@ async function reorder(req, res, next) {
 
 module.exports = {
   dashboard,
+  projectUsers,
   reorder,
 };

@@ -96,11 +96,16 @@ async function listTemplates(filters = {}) {
     params.push(parseStatus(filters.status));
   }
 
+  if (filters.tempateType !== undefined && filters.tempateType !== '') {
+    conditions.push('tempateType = ?');
+    params.push(String(filters.tempateType));
+  }
+
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const [rows] = await pool.execute(
     `
-      SELECT id, name, description, version 
+      SELECT id, name, description, version, tempateType
       FROM template
       ${whereClause}
       ORDER BY name ASC, version ASC

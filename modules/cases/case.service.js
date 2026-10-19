@@ -340,6 +340,7 @@ async function listTickets(filters = {}) {
         ) AS taskCount, p.name AS projectName,
          t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName,
          c.name AS clientName, 
+            c.id AS clientId,
           tc2.name AS parentCategoryName,
               CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName
       FROM ticket t

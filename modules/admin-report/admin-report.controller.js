@@ -3,7 +3,11 @@ const { success } = require('../../helpers/response');
 
 async function taskReport(req, res, next) {
     try {
+        const userId = req.user?.id ? String(req.user.id) : '';
+  
         const filters = { ...(req.query || {}) };
+        filters.userId = userId;
+
         const data = await adminReportService.listClosedTasks(filters);
         return res.json(success('Task report fetched', data));
     } catch (error) {
@@ -12,7 +16,9 @@ async function taskReport(req, res, next) {
 }
 async function caseReport(req, res, next) {
     try {
+        const userId = req.user?.id ? String(req.user.id) : '';
         const filters = { ...(req.query || {}) };
+        filters.userId = userId;
         const data = await adminReportService.listClosedCases(filters);
         return res.json(success('Case report fetched', data));
     } catch (error) {
@@ -22,7 +28,9 @@ async function caseReport(req, res, next) {
 
 async function cRReport(req, res, next) {
     try {
+        const userId = req.user?.id ? String(req.user.id) : '';
         const filters = { ...(req.query || {}) };
+        filters.userId = userId;
         const data = await adminReportService.listClosedCR(filters);
         return res.json(success('CR report fetched', data));
     } catch (error) {

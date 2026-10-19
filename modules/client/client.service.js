@@ -37,14 +37,20 @@ async function listClients(filters = {}) {
     params.push(Number(filters.industryId));
   }
 
+  /*  if (filters.userId !== undefined) {
+    conditions.push('c.userId = ?');
+    params.push(Number(filters.userId));
+  }*/
+
   if (filters.keyword) {
     conditions.push('(c.code LIKE ? OR c.name LIKE ?)');
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`);
   }
 
+  
+
   const whereClause = `WHERE ${conditions.join(' AND ')}`;
-  const [rows] = await pool.execute(
-    `
+   const q =  `
       SELECT 
         c.*, 
         i.name as industryName
@@ -52,10 +58,13 @@ async function listClients(filters = {}) {
       LEFT JOIN industry i ON c.industryId = i.id
       ${whereClause}
       ORDER BY c.id ASC
-    `,
+    `;
+  const [rows] = await pool.execute(
+    q,
     params
   );
-
+ 
+    console.log('listClients query:', q, 'params:', params);
   return rows;
 }
 

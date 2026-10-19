@@ -6,7 +6,7 @@ const CLOSED_STATUS_ID = 900;
 
 async function listClosedTasks(filters = {}) { 
   
-    const conditions = ['t.presence = 1', 't.ticketTypeId = ?', 't.ticketStatusId >= ?'];
+  const conditions = ['t.presence = 1', 't.ticketTypeId = ?', 't.ticketStatusId >= ?'];
   const params = [1, CLOSED_STATUS_ID];
 
   if (filters.projectId) {
@@ -51,6 +51,12 @@ async function listClosedTasks(filters = {}) {
     LEFT JOIN ticket_categories tc2 ON tc2.id = p.ticketCategoriesParentId
     LEFT JOIN user u ON u.id = t.assignTo
   WHERE ${whereClause}
+
+   	AND (SELECT pu.userId FROM project_users pu 
+		  		WHERE pu.projectId = p.id AND pu.userId = '${filters.userId}' AND pu.presence = 1
+        LIMIT 1 
+		   ) IS NOT NULL 
+
     ORDER BY t.actualCompletionDate DESC
   `;
 
@@ -107,6 +113,10 @@ async function listClosedCR(filters = {}) {
     LEFT JOIN ticket_categories tc2 ON tc2.id = p.ticketCategoriesParentId
   --  LEFT JOIN user u ON u.id = t.assignTo
   WHERE ${whereClause}
+  	AND (SELECT pu.userId FROM project_users pu 
+		  		WHERE pu.projectId = p.id AND pu.userId = '${filters.userId}' AND pu.presence = 1
+        LIMIT 1 
+		   ) IS NOT NULL 
     ORDER BY t.actualCompletionDate DESC
   `;
 
@@ -164,6 +174,10 @@ async function listClosedCases(filters = {}) {
     LEFT JOIN ticket_categories tc2 ON tc2.id = p.ticketCategoriesParentId
   --  LEFT JOIN user u ON u.id = t.assignTo
   WHERE ${whereClause}
+  	AND (SELECT pu.userId FROM project_users pu 
+		  		WHERE pu.projectId = p.id AND pu.userId = '${filters.userId}' AND pu.presence = 1
+        LIMIT 1 
+		   ) IS NOT NULL 
     ORDER BY t.actualCompletionDate DESC
   `;
 

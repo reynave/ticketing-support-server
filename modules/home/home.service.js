@@ -9,42 +9,37 @@ const CHANGE_REQUEST_TYPE_ID = 3;
  * mirroring the `/ticket` list behavior.
  */
 async function listTasks(userId) {
-  const conditions = [
-    't.presence = 1',
-    't.ticketTypeId = ?',
-    't.ticketStatusId < 900',
-  ];
-  const params = [TASK_TYPE_ID];
-   
-
-    const query = `
+  const query = `
       SELECT
-    t.id,
-    t.title,
-    t.ticketStatusId,
-    t.sorting,
-    ts.name AS ticketStatusName,
-    p.name AS projectName,
-     (SELECT pu.userId FROM project_users pu WHERE 
-	 pu.userId = '${userId}' AND   pu.projectId = t.projectId  LIMIT 1 ) 'userId',  
-	 (SELECT pu.asManager FROM project_users pu WHERE 
-	 pu.userId = '${userId}' AND   pu.projectId = t.projectId  LIMIT 1 ) 'asManager',
-	   CONCAT( u.firstName, ' ' ,u.lastName ) AS 'assignToName'
-
+        t.id,
+        t.title,
+        t.ticketStatusId,
+        t.sorting,
+        ts.name AS ticketStatusName,
+        p.name AS projectName,
+        (SELECT pu.userId FROM project_users pu WHERE
+          pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'userId',
+        (SELECT pu.asManager FROM project_users pu WHERE
+          pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'asManager',
+        CONCAT(u.firstName, ' ', u.lastName) AS 'assignToName'
       FROM ticket t
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
       LEFT JOIN project p ON p.id = t.projectId
-        LEFT JOIN user AS u ON u.id = t.assignTo
-      WHERE ${conditions.join(' AND ')} AND
-        t.presence = 1 AND t.ticketTypeId = 1 AND t.ticketStatusId < 900  AND (SELECT pu.userId FROM project_users pu WHERE 
-	      pu.userId = '${userId}' AND   pu.projectId = t.projectId  LIMIT 1 ) = '${userId}'
+      LEFT JOIN user AS u ON u.id = t.assignTo
+      WHERE
+        t.presence = 1 AND t.ticketTypeId = ? AND t.ticketStatusId < 900
+        AND (SELECT pu.userId FROM project_users pu WHERE
+          pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) = ?
       ORDER BY t.sorting ASC, t.inputDate DESC
     `;
 
-  const [rows] = await pool.execute(
-    query,
-    params,
-  );
+  const [rows] = await pool.execute(query, [
+    userId,
+    userId,
+    TASK_TYPE_ID,
+    userId,
+    userId,
+  ]);
 
   return rows;
 }
@@ -65,24 +60,42 @@ async function listCasesAndChangeRequests(ticketTypeId, { userId }) {
         ts.name AS ticketStatusName,
         p.name AS projectName,
         (SELECT pu.userId FROM project_users pu WHERE
-          pu.userId = '${userId}' AND pu.projectId = t.projectId LIMIT 1) 'userId',
+          pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'userId',
         (SELECT pu.asManager FROM project_users pu WHERE
-          pu.userId = '${userId}' AND pu.projectId = t.projectId LIMIT 1) 'asManager',
-            CONCAT( u.firstName, ' ' ,u.lastName ) AS 'assignToName'
-
+          pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'asManager',
+        CONCAT(u.firstName, ' ', u.lastName) AS 'assignToName'
       FROM ticket t
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
       LEFT JOIN project p ON p.id = t.projectId
-            LEFT JOIN user AS u ON u.id = t.assignTo
+      LEFT JOIN user AS u ON u.id = t.assignTo
       WHERE
         t.presence = 1 AND t.ticketTypeId = ? AND t.ticketStatusId < 900
         AND (SELECT pu.userId FROM project_users pu WHERE
-          pu.userId = '${userId}' AND pu.projectId = t.projectId LIMIT 1) = '${userId}'
+          pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) = ?
       ORDER BY t.sorting ASC, t.inputDate DESC
     `;
- 
 
-  const [rows] = await pool.execute(query, [ticketTypeId]);
+  const [rows] = await pool.execute(query, [
+    userId,
+    userId,
+    ticketTypeId,
+    userId,
+    userId,
+  ]);
+
+  return rows;
+}
+
+async function listProjectUsers() {
+  const query = `
+      SELECT DISTINCT u.id, CONCAT(u.firstName, ' ', u.lastName) AS name
+      FROM project_users pu
+      INNER JOIN user u ON u.id = pu.userId
+      WHERE pu.presence = 1 AND u.presence = 1
+      ORDER BY name ASC
+    `;
+
+  const [rows] = await pool.execute(query);
 
   return rows;
 }
@@ -122,4 +135,5 @@ async function updateSorting(ticketTypeId, ids) {
 module.exports = {
   getDashboard,
   updateSorting,
+  listProjectUsers,
 };
