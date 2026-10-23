@@ -21,6 +21,7 @@ async function listTasks(userId) {
           pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'userId',
         (SELECT pu.asManager FROM project_users pu WHERE
           pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'asManager',
+        t.assignTo,
         CONCAT(u.firstName, ' ', u.lastName) AS 'assignToName'
       FROM ticket t
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
@@ -63,6 +64,7 @@ async function listCasesAndChangeRequests(ticketTypeId, { userId }) {
           pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'userId',
         (SELECT pu.asManager FROM project_users pu WHERE
           pu.userId = ? AND pu.projectId = t.projectId LIMIT 1) 'asManager',
+        t.assignTo,
         CONCAT(u.firstName, ' ', u.lastName) AS 'assignToName'
       FROM ticket t
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
