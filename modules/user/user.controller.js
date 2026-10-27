@@ -69,6 +69,27 @@ async function remove(req, res, next) {
   }
 }
 
+async function listProducts(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await userService.listUserProducts(id);
+    return res.json(success('User products fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function saveProducts(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = String(req.user?.id || '1');
+    const data = await userService.saveUserProducts(id, req.body || {}, actorId);
+    return res.json(success('User products updated', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
@@ -76,4 +97,6 @@ module.exports = {
   update,
   changePassword,
   remove,
+  listProducts,
+  saveProducts,
 };

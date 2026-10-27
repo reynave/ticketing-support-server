@@ -484,6 +484,93 @@ async function createExternalUserForClient(clientId, payload = {}) {
   return getUserDetail(id);
 }
 
+function normalizeProductIds(payload) {
+  const raw = Array.isArray(payload?.productIds) ? payload.productIds : [];
+
+  if (!raw.length) {
+    return [];
+  }
+
+  const ids = [];
+
+  for (const value of raw) {
+    const parsed = Number(value);
+
+    if (!Number.isInteger(parsed) || parsed < 1) {
+      const error = new Error('productIds must be an array of positive integer product ids');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (!ids.includes(parsed)) {
+      ids.push(parsed);
+    }
+  }
+
+  return ids;
+}
+
+async function listUserProducts(id) {
+  await getUserForUpdate(id);
+
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        p.id, p.name, p.parentId, p.status, p.presence,
+        CASE WHEN up.id IS NOT NULL THEN 1 ELSE 0 END AS checked
+      FROM product p
+      LEFT JOIN user_product up
+        ON up.productId = p.id AND up.userId = ? AND up.presence = 1
+      WHERE p.parentId = 0 AND p.presence = 1
+      ORDER BY p.name ASC, p.id ASC
+    `,
+    [id]
+  );
+
+  return rows;
+}
+
+async function saveUserProducts(id, payload, actorId) {
+  await getUserForUpdate(id);
+
+  const productIds = normalizeProductIds(payload || {});
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    await connection.execute(
+      `
+        UPDATE user_product
+        SET presence = 0, updateDate = NOW(), updateBy = ?
+        WHERE userId = ? AND presence = 1
+      `,
+      [actorId, id]
+    );
+
+    for (const productId of productIds) {
+      await connection.execute(
+        `
+          INSERT INTO user_product (
+            userId, productId, status, presence, inputDate, inputBy, updateDate, updateBy
+          )
+          VALUES (?, ?, 1, 1, NOW(), ?, NOW(), ?)
+        `,
+        [id, productId, actorId, actorId]
+      );
+    }
+
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+
+  return listUserProducts(id);
+}
+
 module.exports = {
   INTERNAL_USER_TYPE_ID,
   EXTERNAL_USER_TYPE_ID,
@@ -495,4 +582,6 @@ module.exports = {
   deleteUser,
   listExternalUsersByClient,
   createExternalUserForClient,
+  listUserProducts,
+  saveUserProducts,
 };

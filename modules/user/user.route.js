@@ -11,6 +11,9 @@ router.post('/', authMiddleware, userController.create);
 router.put('/:id', authMiddleware, userController.update);
 router.put('/:id/password', authMiddleware, userController.changePassword);
 
+router.get('/:id/products', authMiddleware, userController.listProducts);
+router.put('/:id/products', authMiddleware, userController.saveProducts);
+
 router.delete('/:id', authMiddleware, userController.remove);
 
 module.exports = router;

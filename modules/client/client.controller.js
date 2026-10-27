@@ -25,7 +25,8 @@ function parseProjectId(projectId) {
 
 async function list(req, res, next) {
   try {
-    const data = await clientService.listClients(req.query);
+    const userId = req.user?.id ? String(req.user.id) : null;
+    const data = await clientService.listClients(req.query, userId);
     return res.json(success('Client list fetched', data));
   } catch (error) {
     return next(error);
@@ -127,6 +128,36 @@ async function listUsersByProject(req, res, next) {
 }
 
 
+async function listProducts(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await clientService.listClientProducts(id);
+    return res.json(success('Client products fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function saveProducts(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = String(req.user?.id || '1');
+    const data = await clientService.saveClientProducts(id, req.body || {}, actorId);
+    return res.json(success('Client products updated', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listWithoutProducts(req, res, next) {
+  try {
+    const data = await clientService.listClientsWithoutProducts();
+    return res.json(success('Clients without products fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
@@ -138,4 +169,7 @@ module.exports = {
   listProjects,
   removeProject,
   listUsersByProject,
+  listProducts,
+  saveProducts,
+  listWithoutProducts,
 };

@@ -5,8 +5,11 @@ const clientController = require('./client.controller');
 const router = express.Router();
 
 router.get('/', authMiddleware, clientController.list);
+router.get('/without-products', authMiddleware, clientController.listWithoutProducts);
 router.get('/:id', authMiddleware, clientController.detail);
 router.get('/:id/users', authMiddleware, clientController.listUsers);
+router.get('/:id/products', authMiddleware, clientController.listProducts);
+router.put('/:id/products', authMiddleware, clientController.saveProducts);
 router.get('/:id/project/:projectId', authMiddleware, clientController.listUsersByProject);
 
 

@@ -23,7 +23,7 @@ function buildDeletedEmail(email, userId) {
   return `delete.${randomPart}.${source}`;
 }
 
-async function listClients(filters = {}) {
+async function listClients(filters = {}, userId = null) {
   const conditions = ['c.presence = 1'];
   const params = [];
 
@@ -37,10 +37,25 @@ async function listClients(filters = {}) {
     params.push(Number(filters.industryId));
   }
 
-  /*  if (filters.userId !== undefined) {
-    conditions.push('c.userId = ?');
-    params.push(Number(filters.userId));
-  }*/
+  // Optional: only show clients whose products intersect with the current
+  // user's products (client_product.productId == user_product.productId).
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM client_product cp
+        JOIN user_product up ON up.productId = cp.productId
+        WHERE cp.clientId = c.id AND cp.presence = 1
+          AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(userId);
+  }
 
   if (filters.keyword) {
     conditions.push('(c.code LIKE ? OR c.name LIKE ?)');
@@ -325,6 +340,129 @@ async function listClientUsersByProject(clientId, projectId) {
 }
 
 
+function normalizeProductIds(payload) {
+  const raw = Array.isArray(payload?.productIds) ? payload.productIds : [];
+
+  if (!raw.length) {
+    return [];
+  }
+
+  const ids = [];
+
+  for (const value of raw) {
+    const parsed = Number(value);
+
+    if (!Number.isInteger(parsed) || parsed < 1) {
+      const error = new Error('productIds must be an array of positive integer product ids');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (!ids.includes(parsed)) {
+      ids.push(parsed);
+    }
+  }
+
+  return ids;
+}
+
+async function getClientForUpdate(id) {
+  const [rows] = await pool.execute(
+    'SELECT id FROM client WHERE id = ? AND presence = 1 LIMIT 1',
+    [id]
+  );
+
+  if (!rows[0]) {
+    const error = new Error('Client not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return rows[0];
+}
+
+async function listClientProducts(id) {
+  await getClientForUpdate(id);
+
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        p.id, p.name, p.parentId, p.status, p.presence,
+        CASE WHEN cp.id IS NOT NULL THEN 1 ELSE 0 END AS checked
+      FROM product p
+      LEFT JOIN client_product cp
+        ON cp.productId = p.id AND cp.clientId = ? AND cp.presence = 1
+      WHERE p.parentId = 0 AND p.presence = 1
+      ORDER BY p.name ASC, p.id ASC
+    `,
+    [id]
+  );
+
+  return rows;
+}
+
+async function saveClientProducts(id, payload, actorId) {
+  await getClientForUpdate(id);
+
+  const productIds = normalizeProductIds(payload || {});
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    await connection.execute(
+      `
+        UPDATE client_product
+        SET presence = 0, updateDate = NOW(), updateBy = ?
+        WHERE clientId = ? AND presence = 1
+      `,
+      [actorId, id]
+    );
+
+    for (const productId of productIds) {
+      await connection.execute(
+        `
+          INSERT INTO client_product (
+            clientId, productId, status, presence, inputDate, inputBy, updateDate, updateBy
+          )
+          VALUES (?, ?, 1, 1, NOW(), ?, NOW(), ?)
+        `,
+        [id, productId, actorId, actorId]
+      );
+    }
+
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+
+  return listClientProducts(id);
+}
+
+async function listClientsWithoutProducts() {
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        c.*,
+        i.name as industryName
+      FROM client c
+      LEFT JOIN industry i ON c.industryId = i.id
+      WHERE c.presence = 1
+        AND NOT EXISTS (
+          SELECT 1
+          FROM client_product cp
+          WHERE cp.clientId = c.id AND cp.presence = 1
+        )
+      ORDER BY c.id ASC
+    `
+  );
+
+  return rows;
+}
+
 module.exports = {
   listClients,
   getClientDetail,
@@ -336,4 +474,7 @@ module.exports = {
   listClientProjects,
   removeClientProject,
   listClientUsersByProject,
+  listClientProducts,
+  saveClientProducts,
+  listClientsWithoutProducts,
 };
