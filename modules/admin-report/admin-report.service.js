@@ -9,6 +9,23 @@ async function listClosedTasks(filters = {}) {
   const conditions = ['t.presence = 1', 't.ticketTypeId = ?', 't.ticketStatusId >= ?'];
   const params = [1, CLOSED_STATUS_ID];
 
+  // Optional: only show tasks whose project product matches the current user's products.
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM user_product up
+        WHERE up.productId = p.productId AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(filters.userId || '');
+  }
+
   if (filters.projectId) {
     conditions.push('t.projectId = ?');
     params.push(String(filters.projectId));
@@ -70,6 +87,23 @@ async function listClosedCR(filters = {}) {
     const conditions = ['t.presence = 1', 't.ticketTypeId = ?', 't.ticketStatusId >= ?'];
   const params = [3, CLOSED_STATUS_ID];
 
+  // Optional: only show CR whose project product matches the current user's products.
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM user_product up
+        WHERE up.productId = p.productId AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(filters.userId || '');
+  }
+
   if (filters.projectId) {
     conditions.push('t.projectId = ?');
     params.push(String(filters.projectId));
@@ -130,6 +164,23 @@ async function listClosedCases(filters = {}) {
 
     const conditions = ['t.presence = 1', 't.ticketTypeId = ?', 't.ticketStatusId >= ?'];
   const params = [2, CLOSED_STATUS_ID];
+
+  // Optional: only show cases whose project product matches the current user's products.
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM user_product up
+        WHERE up.productId = p.productId AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(filters.userId || '');
+  }
 
   if (filters.projectId) {
     conditions.push('t.projectId = ?');

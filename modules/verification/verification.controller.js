@@ -13,7 +13,8 @@ function parseId(id) {
 
 async function list(req, res, next) {
   try {
-    const filters = { ...(req.query || {}) };
+    const userId = req.user?.id ? String(req.user.id) : '';
+    const filters = { ...(req.query || {}), userId };
     const data = await verificationService.listVerification(filters);
     return res.json(success('Verification list fetched', data));
   } catch (error) {

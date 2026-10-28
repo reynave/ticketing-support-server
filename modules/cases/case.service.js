@@ -288,6 +288,23 @@ async function listTickets(filters = {}) {
     params.push(Number(filters.assignTo));
   }
 
+  // Optional: only show cases whose project product matches the current user's products.
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM user_product up
+        WHERE up.productId = p.productId AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(filters.userId || '');
+  }
+
   if (filters.keyword) {
     conditions.push('(t.id LIKE ? OR t.title LIKE ? OR t.crNoRef LIKE ? OR t.issueNo LIKE ?)');
     params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);

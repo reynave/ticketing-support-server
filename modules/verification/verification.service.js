@@ -56,6 +56,23 @@ async function listVerification(filters = {}) {
     params.push(`${endDate} 23:59:59`);
   }
 
+  // Optional: only show verification cases whose project product matches the current user's products.
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM user_product up
+        WHERE up.productId = p.productId AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(filters.userId || '');
+  }
+
   const whereClause = conditions.join(' AND ');
 
   const q = `

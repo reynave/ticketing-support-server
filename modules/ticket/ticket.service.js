@@ -103,6 +103,23 @@ async function listTickets(filters = {}) {
 
   
 
+  // Optional: only show tickets whose project product matches the current user's products.
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM user_product up
+        WHERE up.productId = p.productId AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(filters.userId || '');
+  }
+
   if (filters.issueNo !== undefined && String(filters.issueNo).trim() !== '') {
     conditions.push('t.issueNo = ?');
     params.push(String(filters.issueNo).trim());

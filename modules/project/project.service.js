@@ -317,6 +317,24 @@ async function listProjects(filters = {}) {
         params.push(String(filters.id));
     }
 
+    // Optional: only show projects whose product is registered to the current user
+    // (project.productId matches user_product.productId for the logged-in user).
+    const matchUserProduct =
+        filters.matchUserProduct === '1' ||
+        filters.matchUserProduct === 1 ||
+        filters.matchUserProduct === true;
+
+    if (matchUserProduct) {
+        conditions.push(
+            `EXISTS (
+                SELECT 1
+                FROM user_product up
+                WHERE up.productId = p.productId AND up.userId = ? AND up.presence = 1
+            )`
+        );
+        params.push(filters.userId || '');
+    }
+
     if (filters.keyword) {
         conditions.push('(p.id LIKE ? OR p.name LIKE ? OR c.name LIKE ?)');
         params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
