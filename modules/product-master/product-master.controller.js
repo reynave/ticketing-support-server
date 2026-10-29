@@ -3,7 +3,8 @@ const { success } = require('../../helpers/response');
 
 async function list(req, res, next) {
   try {
-    const data = await productMasterService.listProducts(req.query || {});
+    const userId = req.user?.id ? String(req.user.id) : '';
+    const data = await productMasterService.listProducts({ ...(req.query || {}), userId });
     return res.json(success('Product master fetched', data));
   } catch (error) {
     return next(error);

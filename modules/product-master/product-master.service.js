@@ -92,6 +92,23 @@ async function listProducts(filters = {}) {
     params.push(parseNumeric(filters.parentId, 'parentId'));
   }
 
+  // Optional: only show products that are registered to the current user (user_product).
+  const matchUserProduct =
+    filters.matchUserProduct === '1' ||
+    filters.matchUserProduct === 1 ||
+    filters.matchUserProduct === true;
+
+  if (matchUserProduct) {
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+        FROM user_product up
+        WHERE up.productId = p.id AND up.userId = ? AND up.presence = 1
+      )`
+    );
+    params.push(filters.userId || '');
+  }
+
   if (filters.keyword) {
     const keyword = String(filters.keyword).trim();
 
