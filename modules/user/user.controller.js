@@ -90,6 +90,26 @@ async function saveProducts(req, res, next) {
   }
 }
 
+async function listProjects(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await userService.listUserProjects(id);
+    return res.json(success('User projects fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listClients(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await userService.listUserClients(id);
+    return res.json(success('User clients fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
@@ -99,4 +119,6 @@ module.exports = {
   remove,
   listProducts,
   saveProducts,
+  listProjects,
+  listClients,
 };

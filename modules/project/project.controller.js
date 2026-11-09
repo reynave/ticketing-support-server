@@ -130,6 +130,24 @@ async function removeContact(req, res, next) {
 }
 
 
+async function createProjectTask(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.createProjectTask(id, req.body || {}, actorId);
+    return res.status(201).json(success('Task created', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
@@ -139,4 +157,5 @@ module.exports = {
   addContact,
   removeContact,
   ticketList,
+  createProjectTask,
 };

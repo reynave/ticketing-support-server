@@ -831,6 +831,8 @@ async function ticketList(filters = {}) {
         ts.name AS ticketStatusName,
         tc2.sorting as sorting,
         p.name AS projectName,
+        tc.name as ticketCategoryNameParent,
+        tc.id AS ticketCategoryIdParent,
        CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
         c.name AS clientName, tc2.name AS parentCategoryName,
         t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName
@@ -852,13 +854,114 @@ async function ticketList(filters = {}) {
     q,
     params
   );
- 
 
-  
+  // Buatkan array grouping berdasarkan ticketCategoryIdParent
+  const groupedMap = new Map();
 
-  return rows;
+  for (const row of rows) {
+    const parentId = row.ticketCategoryIdParent;
+    const key =
+      parentId === null || parentId === undefined
+        ? '__ungrouped__'
+        : String(parentId);
+
+    if (!groupedMap.has(key)) {
+      groupedMap.set(key, {
+        id: parentId,
+        name: row.ticketCategoryNameParent || row.ticketCategoryName || 'Ungrouped',
+        sorting: Number(row.sorting ?? 0),
+        data: [],
+      });
+    }
+
+    groupedMap.get(key).data.push(row);
+  }
+
+  const grouped = Array.from(groupedMap.values()).sort(
+    (a, b) => a.sorting - b.sorting || String(a.name).localeCompare(String(b.name))
+  );
+
+  return grouped;
 }
 
+
+async function createProjectTask(projectId, payload, actorId) {
+  const [projects] = await pool.execute(
+    'SELECT id, productId FROM project WHERE id = ? AND presence = 1 LIMIT 1',
+    [String(projectId)]
+  );
+
+  const project = projects[0];
+
+  if (!project) {
+    const error = new Error('Project not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const title = String(payload.title || '').trim();
+
+  if (!title) {
+    const error = new Error('title is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const assignTo = String(payload.assignTo || '').trim();
+
+  if (!assignTo) {
+    const error = new Error('assignTo is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const ticketCategoryId = Number(payload.ticketCategoryId || 0);
+
+  if (!Number.isInteger(ticketCategoryId) || ticketCategoryId < 1) {
+    const error = new Error('ticketCategoryId is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const description = String(payload.description || '').trim();
+  const targetCompletionDate = normalizeDateTime(payload.targetCompletionDate || new Date());
+  const actualCompletionDate = payload.actualCompletionDate
+    ? normalizeDateTime(payload.actualCompletionDate)
+    : targetCompletionDate;
+
+  const ticketId = await runningNumber('task');
+
+  await pool.execute(
+    `
+    INSERT INTO ticket (
+      id, ticketTypeId, issueNo, title, description, projectId,
+      submitBy, submitDate, targetCompletionDate, assignTo,
+      actualCompletionDate, ticketStatusId, ticketCategoryId,
+      presence, inputDate, inputBy, updateDate, updateBy,
+      productChildId
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, 1, ?, 1, NOW(), ?, NOW(), ?, ?)
+    `,
+    [
+      ticketId,
+      1,
+      '',
+      title,
+      description,
+      String(projectId),
+      String(actorId),
+      targetCompletionDate,
+      assignTo,
+      actualCompletionDate,
+      ticketCategoryId,
+      String(actorId),
+      String(actorId),
+      String(payload.productChildId || ''),
+    ]
+  );
+
+  return { id: ticketId };
+}
 
 module.exports = {
     listProjects,
@@ -868,5 +971,6 @@ module.exports = {
     deleteProject,
     addContactToProject,
     removeContactFromProject,
-    ticketList
+    ticketList,
+    createProjectTask
 };

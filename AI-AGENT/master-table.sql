@@ -1587,6 +1587,23 @@ INSERT INTO `user_type` (`id`, `name`, `status`, `presence`, `inputDate`, `input
 	(1, 'Internal', 1, 1, '2025-01-01 00:00:00', '1', '2025-01-01 00:00:00', '1'),
 	(2, 'External', 1, 1, '2025-01-01 00:00:00', '1', '2025-01-01 00:00:00', '1');
 
+-- Dumping structure for table thinktank-ticket.ticket_checklist
+CREATE TABLE IF NOT EXISTS `ticket_checklist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ticketId` varchar(50) NOT NULL DEFAULT '',
+  `ticketChecklistId` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(4) NOT NULL DEFAULT 0,
+  `description` text NOT NULL,
+  `sorting` mediumint(9) NOT NULL DEFAULT 999,
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` varchar(50) NOT NULL DEFAULT '',
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `ticketId` (`ticketId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

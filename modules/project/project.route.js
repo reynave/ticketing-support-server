@@ -18,6 +18,7 @@ router.get('/detail/:id', authMiddleware, projectController.detail);
 
 router.post('/', authMiddleware, projectController.create);
 router.post('/contact', authMiddleware, projectController.addContact);
+router.post('/:id/task', authMiddleware, projectController.createProjectTask);
 
 router.put('/contact', authMiddleware, projectController.removeContact);
 router.put('/:id', authMiddleware, projectController.update);

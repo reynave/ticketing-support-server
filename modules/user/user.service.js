@@ -161,8 +161,15 @@ async function listUsers(filters = {}) {
   }
 
   if (filters.keyword) {
-    conditions.push('(u.id LIKE ? OR u.email LIKE ? OR u.firstName LIKE ? OR u.lastName LIKE ?)');
-    params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
+    conditions.push('(u.id LIKE ? OR u.email LIKE ? OR u.firstName LIKE ? OR u.lastName LIKE ? OR u.phone LIKE ? OR u.mobile LIKE ?)');
+    params.push(
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`,
+      `%${filters.keyword}%`
+    );
   }
 
   const whereClause = `WHERE ${conditions.join(' AND ')}`;
@@ -571,6 +578,113 @@ async function saveUserProducts(id, payload, actorId) {
   return listUserProducts(id);
 }
 
+async function listUserProjects(id) {
+  await getUserForUpdate(id);
+
+  const [rows] = await pool.execute(
+    `
+    SELECT
+      p.id,
+      p.name,
+      c.name AS clientName,
+      pt.name AS projectTypeName,
+      pb.name AS projectBilleableName,
+      pr.name AS productName,
+      p.startDate,
+      p.endDate,
+      p.status,
+      rel.roleName
+    FROM project AS p
+    LEFT JOIN client AS c ON c.id = p.clientId
+    LEFT JOIN project_type AS pt ON pt.id = p.projectTypeId
+    LEFT JOIN project_billeable AS pb ON pb.id = p.projectBilleableId
+    LEFT JOIN product AS pr ON pr.id = p.productId
+    INNER JOIN (
+      SELECT projectId, GROUP_CONCAT(DISTINCT roleName ORDER BY roleName SEPARATOR ', ') AS roleName
+      FROM (
+        SELECT projectId,
+               CASE WHEN asManager = 1 THEN 'Manager' ELSE 'Member' END AS roleName
+        FROM project_users
+        WHERE userId = ? AND presence = 1
+        UNION ALL
+        SELECT projectId, 'Contact' AS roleName
+        FROM project_contact
+        WHERE userId = ? AND presence = 1
+      ) AS src
+      GROUP BY projectId
+    ) AS rel ON rel.projectId = p.id
+    WHERE p.presence = 1
+    ORDER BY p.inputDate DESC
+    `,
+    [id, id]
+  );
+
+  return rows;
+}
+
+async function listUserClients(id) {
+  const user = await getUserForUpdate(id);
+
+  const [rows] = await pool.execute(
+    `
+    SELECT
+      c.id,
+      c.code,
+      c.name,
+      c.address,
+      c.status,
+      i.name AS industryName,
+      rel.relation
+    FROM client AS c
+    LEFT JOIN industry AS i ON i.id = c.IndustryId
+    INNER JOIN (
+      SELECT clientId, GROUP_CONCAT(DISTINCT relation ORDER BY relation SEPARATOR ', ') AS relation
+      FROM (
+        SELECT p.clientId AS clientId, 'PIC' AS relation
+        FROM project AS p
+        INNER JOIN project_users AS pu
+          ON pu.projectId = p.id AND pu.userId = ? AND pu.presence = 1
+        WHERE p.presence = 1
+        UNION ALL
+        SELECT p.clientId AS clientId, 'Project Contact' AS relation
+        FROM project AS p
+        INNER JOIN project_contact AS pc
+          ON pc.projectId = p.id AND pc.userId = ? AND pc.presence = 1
+        WHERE p.presence = 1
+      ) AS src
+      GROUP BY clientId
+    ) AS rel ON rel.clientId = c.id
+    WHERE c.presence = 1
+    ORDER BY c.name ASC
+    `,
+    [id, id]
+  );
+
+  const ownClientId = Number(user.clientId);
+
+  if (ownClientId > 0 && !rows.some((row) => Number(row.id) === ownClientId)) {
+    const [own] = await pool.execute(
+      `
+      SELECT
+        c.id, c.code, c.name, c.address, c.status,
+        i.name AS industryName,
+        'Own Client' AS relation
+      FROM client AS c
+      LEFT JOIN industry AS i ON i.id = c.IndustryId
+      WHERE c.id = ? AND c.presence = 1
+      LIMIT 1
+      `,
+      [ownClientId]
+    );
+
+    if (own[0]) {
+      rows.unshift(own[0]);
+    }
+  }
+
+  return rows;
+}
+
 module.exports = {
   INTERNAL_USER_TYPE_ID,
   EXTERNAL_USER_TYPE_ID,
@@ -584,4 +698,6 @@ module.exports = {
   createExternalUserForClient,
   listUserProducts,
   saveUserProducts,
+  listUserProjects,
+  listUserClients,
 };
