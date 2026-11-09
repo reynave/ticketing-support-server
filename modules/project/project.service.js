@@ -835,11 +835,15 @@ async function ticketList(filters = {}) {
         tc.id AS ticketCategoryIdParent,
        CONCAT(tc2.name, ' - ', tc.name) AS ticketCategoryName,
         c.name AS clientName, tc2.name AS parentCategoryName,
-        t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName
+        t.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName,
+        t.productChildId, 
+        pr.name AS productChildName,
+        t.projectSorting
       FROM ticket t
       LEFT JOIN ticket_type tt ON tt.id = t.ticketTypeId
       LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
       left join project AS p ON p.id = t.projectId
+      left join product AS pr ON pr.id = t.productChildId
       left join ticket_categories AS tc ON tc.id = t.ticketCategoryId
       left join ticket_categories AS tc2 ON tc2.id = p.ticketCategoriesParentId
       left join client AS c ON c.id = p.clientId
@@ -847,7 +851,7 @@ async function ticketList(filters = {}) {
       WHERE t.presence = 1 AND   (
       ${whereClause}
       )  AND t.ticketStatusId < 900
-      ORDER BY t.inputDate DESC
+      ORDER BY t.projectSorting ASC, t.inputDate DESC
     `;
  console.log(q,params)
   const [rows] = await pool.execute(
@@ -963,6 +967,51 @@ async function createProjectTask(projectId, payload, actorId) {
   return { id: ticketId };
 }
 
+async function reorderProjectTasks(items, actorId) {
+  if (!Array.isArray(items) || items.length === 0) {
+    const error = new Error('items is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const conn = await pool.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    for (const entry of items) {
+      const id = String(entry.id || '').trim();
+      const projectSorting = Number(entry.projectSorting);
+
+      if (!id) {
+        const error = new Error('id is required');
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (!Number.isInteger(projectSorting) || projectSorting < 0) {
+        const error = new Error('projectSorting must be a non-negative integer');
+        error.statusCode = 400;
+        throw error;
+      }
+
+      await conn.execute(
+        'UPDATE ticket SET projectSorting = ?, updateDate = NOW(), updateBy = ? WHERE id = ? AND presence = 1',
+        [projectSorting, String(actorId), id]
+      );
+    }
+
+    await conn.commit();
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
+
+  return { reordered: items.length };
+}
+
 module.exports = {
     listProjects,
     getProjectDetail,
@@ -972,5 +1021,6 @@ module.exports = {
     addContactToProject,
     removeContactFromProject,
     ticketList,
-    createProjectTask
+    createProjectTask,
+    reorderProjectTasks
 };

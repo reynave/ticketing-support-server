@@ -148,6 +148,24 @@ async function createProjectTask(req, res, next) {
   }
 }
 
+async function reorderTasks(req, res, next) {
+  try {
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const items = Array.isArray(req.body?.items) ? req.body.items : [];
+    const data = await projectMasterService.reorderProjectTasks(items, actorId);
+    return res.json(success('Tasks reordered', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
@@ -158,4 +176,5 @@ module.exports = {
   removeContact,
   ticketList,
   createProjectTask,
+  reorderTasks,
 };

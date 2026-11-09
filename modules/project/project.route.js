@@ -21,6 +21,7 @@ router.post('/contact', authMiddleware, projectController.addContact);
 router.post('/:id/task', authMiddleware, projectController.createProjectTask);
 
 router.put('/contact', authMiddleware, projectController.removeContact);
+router.put('/task/reorder', authMiddleware, projectController.reorderTasks);
 router.put('/:id', authMiddleware, projectController.update);
 
 
