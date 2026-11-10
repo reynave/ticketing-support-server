@@ -1,7 +1,7 @@
 # Agent: Server Builder — Thinktank Ticketing System
 
 > 📌 **Dokumen ini adalah sumber kebenaran (single source of truth) untuk backend.**
-> Terakhir di-sync dengan kode: **30 September 2026** (commit `110ec46` "update master").
+> Terakhir di-sync dengan kode: **10 November 2026** (draft project + draft task).
 > Jika ada perubahan kode, dokumen ini **wajib** di-update pada sesi yang sama.
 
 ---
@@ -11,6 +11,7 @@
 - ✅ **Selesai**: Auth (internal + client), Master Data, Client, Project, User, Ticket Balance.
 - ✅ **Selesai**: Modul transaksi **Task / Case / Change Request** + Logs + Status Logs + Rating + Attachment upload.
 - ✅ **Selesai**: Modul pendukung — Template, Product Master, Ticket Categories, User Login History, Admin Report, Client Ticket (portal).
+- ✅ **Selesai**: Draft Project (`presence = 4`) + Draft Task (`project_ticket_draft`) — create, auto-save, publish (copy draft task → `ticket`), cascade delete.
 - 🟡 **Sebagian**: Socket.io — hanya event `connected` & `notification`. Realtime per-ticket **belum** diimplementasikan.
 - ⏳ **Belum ada**: refresh token / blacklisting token, unit test, pagination server-side, validasi `express-validator` di modul selain auth.
 
@@ -23,6 +24,8 @@
   - Task turunan **Change Request** mengisi kolom `crNoRef` = `id` CR.
 - 1 ticket = 2 jam / 1 manDay = 8 jam (dicatat lewat kolom `hours` dan tabel `ticket_balance`).
 - Client (external user) hanya melihat Case/CR milik project tempat ia tercatat di `project_contact`.
+- Draft project memakai `project.presence = 4` (belum publish); saat publish berubah jadi `presence = 1` & `status = 1`.
+- Draft task disimpan di tabel **`project_ticket_draft`** (mirror `ticket`). Saat project di-publish (`presence 4→1`), draft task di-copy ke `ticket` (`ticketTypeId = 1`, `ticketStatusId = 1`) lalu soft-delete di `project_ticket_draft`.
 
 ---
 
@@ -190,6 +193,7 @@ const actorId = req.user?.id ? String(req.user.id) : '1';
 | `cases` (Case) | `runningNumber('issue')` → `IS######` |
 | `change-requests` (CR) | `runningNumber('cr')` → `CR######` |
 | `project` | `PRJ-${randomUUID().split('-')[0].toUpperCase()}` |
+| `project_ticket_draft` (draft task) | `DRFT-${randomUUID().split('-')[0].toUpperCase()}` |
 | `user` | `USR-${randomUUID().split('-')[0].toUpperCase()}` |
 | `client` | AUTO_INCREMENT (id int; kolom `code` varchar diisi manual) |
 
@@ -280,6 +284,7 @@ status TINYINT, templateMaster VARCHAR(50), presence, audit...
 > ⚠️ **Known issue (belum diperbaiki)**: `clientId` masih `varchar(50)`, sementara `client.id` dan `user.clientId` bertipe `int(11)`. Kode saat ini menutupi ini dengan konversi `String()`. Disarankan ubah ke `INT` untuk konsistensi.
 > ⚠️ `ticketCategoriesParentId` merujuk `ticket_categories.id`.
 > ⚠️ `inputBy`/`updateBy` bertipe **varchar(50)** → diisi `user.id` (contoh: `USR-ADMIN`).
+> ⚠️ Nilai `presence`: `1` = published, `4` = **draft**, `0` = soft-delete. `status = 1` **wajib** saat create draft & publish.
 
 #### `project_contact`
 ```sql
@@ -292,6 +297,20 @@ Tabel penghubung user ↔ project. **Dipakai** modul `client-ticket` untuk menen
 id INT AI PK, projectId VARCHAR(50), userId VARCHAR(100), asManager TINYINT DEFAULT 0, presence, audit...
 ```
 Menandai user sebagai manager (asManager = 1) sebuah project.
+
+#### `project_ticket_draft`
+```sql
+id VARCHAR(50) PK, ticketTypeId INT DEFAULT 0, ticketCategoryId INT, ticketSeverityId INT,
+productChildId VARCHAR(50), crNoRef VARCHAR(50), issueNo VARCHAR(50),
+title VARCHAR(250), description TEXT, projectId VARCHAR(50),
+assignTo VARCHAR(50), targetCompletionDate DATETIME, actualCompletionDate DATETIME,
+ticketStatusId INT DEFAULT 0, rating TINYINT, sorting MEDIUMINT DEFAULT 999,
+projectSorting MEDIUMINT DEFAULT 999, presence, audit...
+```
+Draft task milik **draft project** (`presence = 4`), skema **mirror** `ticket`.
+- ID di-generate `DRFT-XXXXXXXX` (random), **bukan** `TA...`.
+- Saat publish project, di-copy ke `ticket` dengan id `runningNumber('task')` (TA...), `ticketStatusId = 1`, lalu soft-delete di `project_ticket_draft`.
+- Urutan di UI memakai `projectSorting` (drag-drop di halaman Project Create).
 
 
 ### Tabel Transaksi — Ticket
@@ -485,14 +504,25 @@ Health check: `GET /api` → `{ status: true, message: 'Server is running', data
 ### Project (`modules/project`)
 | Method | Endpoint | Keterangan |
 |---|---|---|
-| GET | `/api/project` | List projects |
+| GET | `/api/project` | List projects **published** (`presence = 1`) |
+| GET | `/api/project/drafts` | List **draft** projects (`presence = 4`, milik user login) |
 | GET | `/api/project/ticketList` | List ticket pada project (filter `projectId`) |
-| GET | `/api/project/detail/:id` | Detail project ⚠️ path `detail/:id`, **bukan** `/:id` |
+| GET | `/api/project/detail/:id` | Detail project ⚠️ path `detail/:id`, **bukan** `/:id` (bisa presence 1/4) |
 | POST | `/api/project` | Create project |
+| POST | `/api/project/draft` | Buat **draft project** kosong (`presence=4`, `status=1`), return `{ id }` |
 | POST | `/api/project/contact` | Tambah contact ke project (isi `project_contact`) |
 | PUT | `/api/project/contact` | Hapus contact dari project |
-| PUT | `/api/project/:id` | Update project |
-| DELETE | `/api/project/:id` | Soft delete project |
+| PUT | `/api/project/:id` | Update project — dukung **publish** (`presence 4→1`, `status=1`, copy draft task → `ticket`) |
+| DELETE | `/api/project/:id` | Soft delete project + **cascade** `project_ticket_draft` |
+
+### Draft Task (`modules/project`, tabel `project_ticket_draft`)
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/project/draftTasks?projectId=&ticketTypeId=` | List draft task (di-group by `ticketCategoryId`) |
+| POST | `/api/project/draftTasks` | Create draft task (body `projectId`, `ticketTypeId=1`, id `DRFT-...`) |
+| PUT | `/api/project/draftTasks/reorder` | Simpan urutan `projectSorting` — ⚠️ daftar **sebelum** `/:id` |
+| PUT | `/api/project/draftTasks/:id` | Update draft task |
+| DELETE | `/api/project/draftTasks/:id` | Soft delete draft task |
 
 ### Product Master (`modules/product-master`)
 | Method | Endpoint | Keterangan |
