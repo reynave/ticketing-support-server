@@ -87,9 +87,10 @@ Catatan khusus:
 
 ### Project
 - GET /api/project
-- GET /api/project/:id
+- GET /api/project/:id (via /detail/:id)
 - POST /api/project
-- PUT /api/project/:id
+- POST /api/project/draft  ← buat draft project kosong (presence=4), return { id }
+- PUT /api/project/:id  ← mendukung publish draft (presence 4→1) & update
 - DELETE /api/project/:id
 
 ### User

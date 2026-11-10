@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `auto_number` (
 INSERT INTO `auto_number` (`id`, `name`, `prefix`, `digit`, `runningNumber`, `lastRecord`, `updateDate`) VALUES
 	(324, 'project', 'P', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(325, 'client', 'C', 6, 0, NULL, '2024-01-01 00:00:00'),
-	(326, 'task', 'TA', 6, 81, 'TA000081', '2026-10-20 00:11:30'),
+	(326, 'task', 'TA', 6, 94, 'TA000094', '2026-11-09 18:05:22'),
 	(327, 'issue', 'IS', 6, 81, 'IS000081', '2026-10-14 21:47:51'),
 	(328, 'cr', 'CR', 6, 7, 'CR000007', '2026-09-28 15:47:59');
 
@@ -82,12 +82,24 @@ CREATE TABLE IF NOT EXISTS `client_product` (
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `clientId` (`clientId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.client_product: ~2 rows (approximately)
+-- Dumping data for table thinktank-ticket.client_product: ~13 rows (approximately)
 INSERT INTO `client_product` (`id`, `clientId`, `productId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(5, 351, 1, 1, 1, '2026-10-27 13:10:33', 'USR-ADMIN', '2026-10-27 13:10:33', 'USR-ADMIN'),
-	(6, 357, 1, 1, 1, '2026-10-27 13:10:38', 'USR-ADMIN', '2026-10-27 13:10:38', 'USR-ADMIN');
+	(5, 351, 1, 1, 0, '2026-10-27 13:10:33', 'USR-ADMIN', '2026-10-27 13:43:54', 'USR-ADMIN'),
+	(6, 357, 1, 1, 1, '2026-10-27 13:10:38', 'USR-ADMIN', '2026-10-27 13:10:38', 'USR-ADMIN'),
+	(7, 351, 1, 1, 0, '2026-10-27 13:43:54', 'USR-ADMIN', '2026-10-27 13:44:04', 'USR-ADMIN'),
+	(8, 351, 3, 1, 0, '2026-10-27 13:43:54', 'USR-ADMIN', '2026-10-27 13:44:04', 'USR-ADMIN'),
+	(9, 351, 2, 1, 0, '2026-10-27 13:43:54', 'USR-ADMIN', '2026-10-27 13:44:04', 'USR-ADMIN'),
+	(10, 351, 2, 1, 0, '2026-10-27 13:44:04', 'USR-ADMIN', '2026-10-27 13:44:32', 'USR-ADMIN'),
+	(11, 351, 1, 1, 1, '2026-10-27 13:44:32', 'USR-ADMIN', '2026-10-27 13:44:32', 'USR-ADMIN'),
+	(12, 351, 3, 1, 1, '2026-10-27 13:44:32', 'USR-ADMIN', '2026-10-27 13:44:32', 'USR-ADMIN'),
+	(13, 351, 2, 1, 1, '2026-10-27 13:44:32', 'USR-ADMIN', '2026-10-27 13:44:32', 'USR-ADMIN'),
+	(14, 361, 2, 1, 1, '2026-10-27 13:58:27', 'USR-ADMIN', '2026-10-27 13:58:27', 'USR-ADMIN'),
+	(15, 363, 2, 1, 1, '2026-10-28 15:27:28', 'USR-ADMIN', '2026-10-28 15:27:28', 'USR-ADMIN'),
+	(16, 364, 2, 1, 1, '2026-10-28 15:27:33', 'USR-ADMIN', '2026-10-28 15:27:33', 'USR-ADMIN'),
+	(17, 365, 2, 1, 1, '2026-10-28 15:27:38', 'USR-ADMIN', '2026-10-28 15:27:38', 'USR-ADMIN'),
+	(18, 366, 2, 1, 1, '2026-10-28 15:27:42', 'USR-ADMIN', '2026-10-28 15:27:42', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.global_setting
 CREATE TABLE IF NOT EXISTS `global_setting` (
@@ -178,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.product: ~19 rows (approximately)
 INSERT INTO `product` (`id`, `parentId`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -200,7 +212,10 @@ INSERT INTO `product` (`id`, `parentId`, `name`, `status`, `presence`, `inputDat
 	(16, 1, 'Module Project', 0, 1, '2026-08-11 16:07:29', 1, '2026-08-11 16:07:37', 1),
 	(17, 1, 'Construction', 0, 1, '2026-09-11 11:31:04', 1, '2026-09-11 11:37:21', 1),
 	(18, 1, 'Modul Construction', 1, 1, '2026-09-11 11:32:22', 1, '2026-09-11 11:32:22', 1),
-	(19, 1, 'Modul AI', 1, 1, '2026-09-16 09:19:26', 1, '2026-09-16 09:19:43', 1);
+	(19, 1, 'Modul AI', 1, 1, '2026-09-16 09:19:26', 1, '2026-09-16 09:19:43', 1),
+	(20, 2, 'B1 AP', 1, 1, '2026-10-28 16:18:58', 1, '2026-10-28 16:18:58', 1),
+	(21, 2, 'B1 AR', 1, 1, '2026-10-28 16:19:05', 1, '2026-10-28 16:19:05', 1),
+	(22, 2, 'B1 GL', 1, 1, '2026-10-28 16:19:17', 1, '2026-10-28 16:19:17', 1);
 
 -- Dumping structure for table thinktank-ticket.project
 CREATE TABLE IF NOT EXISTS `project` (
@@ -224,13 +239,14 @@ CREATE TABLE IF NOT EXISTS `project` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project: ~31 rows (approximately)
+-- Dumping data for table thinktank-ticket.project: ~32 rows (approximately)
 INSERT INTO `project` (`id`, `name`, `projectTypeId`, `projectBilleableId`, `productId`, `ticketCategoriesParentId`, `ticketBaseHours`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	('PRJ-049D3645', 'Project Fitfirst gold', 2, 1, 1, 10, 0, '351', '2026-07-13', '2026-10-30', 1, '1', 1, '2026-08-18 15:42:52', 'USR-ADMIN', '2026-09-11 18:09:51', 'USR-ADMIN'),
 	('PRJ-1BFC34AA', 'Project COBAAN DUNIA', 2, 1, 1, 123, 480, '365', '2026-09-11', '2026-09-11', 1, '', 1, '2026-09-11 15:04:22', 'USR-EF278E46', '2026-09-11 15:04:22', 'USR-EF278E46'),
 	('PRJ-1F4322E6', 'project cucoklogi', 2, 1, 1, 123, 2, '364', '2026-09-21', '2026-09-21', 0, '0', 1, '2026-09-21 13:02:09', 'USR-ADMIN', '2026-09-21 14:12:41', 'USR-ADMIN'),
 	('PRJ-206E47EB', 'TES', 1, 2, 1, 113, 0.5, '351', '2026-09-21', '2026-09-21', 1, '', 1, '2026-09-21 09:30:06', 'USR-ADMIN', '2026-09-21 09:30:06', 'USR-ADMIN'),
 	('PRJ-2A40B211', 'PROJECT KILAU TTS', 2, 1, 1, 123, 480, '365', '2026-09-11', '2026-09-11', 1, '0', 1, '2026-09-11 10:18:47', 'USR-EF278E46', '2026-09-21 11:03:31', 'USR-ADMIN'),
+	('PRJ-435F7968', 'Project Sap B1', 1, 1, 2, 113, 2, '361', '2026-10-28', '2026-10-28', 1, '', 1, '2026-10-28 16:18:04', 'USR-ADMIN', '2026-10-28 16:18:04', 'USR-ADMIN'),
 	('PRJ-54E3A483', 'Ticketing System 2026', 2, 1, 1, 0, 0, '351', '2026-07-10', '2026-08-31', 0, '0', 1, '2026-07-10 12:00:47', '1', '2026-07-13 16:00:18', 'USR-ADMIN'),
 	('PRJ-632CB07D', 'project TOP3', 2, 1, 1, 123, 40, '360', '2026-09-08', '2026-09-08', 1, '', 1, '2026-09-08 14:47:12', 'USR-EF278E46', '2026-09-08 14:47:12', 'USR-EF278E46'),
 	('PRJ-6628F029', 'Project 01 CUCOK', 2, 1, 1, 123, 2, '364', '2026-09-21', '2026-09-21', 1, '0', 1, '2026-09-21 14:14:39', 'USR-ADMIN', '2026-10-20 00:13:09', 'USR-ADMIN'),
@@ -239,6 +255,7 @@ INSERT INTO `project` (`id`, `name`, `projectTypeId`, `projectBilleableId`, `pro
 	('PRJ-822BC171', 'test 1', 1, 1, 1, 0, 0, '351', '2026-06-10', '2026-08-10', 1, 'TB-TEST', 0, '2026-06-10 16:58:11', '1', '2026-06-10 16:58:11', '1'),
 	('PRJ-95961757', 'PROJECT GLOWING TTS', 2, 1, 1, 123, 480, '365', '2026-09-09', '2026-09-09', 1, '0', 1, '2026-09-09 17:43:19', 'USR-EF278E46', '2026-09-11 11:31:20', 'USR-EF278E46'),
 	('PRJ-9E458A0C', 'PROJECT UOUO 01', 1, 1, 1, 113, 0, '362', '2026-09-07', '2026-09-07', 1, '0', 1, '2026-09-07 13:28:38', 'USR-EF278E46', '2026-09-08 14:30:21', 'USR-D0322088'),
+	('PRJ-B4FA7357', 'Porject baru 2 2', 2, 2, 2, 113, 3, '363', '2026-11-12', '2026-11-29', 0, '0', 4, '2026-11-10 15:55:12', 'USR-ADMIN', '2026-11-10 16:31:34', 'USR-ADMIN'),
 	('PRJ-B8887D5E', 'ASCO Akumatik', 1, 1, 1, 10, 0, '351', '2026-06-17', '2026-07-04', 1, '0', 1, '2026-06-17 17:12:04', '1', '2026-07-21 17:27:59', 'USR-ADMIN'),
 	('PRJ-B9FA8571', 'CRM Project by Felix', 2, 2, 1, 108, 0, '357', '2026-08-18', '2026-08-18', 1, '0', 1, '2026-08-18 15:59:06', 'USR-ADMIN', '2026-08-26 16:39:27', 'USR-ADMIN'),
 	('PRJ-BBAF0290', 'Project Diamond TTS', 1, 3, 1, 113, 0, '365', '2026-09-09', '2026-09-09', 1, '0', 1, '2026-09-09 18:00:16', 'USR-75D1A3D2', '2026-09-11 11:31:20', 'USR-EF278E46'),
@@ -324,6 +341,51 @@ INSERT INTO `project_contact` (`id`, `clientId`, `projectId`, `userId`, `presenc
 	(70, '364', 'PRJ-6628F029', 'USR-06F9BB55', 1, '2026-09-21 14:14:58', 'USR-ADMIN', '2026-09-21 14:14:58', 'USR-ADMIN'),
 	(71, '364', 'PRJ-6628F029', 'USR-A9F434EE', 1, '2026-09-30 22:43:34', 'USR-ADMIN', '2026-09-30 22:43:34', 'USR-ADMIN');
 
+-- Dumping structure for table thinktank-ticket.project_ticket_draft
+CREATE TABLE IF NOT EXISTS `project_ticket_draft` (
+  `id` varchar(50) NOT NULL DEFAULT '',
+  `ticketTypeId` int(11) NOT NULL DEFAULT 0,
+  `ticketCategoryId` int(11) NOT NULL,
+  `ticketSeverityId` int(11) NOT NULL,
+  `productChildId` varchar(50) NOT NULL DEFAULT '',
+  `crNoRef` varchar(50) NOT NULL DEFAULT '',
+  `issueNo` varchar(50) NOT NULL DEFAULT '',
+  `title` varchar(250) NOT NULL DEFAULT '',
+  `description` text NOT NULL,
+  `responseDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `lockTime` tinyint(4) NOT NULL DEFAULT 0,
+  `targetCompletationDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `actualWorkingDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `verificationDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `verificationHour` float NOT NULL DEFAULT 0,
+  `actualWorkingHour` float NOT NULL,
+  `ticketSolutionTimeId` smallint(6) NOT NULL DEFAULT 0,
+  `responseHour` float NOT NULL DEFAULT 0,
+  `projectId` varchar(50) NOT NULL DEFAULT '',
+  `submitBy` varchar(50) NOT NULL DEFAULT '',
+  `submitDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `deadlineDateTime` datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+  `targetCompletionDate` datetime NOT NULL,
+  `assignTo` varchar(50) NOT NULL DEFAULT '0',
+  `taskSolution` text NOT NULL DEFAULT '',
+  `actualCompletionDate` datetime NOT NULL,
+  `ticketStatusId` int(11) NOT NULL DEFAULT 0,
+  `rating` tinyint(4) NOT NULL,
+  `ratesBy` varchar(50) NOT NULL DEFAULT '',
+  `ticketEstimationCost` double NOT NULL DEFAULT 0,
+  `hours` double NOT NULL,
+  `sorting` mediumint(9) NOT NULL DEFAULT 999,
+  `projectSorting` mediumint(9) NOT NULL DEFAULT 999,
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` varchar(50) NOT NULL DEFAULT 'mysql',
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` varchar(50) NOT NULL DEFAULT 'mysql',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table thinktank-ticket.project_ticket_draft: ~0 rows (approximately)
+
 -- Dumping structure for table thinktank-ticket.project_type
 CREATE TABLE IF NOT EXISTS `project_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -359,9 +421,9 @@ CREATE TABLE IF NOT EXISTS `project_users` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=327 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=358 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_users: ~90 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_users: ~88 rows (approximately)
 INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(7, 'PRJ-54E3A483', 'USR-8C76A791', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
 	(8, 'PRJ-54E3A483', 'USR-ADMIN', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
@@ -446,13 +508,11 @@ INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence
 	(291, 'PRJ-E99C795A', 'USR-8E476F10', 0, 1, '2026-09-21 11:47:25', 'USR-ADMIN', '2026-09-21 11:47:25', 'USR-ADMIN'),
 	(292, 'PRJ-E99C795A', 'USR-EF278E46', 0, 1, '2026-09-21 11:47:25', 'USR-ADMIN', '2026-09-21 11:47:25', 'USR-ADMIN'),
 	(293, 'PRJ-E99C795A', 'USR-ADMIN', 1, 1, '2026-09-21 11:47:25', 'USR-ADMIN', '2026-09-21 11:47:25', 'USR-ADMIN'),
-	(297, 'PRJ-1F4322E6', 'USR-8E476F10', 0, 1, '2026-09-21 14:12:41', 'USR-ADMIN', '2026-09-21 14:12:41', 'USR-ADMIN'),
-	(298, 'PRJ-1F4322E6', 'USR-EF278E46', 0, 1, '2026-09-21 14:12:41', 'USR-ADMIN', '2026-09-21 14:12:41', 'USR-ADMIN'),
-	(299, 'PRJ-1F4322E6', 'USR-ADMIN', 0, 1, '2026-09-21 14:12:41', 'USR-ADMIN', '2026-09-21 14:12:41', 'USR-ADMIN'),
-	(323, 'PRJ-6628F029', 'USR-8E476F10', 1, 1, '2026-10-20 00:13:09', 'USR-ADMIN', '2026-10-20 00:13:09', 'USR-ADMIN'),
-	(324, 'PRJ-6628F029', 'USR-EF278E46', 0, 1, '2026-10-20 00:13:09', 'USR-ADMIN', '2026-10-20 00:13:09', 'USR-ADMIN'),
-	(325, 'PRJ-6628F029', 'USR-E5A4B811', 0, 1, '2026-10-20 00:13:09', 'USR-ADMIN', '2026-10-20 00:13:09', 'USR-ADMIN'),
-	(326, 'PRJ-6628F029', 'USR-ADMIN', 0, 1, '2026-10-20 00:13:09', 'USR-ADMIN', '2026-10-20 00:13:09', 'USR-ADMIN');
+	(353, 'PRJ-B4FA7357', 'USR-75D1A3D2', 1, 1, '2026-11-10 16:31:34', 'USR-ADMIN', '2026-11-10 16:31:34', 'USR-ADMIN'),
+	(354, 'PRJ-B4FA7357', 'USR-8E476F10', 0, 1, '2026-11-10 16:31:34', 'USR-ADMIN', '2026-11-10 16:31:34', 'USR-ADMIN'),
+	(355, 'PRJ-B4FA7357', 'USR-D0322088', 0, 1, '2026-11-10 16:31:34', 'USR-ADMIN', '2026-11-10 16:31:34', 'USR-ADMIN'),
+	(356, 'PRJ-B4FA7357', 'USR-318754F4', 0, 1, '2026-11-10 16:31:34', 'USR-ADMIN', '2026-11-10 16:31:34', 'USR-ADMIN'),
+	(357, 'PRJ-B4FA7357', 'USR-ADMIN', 0, 1, '2026-11-10 16:31:34', 'USR-ADMIN', '2026-11-10 16:31:34', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.rating
 CREATE TABLE IF NOT EXISTS `rating` (
@@ -491,14 +551,22 @@ CREATE TABLE IF NOT EXISTS `template` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template: ~3 rows (approximately)
+-- Dumping data for table thinktank-ticket.template: ~11 rows (approximately)
 INSERT INTO `template` (`id`, `name`, `clientId`, `description`, `version`, `tempateType`, `json`, `presence`, `status`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 'test 1', '', 'test 1', '20260810', 'project', '{"projectId":"PRJ-FA50EC5D","projectName":"Project Fitfirst gold","project":{"id":"PRJ-FA50EC5D","name":"Project Fitfirst gold","projectTypeId":3,"projectBilleableId":1,"productId":1,"ticketCategoriesParentId":10,"clientId":"351","startDate":"2026-07-13","endDate":"2026-10-30","status":1,"templateMaster":"0","presence":1,"inputDate":"2026-07-13 16:50:13","inputBy":"USR-ADMIN","updateDate":"2026-08-06 13:25:09","updateBy":"USR-ADMIN","clientName":"PT XYZ Jp.co","projectTypeName":"Software Support Fixed Cost","projectBilleableName":"Chrageable","productName":"Acumatica ERP","ticketBased":0,"users":[{"id":"USR-12788040","name":"Internal Tester","email":"781164843@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-405F00F4","name":"Internal Tester","email":"1781164861@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-ADMIN","name":"System Admin","email":"admin@thinktank.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":1,"checked":1},{"id":"USR-62199DD8","name":"Temp Updated User","email":"temp.user.crud@thinktank.local","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-8C76A791","name":"baba cdcd","email":"cso12333@email.com","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-E5A4B811","name":"abb abb","email":"anggie123@crm.co.id","userAuthLevel":"Administrator","division":"Division 1","position":"Position 2","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0}],"ticketCategories":[{"id":100,"name":"Blueprint"},{"id":102,"name":"Configuration"},{"id":105,"name":"Deployement"},{"id":106,"name":"GO LIVE"},{"id":103,"name":"SIT & UAT"},{"id":104,"name":"Training"}],"ticketBalance":{"ticketIn":"2146","ticketOut":"30","balance":"2116"},"contacts":[{"id":46,"userId":"DEMO1","name":"Client 200 Demo","phone":"021111111","email":"client2.demo@thinktank.local","projectId":"PRJ-FA50EC5D","division":"Division","position":"Position"},{"id":47,"userId":"DEMO2","name":"Client 300 Demo","phone":"021111111","email":"client3.demo@thinktank.local","projectId":"PRJ-FA50EC5D","division":"","position":""},{"id":52,"userId":"USR-9A0C9A66","name":"Abang Abang","phone":"234234","email":"ag@jagoan.com","projectId":"PRJ-FA50EC5D","division":"Division","position":"Position"}],"modules":[{"productId":1,"id":4,"name":"Module AR"},{"productId":1,"id":5,"name":"Module Fix Asset"}],"task":[{"id":100,"name":"Blueprint","data":[]},{"id":102,"name":"Configuration","data":[]},{"id":105,"name":"Deployement","data":[]},{"id":106,"name":"GO LIVE","data":[]},{"id":103,"name":"SIT & UAT","data":[]},{"id":104,"name":"Training","data":[]}],"cases":[{"id":100,"name":"Blueprint","data":[]},{"id":102,"name":"Configuration","data":[]},{"id":105,"name":"Deployement","data":[]},{"id":106,"name":"GO LIVE","data":[]},{"id":103,"name":"SIT & UAT","data":[]},{"id":104,"name":"Training","data":[]}],"cr":[{"id":100,"name":"Blueprint","data":[]},{"id":102,"name":"Configuration","data":[]},{"id":105,"name":"Deployement","data":[]},{"id":106,"name":"GO LIVE","data":[]},{"id":103,"name":"SIT & UAT","data":[]},{"id":104,"name":"Training","data":[]}]}}', 1, 1, '2026-08-10 17:12:18', 'USR-ADMIN', '2026-08-10 17:12:31', 'USR-ADMIN'),
 	(2, 'test Felix', '', '', '20260818', 'project', '{"projectId":"PRJ-B9FA8571","projectName":"CRM Project by Felix","project":{"id":"PRJ-B9FA8571","name":"CRM Project by Felix","projectTypeId":1,"projectBilleableId":2,"productId":1,"ticketCategoriesParentId":108,"clientId":"357","startDate":"2026-08-18","endDate":"2026-08-18","status":1,"templateMaster":"","presence":1,"inputDate":"2026-08-18 15:59:06","inputBy":"USR-ADMIN","updateDate":"2026-08-18 15:59:06","updateBy":"USR-ADMIN","clientName":"Astra Otto","projectTypeName":"Software Implementation","projectBilleableName":"Internal","productName":"Acumatica ERP","ticketBased":0,"users":[{"id":"USR-62199DD8","name":"Temp Updated User","email":"temp.user.crud@thinktank.local","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-ADMIN","name":"System Admin","email":"admin@thinktank.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":1,"checked":1},{"id":"USR-12788040","name":"Internal Tester","email":"781164843@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-405F00F4","name":"Internal Tester","email":"1781164861@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-8C76A791","name":"baba cdcd","email":"cso12333@email.com","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-ACF74981","name":"Admin3 ABC","email":"ABC3@admin.com","userAuthLevel":"Client Team","division":"Divisi","position":"Posisi","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-E5A4B811","name":"abb abb","email":"anggie123@crm.co.id","userAuthLevel":"Administrator","division":"Division 1","position":"Position 2","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-EF278E46","name":"Admin2 thinktank","email":"admin2@thinktank.local","userAuthLevel":"Administrator","division":"Divisi","position":"posisi","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0}],"ticketCategories":[{"id":110,"name":"Blue print"},{"id":112,"name":"development"},{"id":111,"name":"Testing"}],"ticketBalance":{"ticketIn":"0","ticketOut":"0","balance":"0"},"contacts":[],"modules":[{"productId":1,"id":4,"name":"Module AR"},{"productId":1,"id":5,"name":"Module Fixed Asset"},{"productId":1,"id":10,"name":"Module AP"},{"productId":1,"id":11,"name":"Module Finance"},{"productId":1,"id":12,"name":"Module Banking"},{"productId":1,"id":13,"name":"Module Purchase"},{"productId":1,"id":14,"name":"Module Sales"},{"productId":1,"id":15,"name":"Module Inventory"}],"templateName":null,"task":[{"id":110,"name":"Blue print","data":[]},{"id":112,"name":"development","data":[]},{"id":111,"name":"Testing","data":[]}],"cases":[{"id":110,"name":"Blue print","data":[]},{"id":112,"name":"development","data":[]},{"id":111,"name":"Testing","data":[]}],"cr":[{"id":110,"name":"Blue print","data":[]},{"id":112,"name":"development","data":[]},{"id":111,"name":"Testing","data":[]}]}}', 1, 1, '2026-08-18 16:00:53', 'USR-ADMIN', '2026-08-18 16:00:53', 'USR-ADMIN'),
 	(3, 'PRJ CUAN01', '', 'Project Harap Cuan', '20260826', 'project', '{"projectId":"PRJ-C8044CCC","projectName":"Project HARAP CUAN","project":{"id":"PRJ-C8044CCC","name":"Project HARAP CUAN","projectTypeId":2,"projectBilleableId":1,"productId":1,"ticketCategoriesParentId":123,"clientId":"361","startDate":"2026-08-26","endDate":"2026-08-26","status":1,"templateMaster":"","presence":1,"inputDate":"2026-08-26 16:13:12","inputBy":"USR-EF278E46","updateDate":"2026-08-26 16:13:12","updateBy":"USR-EF278E46","clientName":"PT. CUAN","projectTypeName":"Software Support Ticket Based","projectBilleableName":"Chrageable","productName":"Acumatica ERP","ticketBased":1,"users":[{"id":"USR-9B2C12BE","name":"admin2 Cuam","email":"admin2@cuan.com","userAuthLevel":"Client Team","division":"Divisi","position":"Position","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-EF278E46","name":"Admin2 thinktank","email":"admin2@thinktank.local","userAuthLevel":"Administrator","division":"Divisi","position":"posisi","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-ADMIN","name":"System Admin","email":"admin@thinktank.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":1,"checked":1},{"id":"USR-12788040","name":"Internal Tester","email":"781164843@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-405F00F4","name":"Internal Tester","email":"1781164861@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-62199DD8","name":"Temp Updated User","email":"temp.user.crud@thinktank.local","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-8C76A791","name":"baba cdcd","email":"cso12333@email.com","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-ACF74981","name":"Admin3 ABC","email":"ABC3@admin.com","userAuthLevel":"Client Team","division":"Divisi","position":"Posisi","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-B99A3272","name":"Admin TOP","email":"admin2@TOP.COM","userAuthLevel":"Client Team","division":"Division","position":"Position","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-E5A4B811","name":"abb abb","email":"anggie123@crm.co.id","userAuthLevel":"Administrator","division":"Division 1","position":"Position 2","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0}],"ticketCategories":[{"id":124,"name":"BUGS"},{"id":125,"name":"Configuration & Settingan"},{"id":128,"name":"Consultation"},{"id":127,"name":"Enhancement"},{"id":126,"name":"Perbaikan Data"},{"id":131,"name":"Upgrade"}],"ticketBalance":{"ticketIn":"0","ticketOut":"0","balance":"0"},"contacts":[],"modules":[{"productId":1,"id":4,"name":"Module AR"},{"productId":1,"id":5,"name":"Module Fixed Asset"},{"productId":1,"id":10,"name":"Module AP"},{"productId":1,"id":11,"name":"Module Finance"},{"productId":1,"id":12,"name":"Module Banking"},{"productId":1,"id":13,"name":"Module Purchase"},{"productId":1,"id":14,"name":"Module Sales"},{"productId":1,"id":15,"name":"Module Inventory"}],"templateName":null,"task":[{"id":124,"name":"BUGS","data":[]},{"id":125,"name":"Configuration & Settingan","data":[]},{"id":128,"name":"Consultation","data":[]},{"id":127,"name":"Enhancement","data":[]},{"id":126,"name":"Perbaikan Data","data":[]},{"id":131,"name":"Upgrade","data":[]}],"cases":[{"id":124,"name":"BUGS","data":[]},{"id":125,"name":"Configuration & Settingan","data":[]},{"id":128,"name":"Consultation","data":[]},{"id":127,"name":"Enhancement","data":[]},{"id":126,"name":"Perbaikan Data","data":[]},{"id":131,"name":"Upgrade","data":[]}],"cr":[{"id":124,"name":"BUGS","data":[]},{"id":125,"name":"Configuration & Settingan","data":[]},{"id":128,"name":"Consultation","data":[]},{"id":127,"name":"Enhancement","data":[]},{"id":126,"name":"Perbaikan Data","data":[]},{"id":131,"name":"Upgrade","data":[]}]}}', 1, 1, '2026-08-26 16:21:18', 'USR-EF278E46', '2026-08-26 16:21:18', 'USR-EF278E46'),
-	(4, 'Task baru 1111', '', 'Follow up from case IS000078', '20261019', 'task', '{"taskId":"TA000077","taskTitle":"ok task","task":{"id":"TA000077","ticketTypeId":1,"ticketCategoryId":131,"ticketSeverityId":0,"productChildId":"5","crNoRef":"","issueNo":"IS000078","title":"ok task","description":"Follow up from case IS000078","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-6628F029","submitBy":"USR-ADMIN","submitDate":"2026-10-07 18:15:31","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-16 21:07:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-16 21:07:00","ticketStatusId":1,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":3,"presence":1,"inputDate":"2026-10-07 18:15:31","inputBy":"USR-ADMIN","updateDate":"2026-10-19 22:14:05","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Open","projectName":"Project 01 CUCOK","productName":"Acumatica ERP","clientName":"PT. CUCOKLOGI KONSULTASI","projectType":"Software Support Ticket Based","submitByName":"System Admin","ticketCategory":"Upgrade","productChildName":"Module Fixed Asset","ParentCategoryName":"Acumatica Support","ticketCategoriesParentId":123}}', 1, 1, '2026-10-19 22:57:28', 'USR-ADMIN', '2026-10-19 22:57:28', 'USR-ADMIN');
+	(4, 'Task baru 1111', '', 'Follow up from case IS000078', '20261019', 'task', '{"taskId":"TA000077","taskTitle":"ok task","task":{"id":"TA000077","ticketTypeId":1,"ticketCategoryId":131,"ticketSeverityId":0,"productChildId":"5","crNoRef":"","issueNo":"IS000078","title":"ok task","description":"Follow up from case IS000078","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-6628F029","submitBy":"USR-ADMIN","submitDate":"2026-10-07 18:15:31","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-16 21:07:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-16 21:07:00","ticketStatusId":1,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":3,"presence":1,"inputDate":"2026-10-07 18:15:31","inputBy":"USR-ADMIN","updateDate":"2026-10-19 22:14:05","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Open","projectName":"Project 01 CUCOK","productName":"Acumatica ERP","clientName":"PT. CUCOKLOGI KONSULTASI","projectType":"Software Support Ticket Based","submitByName":"System Admin","ticketCategory":"Upgrade","productChildName":"Module Fixed Asset","ParentCategoryName":"Acumatica Support","ticketCategoriesParentId":123}}', 1, 1, '2026-10-19 22:57:28', 'USR-ADMIN', '2026-10-19 22:57:28', 'USR-ADMIN'),
+	(5, '123', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:11:57', 'USR-ADMIN', '2026-11-05 13:11:57', 'USR-ADMIN'),
+	(6, '3213', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:12:00', 'USR-ADMIN', '2026-11-05 13:12:00', 'USR-ADMIN'),
+	(7, '234', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:12:03', 'USR-ADMIN', '2026-11-05 13:12:03', 'USR-ADMIN'),
+	(8, '345', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:12:07', 'USR-ADMIN', '2026-11-05 13:12:07', 'USR-ADMIN'),
+	(9, '456', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:12:09', 'USR-ADMIN', '2026-11-05 13:12:09', 'USR-ADMIN'),
+	(10, '767', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:12:12', 'USR-ADMIN', '2026-11-05 13:12:12', 'USR-ADMIN'),
+	(11, '45656', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:12:15', 'USR-ADMIN', '2026-11-05 13:12:15', 'USR-ADMIN'),
+	(12, '45', '', '<p>test</p>', '20261105', 'task', '{"taskId":"TA000082","taskTitle":"tet","task":{"id":"TA000082","ticketTypeId":1,"ticketCategoryId":115,"ticketSeverityId":0,"productChildId":"20","crNoRef":"","issueNo":"","title":"tet","description":"<p>test</p>","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0.26669999957084656,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-435F7968","submitBy":"USR-ADMIN","submitDate":"2026-10-28 16:19:33","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-29 16:19:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-28 16:35:35","ticketStatusId":900,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"presence":1,"inputDate":"2026-10-28 16:19:33","inputBy":"1","updateDate":"2026-10-28 16:35:35","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Closed","projectName":"Project Sap B1","productName":"SAP B1","clientName":"PT. CUAN","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"Requirement Gathering","productChildName":"B1 AP","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-05 13:12:17', 'USR-ADMIN', '2026-11-05 13:12:17', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket
 CREATE TABLE IF NOT EXISTS `ticket` (
@@ -534,6 +602,7 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   `ticketEstimationCost` double NOT NULL DEFAULT 0,
   `hours` double NOT NULL,
   `sorting` mediumint(9) NOT NULL DEFAULT 999,
+  `projectSorting` mediumint(9) NOT NULL DEFAULT 999,
   `presence` tinyint(2) NOT NULL DEFAULT 1,
   `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `inputBy` varchar(50) NOT NULL DEFAULT 'mysql',
@@ -542,22 +611,30 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket: ~13 rows (approximately)
-INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	('IS000078', 2, 131, 30, '5', '', '', 'ok task', '<p>Screen CASE, saat create new task dari case -&gt; target completation date TAsk belum mengikuti dari field Target completaion date CASE</p>', '2026-10-07 18:07:00', 1, '2026-10-16 21:07:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 105, 171, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:51:23', '2026-10-07 21:51:23', '2026-10-07 21:51:23', 'USR-ADMIN', '<p>123</p>', '2026-10-07 18:07:48', 100, 0, '', 2, 4, 3, 1, '2026-10-07 17:51:23', '1', '2026-10-19 22:12:30', 'USR-ADMIN'),
-	('IS000079', 2, 127, 20, '4', '', '', '123', '123', '2026-10-14 21:52:00', 1, '2026-10-14 23:56:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 102, 2.07, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-11 15:43:31', '2026-10-13 15:43:31', '2026-10-13 15:43:31', 'USR-ADMIN', '', '2026-10-13 15:43:31', 100, 0, '', 0, 0, 2, 1, '2026-10-11 15:43:31', '1', '2026-10-19 22:12:30', 'USR-E5A4B811'),
-	('IS000080', 2, 131, 10, '4', '', '', '123', '<p>123123</p>', '2026-10-14 22:08:00', 1, '2026-10-14 23:12:00', '2026-10-14 22:09:11', '2026-10-14 22:09:11', 0, 0, 102, 1.07, 'PRJ-6628F029', 'USR-EF278E46', '2026-10-12 21:49:34', '2026-10-17 21:49:34', '2026-10-17 21:49:34', 'USR-ADMIN', '<p>asdfasdf</p>', '2026-10-14 22:09:07', 400, 0, '', 3, 6, 1, 1, '2026-10-12 21:49:34', '1', '2026-10-19 22:12:30', 'USR-EF278E46'),
-	('IS000081', 2, 131, 10, '4', '', '', '123', '<p>123</p>', '2026-10-14 21:47:00', 1, '2026-10-15 04:51:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 103, 7.07, 'PRJ-6628F029', 'USR-E5A4B811', '2026-10-14 21:47:51', '2026-10-19 21:47:51', '2026-10-19 21:47:51', 'USR-EF278E46', '<p>abc</p>', '2026-10-14 21:48:34', 100, 0, '', 3, 6, 4, 1, '2026-10-14 21:47:51', '1', '2026-10-19 22:12:30', 'USR-E5A4B811'),
-	('TA000072', 1, 131, 0, '5', '', '', '123123', '<p>123123</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 4.3333, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-06 11:05:34', '2026-01-01 00:00:00', '2026-10-07 00:00:00', 'USR-ADMIN', '', '2026-10-06 15:26:15', 900, 0, '', 0, 0, 999, 1, '2026-10-06 15:25:34', '1', '2026-10-06 15:26:15', 'USR-ADMIN'),
-	('TA000073', 1, 132, 0, '4', '', '', 'jam finish 8:31 PM', '<p>jam finish 8:31 PM</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.15, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:29:43', '2026-01-01 00:00:00', '2026-10-08 21:31:00', 'USR-ADMIN', '', '2026-10-07 17:38:47', 1, 0, '', 0, 0, 5, 1, '2026-10-07 17:29:43', '1', '2026-10-19 22:14:05', 'USR-ADMIN'),
-	('TA000074', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 00:00:00', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 4, 1, '2026-10-07 18:10:51', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
-	('TA000075', 1, 131, 0, '5', '', 'IS000078', 'test baru submit', 'Follow up from case IS000078 time baryu', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:14:35', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 6, 1, '2026-10-07 18:14:35', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
-	('TA000076', 1, 127, 0, '5', '', 'IS000078', 'ok task4', '<p>Follow up from case IS000078</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 171.5, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:01', '2026-01-01 00:00:00', '2026-10-20 21:07:00', 'USR-8E476F10', '', '2026-10-14 21:45:52', 100, 0, '', 0, 0, 1, 1, '2026-10-07 18:15:01', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-E5A4B811'),
-	('TA000077', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:31', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 3, 1, '2026-10-07 18:15:31', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
-	('TA000078', 1, 131, 0, '5', '', 'IS000078', 'ok task 34', '<p>Follow up from case IS000078 3</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 124.717, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-08 18:17:26', '2026-01-01 00:00:00', '2026-10-17 21:07:00', 'USR-8E476F10', '', '2026-10-13 23:00:48', 100, 0, '', 0, 0, 2, 1, '2026-10-07 18:17:26', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
-	('TA000079', 1, 131, 0, '5', '', 'IS000078', 'cccc', '<p>Follow up from case IS000078</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 50.85, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-10 18:18:12', '2026-01-01 00:00:00', '2026-10-17 21:07:00', 'USR-EF278E46', '', '2026-10-12 21:09:50', 100, 0, '', 0, 0, 7, 1, '2026-10-07 18:18:12', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
-	('TA000080', 1, 131, 0, '5', '', '', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-19 23:07:24', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 999, 1, '2026-10-19 23:07:24', '1', '2026-10-19 23:07:24', '1'),
-	('TA000081', 1, 131, 0, '4', '', 'IS000080', '123', '<p>Follow up from case IS000080</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.0333, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-20 00:11:30', '2026-01-01 00:00:00', '2026-10-15 23:12:00', 'USR-ADMIN', '', '2026-10-20 00:13:32', 1, 0, '', 0, 0, 999, 1, '2026-10-20 00:11:30', 'USR-ADMIN', '2026-10-20 00:13:32', 'USR-ADMIN');
+-- Dumping data for table thinktank-ticket.ticket: ~22 rows (approximately)
+INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `projectSorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('IS000078', 2, 131, 30, '5', '', '', 'ok task', '<p>Screen CASE, saat create new task dari case -&gt; target completation date TAsk belum mengikuti dari field Target completaion date CASE</p>', '2026-10-07 18:07:00', 1, '2026-10-16 21:07:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 105, 171, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:51:23', '2026-10-07 21:51:23', '2026-10-07 21:51:23', 'USR-ADMIN', '<p>123</p>', '2026-10-07 18:07:48', 100, 0, '', 2, 4, 3, 0, 1, '2026-10-07 17:51:23', '1', '2026-10-19 22:12:30', 'USR-ADMIN'),
+	('IS000079', 2, 127, 20, '4', '', '', '123', '123', '2026-10-14 21:52:00', 1, '2026-10-14 23:56:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 102, 2.07, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-11 15:43:31', '2026-10-13 15:43:31', '2026-10-13 15:43:31', 'USR-ADMIN', '', '2026-10-13 15:43:31', 100, 0, '', 0, 0, 2, 0, 1, '2026-10-11 15:43:31', '1', '2026-10-19 22:12:30', 'USR-E5A4B811'),
+	('IS000080', 2, 131, 10, '4', '', '', '123', '<p>123123</p>', '2026-10-14 22:08:00', 1, '2026-10-14 23:12:00', '2026-10-14 22:09:11', '2026-10-14 22:09:11', 0, 0, 102, 1.07, 'PRJ-6628F029', 'USR-EF278E46', '2026-10-12 21:49:34', '2026-10-17 21:49:34', '2026-10-17 21:49:34', 'USR-ADMIN', '<p>asdfasdf</p>', '2026-10-14 22:09:07', 400, 0, '', 3, 6, 1, 0, 1, '2026-10-12 21:49:34', '1', '2026-10-19 22:12:30', 'USR-EF278E46'),
+	('IS000081', 2, 131, 10, '4', '', '', '123', '<p>123</p>', '2026-10-14 21:47:00', 1, '2026-10-15 04:51:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 103, 7.07, 'PRJ-6628F029', 'USR-E5A4B811', '2026-10-14 21:47:51', '2026-10-19 21:47:51', '2026-10-19 21:47:51', 'USR-EF278E46', '<p>abc</p>', '2026-10-14 21:48:34', 100, 0, '', 3, 6, 4, 0, 1, '2026-10-14 21:47:51', '1', '2026-10-19 22:12:30', 'USR-E5A4B811'),
+	('TA000072', 1, 131, 0, '5', '', '', '123123', '<p>123123</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 4.3333, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-06 11:05:34', '2026-01-01 00:00:00', '2026-10-07 00:00:00', 'USR-ADMIN', '', '2026-10-06 15:26:15', 900, 0, '', 0, 0, 999, 0, 1, '2026-10-06 15:25:34', '1', '2026-10-06 15:26:15', 'USR-ADMIN'),
+	('TA000073', 1, 132, 0, '4', '', '', 'jam finish 8:31 PM', '<p>jam finish 8:31 PM</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.15, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 17:29:43', '2026-01-01 00:00:00', '2026-10-08 21:31:00', 'USR-ADMIN', '', '2026-10-07 17:38:47', 1, 0, '', 0, 0, 5, 0, 1, '2026-10-07 17:29:43', '1', '2026-10-19 22:14:05', 'USR-ADMIN'),
+	('TA000074', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 00:00:00', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 4, 0, 1, '2026-10-07 18:10:51', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
+	('TA000075', 1, 131, 0, '5', '', 'IS000078', 'test baru submit', 'Follow up from case IS000078 time baryu', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:14:35', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 6, 0, 1, '2026-10-07 18:14:35', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
+	('TA000076', 1, 127, 0, '5', '', 'IS000078', 'ok task4', '<p>Follow up from case IS000078</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 171.5, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:01', '2026-01-01 00:00:00', '2026-10-20 21:07:00', 'USR-8E476F10', '', '2026-10-14 21:45:52', 100, 0, '', 0, 0, 1, 0, 1, '2026-10-07 18:15:01', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-E5A4B811'),
+	('TA000077', 1, 131, 0, '5', '', 'IS000078', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-07 18:15:31', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 3, 0, 1, '2026-10-07 18:15:31', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
+	('TA000078', 1, 131, 0, '5', '', 'IS000078', 'ok task 34', '<p>Follow up from case IS000078 3</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 124.717, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-08 18:17:26', '2026-01-01 00:00:00', '2026-10-17 21:07:00', 'USR-8E476F10', '', '2026-10-13 23:00:48', 100, 0, '', 0, 0, 2, 0, 1, '2026-10-07 18:17:26', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
+	('TA000079', 1, 131, 0, '5', '', 'IS000078', 'cccc', '<p>Follow up from case IS000078</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 50.85, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-10 18:18:12', '2026-01-01 00:00:00', '2026-10-17 21:07:00', 'USR-EF278E46', '', '2026-10-12 21:09:50', 100, 0, '', 0, 0, 7, 0, 1, '2026-10-07 18:18:12', 'USR-ADMIN', '2026-10-19 22:14:05', 'USR-ADMIN'),
+	('TA000080', 1, 131, 0, '5', '', '', 'ok task', 'Follow up from case IS000078', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-19 23:07:24', '2026-01-01 00:00:00', '2026-10-16 21:07:00', 'USR-ADMIN', '', '2026-10-16 21:07:00', 1, 0, '', 0, 0, 999, 0, 1, '2026-10-19 23:07:24', '1', '2026-10-19 23:07:24', '1'),
+	('TA000081', 1, 131, 0, '4', '', 'IS000080', '123', '<p>Follow up from case IS000080</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.0333, 0, 0, 'PRJ-6628F029', 'USR-ADMIN', '2026-10-20 00:11:30', '2026-01-01 00:00:00', '2026-10-15 23:12:00', 'USR-ADMIN', '', '2026-10-20 00:13:32', 1, 0, '', 0, 0, 999, 0, 1, '2026-10-20 00:11:30', 'USR-ADMIN', '2026-10-20 00:13:32', 'USR-ADMIN'),
+	('TA000082', 1, 115, 0, '20', '', '', 'tet', '<p>test</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.2667, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-10-28 16:19:33', '2026-01-01 00:00:00', '2026-10-29 16:19:00', 'USR-ADMIN', '', '2026-10-28 16:35:35', 900, 0, '', 0, 0, 999, 0, 1, '2026-10-28 16:19:33', '1', '2026-10-28 16:35:35', 'USR-ADMIN'),
+	('TA000083', 1, 120, 0, '20', '', '', 'test 1', '<blockquote><p>test 1 123 123 12 asdfsd 123123123</p></blockquote>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 1.3333, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-11-09 13:10:44', '2026-01-01 00:00:00', '2026-11-29 13:10:00', 'USR-ADMIN', '<p>asdf sdfsdf</p>', '2026-11-09 14:30:58', 100, 0, '', 0, 0, 999, 1, 1, '2026-11-09 13:10:44', '1', '2026-11-09 18:05:13', 'USR-ADMIN'),
+	('TA000087', 1, 117, 0, '20', '', '', 'tet 11111', 'asdf', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-11-09 15:09:35', '2026-01-01 00:00:00', '2026-11-09 15:09:00', 'USR-ADMIN', '', '2026-11-09 15:09:00', 1, 0, '', 0, 0, 999, 0, 1, '2026-11-09 15:09:35', '1', '2026-11-09 15:09:35', '1'),
+	('TA000088', 1, 120, 0, '20', '', '', 'uat 12', 'uat 12', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-11-09 15:20:32', '2026-01-01 00:00:00', '2026-11-09 15:20:00', 'USR-ADMIN', '', '2026-11-09 15:20:00', 1, 0, '', 0, 0, 999, 2, 1, '2026-11-09 15:20:32', '1', '2026-11-09 18:05:13', 'USR-ADMIN'),
+	('TA000091', 1, 121, 0, '', '', '', 'test213', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.35, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-11-09 15:55:18', '2026-01-01 00:00:00', '2026-11-10 15:55:00', 'USR-75D1A3D2', '', '2026-11-09 16:16:48', 1, 0, '', 0, 0, 999, 1, 1, '2026-11-09 15:55:18', 'USR-ADMIN', '2026-11-09 18:14:47', 'USR-ADMIN'),
+	('TA000092', 1, 121, 0, '', '', '', 't123 123', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.0667, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-11-09 16:11:33', '2026-01-01 00:00:00', '2026-11-10 16:11:00', 'USR-8E476F10', '', '2026-11-09 16:16:19', 990, 0, '', 0, 0, 999, 0, 1, '2026-11-09 16:11:33', 'USR-ADMIN', '2026-11-09 16:16:19', 'USR-ADMIN'),
+	('TA000093', 1, 121, 0, '20', '', '', 't111', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-11-09 17:39:16', '2026-01-01 00:00:00', '2026-11-09 17:39:16', 'USR-ADMIN', '', '2026-11-09 17:39:16', 1, 0, '', 0, 0, 999, 3, 1, '2026-11-09 17:39:16', 'USR-ADMIN', '2026-11-09 18:14:47', 'USR-ADMIN'),
+	('TA000094', 1, 121, 0, '20', '', '', 'abc', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-435F7968', 'USR-ADMIN', '2026-11-09 18:05:22', '2026-01-01 00:00:00', '2026-11-09 18:05:22', 'USR-ADMIN', '', '2026-11-09 18:05:22', 1, 0, '', 0, 0, 999, 2, 1, '2026-11-09 18:05:22', 'USR-ADMIN', '2026-11-09 18:14:47', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_balance
 CREATE TABLE IF NOT EXISTS `ticket_balance` (
@@ -681,6 +758,30 @@ INSERT INTO `ticket_categories` (`id`, `parentId`, `name`, `weight`, `sorting`, 
 	(133, 129, 'Overview Summary Customer', 0, 0, 1, 1, '2026-08-18 13:18:07', 1, '2026-08-18 13:18:07', 1),
 	(134, 129, 'POC', 0, 0, 1, 1, '2026-08-18 13:18:24', 1, '2026-08-18 13:18:24', 1);
 
+-- Dumping structure for table thinktank-ticket.ticket_checklist
+CREATE TABLE IF NOT EXISTS `ticket_checklist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ticketId` varchar(50) NOT NULL DEFAULT '',
+  `ticketChecklistId` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(4) NOT NULL DEFAULT 0,
+  `description` text NOT NULL,
+  `sorting` mediumint(9) NOT NULL DEFAULT 999,
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` varchar(50) NOT NULL DEFAULT 'mysql',
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` varchar(50) NOT NULL DEFAULT 'mysql',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table thinktank-ticket.ticket_checklist: ~5 rows (approximately)
+INSERT INTO `ticket_checklist` (`id`, `ticketId`, `ticketChecklistId`, `status`, `description`, `sorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(3, 'TA000083', 0, 0, 'ok 1', 1, 0, '2026-11-09 14:20:50', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN'),
+	(4, 'TA000083', 3, 1, '123', 1, 0, '2026-11-09 14:20:59', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN'),
+	(5, 'TA000083', 3, 0, '123 asdf asdf', 3, 0, '2026-11-09 14:21:03', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN'),
+	(6, 'TA000083', 0, 0, 'list module', 2, 0, '2026-11-09 14:22:32', 'USR-ADMIN', '2026-11-09 14:47:58', 'USR-ADMIN'),
+	(7, 'TA000083', 3, 1, '123', 2, 0, '2026-11-09 14:31:08', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN');
+
 -- Dumping structure for table thinktank-ticket.ticket_logs
 CREATE TABLE IF NOT EXISTS `ticket_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -696,7 +797,7 @@ CREATE TABLE IF NOT EXISTS `ticket_logs` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=360 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=364 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.ticket_logs: ~37 rows (approximately)
 INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeDateTime`, `description`, `presence`, `inputBySystem`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -736,7 +837,11 @@ INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeD
 	(356, 0, 'TA000076', '2026-10-21 17:49:00', '2026-10-21 17:50:00', '', 1, 0, '2026-10-21 17:49:10', 'USR-ADMIN', '2026-10-21 17:49:10', 'USR-ADMIN'),
 	(357, 0, 'TA000076', '2026-10-21 17:49:00', '2026-10-21 17:50:00', '', 1, 0, '2026-10-21 17:49:15', 'USR-ADMIN', '2026-10-21 17:49:15', 'USR-ADMIN'),
 	(358, 357, 'TA000076', '2026-10-21 17:49:00', '2026-10-21 17:50:00', '', 1, 0, '2026-10-21 17:49:28', 'USR-ADMIN', '2026-10-21 17:49:28', 'USR-ADMIN'),
-	(359, 0, 'TA000076', '2026-10-21 17:49:00', '2026-10-21 17:50:00', '', 1, 0, '2026-10-21 17:50:36', 'USR-ADMIN', '2026-10-21 17:50:36', 'USR-ADMIN');
+	(359, 0, 'TA000076', '2026-10-21 17:49:00', '2026-10-21 17:50:00', '', 1, 0, '2026-10-21 17:50:36', 'USR-ADMIN', '2026-10-21 17:50:36', 'USR-ADMIN'),
+	(360, 0, 'TA000082', '2026-10-28 16:35:35', '2026-10-28 16:35:35', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong> ', 1, 0, '2026-10-28 16:35:35', 'USR-ADMIN', '2026-10-28 16:35:35', 'USR-ADMIN'),
+	(361, 0, 'TA000083', '2026-11-09 13:26:50', '2026-11-09 13:26:50', 'Update Status from <strong>Open</strong> To  <strong>In Progress</strong> ', 1, 0, '2026-11-09 13:26:50', 'USR-ADMIN', '2026-11-09 13:26:50', 'USR-ADMIN'),
+	(362, 0, 'TA000092', '2026-11-09 16:16:19', '2026-11-09 16:16:19', 'Update Status from <strong>Open</strong> To  <strong>Cancelled</strong> ', 1, 0, '2026-11-09 16:16:19', 'USR-ADMIN', '2026-11-09 16:16:19', 'USR-ADMIN'),
+	(363, 0, 'TA000091', '2026-11-09 16:16:48', '2026-11-09 16:16:48', 'Update Assignee from <strong>Admin2 thinktank</strong> To  <strong>Admin2 TTS</strong> ', 1, 0, '2026-11-09 16:16:48', 'USR-ADMIN', '2026-11-09 16:16:48', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_logs_attachments
 CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
@@ -1048,7 +1153,7 @@ INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAu
 	('USR-3359BCCE', 'admin3@thinktank.local', 0, 1, '$2b$04$GgK0mWtKswkHnmz4Ni8CzOj3kClx6lVLbpkakCwW00cdF4FjINelG', 2, 'Admin3', 'thinktank', NULL, NULL, '2000-01-01', 'Divisi', 'Posisi', 1, 1, '2026-09-07 13:57:46', 1, '2026-09-08 13:29:16', 1),
 	('USR-39C10981', 'ac@gmail.com1', 351, 2, '$2b$04$kJhSlqElVD5/9AmyEjP1qOvzlTO./WwjYerz9EWKa2xe38jI0tanC', 0, 'ag', 'agggg', '32434234', NULL, '2000-01-01', '', '', 1, 1, '2026-07-23 16:27:35', 1, '2026-08-04 14:50:36', 1),
 	('USR-3C793021', 'delete.1789974394574606880.ITSupport@cucok', 364, 2, '$2b$04$10wdQAneVU3vscCxhaN8WO7IcJr6lsGJG6RDod/Z6HSXzhKnSIHie', 0, 'ITSupport', 'cucoklogi', '222222', '', '2000-01-01', 'IT', 'Posisi', 0, 0, '2026-09-21 13:03:56', 1, '2026-09-21 14:06:34', 1),
-	('USR-405F00F4', '1781164861@client.local', 0, 1, '$2b$04$AOsIwcrlShK0kLi/mArz2ei57DRvpGh/z3zKvLCn8rUmcBCZiEY.O', 1, 'Internal', 'Tester', NULL, NULL, '2000-01-01', '', '', 0, 1, '2026-06-11 15:01:01', 1, '2026-06-11 15:01:01', 1),
+	('USR-405F00F4', 'delete.1794216206274191746.1781164861@client.local', 0, 1, '$2b$04$AOsIwcrlShK0kLi/mArz2ei57DRvpGh/z3zKvLCn8rUmcBCZiEY.O', 1, 'Internal', 'Tester', NULL, NULL, '2000-01-01', '', '', 0, 0, '2026-06-11 15:01:01', 1, '2026-11-09 16:23:26', 1),
 	('USR-477578D1', 'ABC2@admin.com', 358, 2, '$2b$04$L/Qi.Yc.6VPqG5h2fbmZ.OC1z.JIj9soTgVP3lH3BzCGtZD1ocL8W', 0, 'Admin2', 'ABC', '09999', NULL, '2000-01-01', 'Division', 'Position', 1, 1, '2026-08-14 15:26:34', 1, '2026-08-14 15:34:51', 1),
 	('USR-48D7A6DE', 'angg111ie@crm.co.id', 357, 2, '$2b$04$i6rJOpE7rP5OshdUUodJ1eAoKBEwGbFJvpGxRKmSDfk3Zp7b656FC', 0, 'aaaa', 'aaa', '123213', NULL, '2000-01-01', '', '', 1, 1, '2026-07-30 15:35:11', 1, '2026-07-30 15:35:11', 1),
 	('USR-4C49A252', 'delete.1789974397161329655.admin@cucok.lokal', 364, 2, '$2b$04$eZ6RK5IoAOkq9fPNRk3ov.5QLB/g7Pdp4GGX.aFuEcY2/EML4TiES', 0, 'admin', 'cucok', '1111', NULL, '2000-01-01', 'support', 'posisi', 0, 0, '2026-09-21 12:59:20', 1, '2026-09-21 14:06:37', 1),
@@ -1069,7 +1174,7 @@ INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAu
 	('USR-9B8746FD', 'ext.1781164821.2@thinktank.local', 353, 2, '$2b$04$HtnLpRDw4ChNT73Uh26.s.GaDhDAKk2sWx03N2a2r6LDHYIhoT94O', 2, 'External', 'Two', NULL, NULL, '2000-01-01', '', '', 0, 1, '2026-06-11 15:00:21', 1, '2026-06-11 15:00:21', 1),
 	('USR-A9F434EE', 'baba@yayahocl.com', 364, 2, '$2b$04$c4ZHzod6q688eWqX2rlXEeOBbsEsYoRsrMEAcXqAkSG/MB9/jtmGS', 0, 'baba', '', '', '', '2000-01-01', '', '', 1, 1, '2026-09-30 22:43:32', 1, '2026-09-30 22:43:32', 1),
 	('USR-ACF74981', 'ABC3@admin.com', 0, 1, '$2b$04$nVrh9kgDLXkDYoexz4Kovu3vl64TkGYhS5/OR27I0ADyzR/260cZ2', 14, 'Admin3', 'ABC', NULL, NULL, '2000-01-01', 'Divisi', 'Posisi', 1, 1, '2026-08-14 15:29:22', 1, '2026-08-14 15:33:22', 1),
-	('USR-ADMIN', 'admin@thinktank.local', 0, 1, '$2b$04$pBuL95VqIupLzvuvu399huQEYeuC5bJbEfAU.6uo58Xq3xVIs6BLS', 1, 'System', 'Admin', '021000000', '081200000001', '1990-01-01', '', '', 1, 1, '2026-06-10 15:53:03', 1, '2026-10-27 13:02:44', 1),
+	('USR-ADMIN', 'admin@thinktank.local', 0, 1, '$2b$04$pBuL95VqIupLzvuvu399huQEYeuC5bJbEfAU.6uo58Xq3xVIs6BLS', 1, 'System', 'Admin', '021000000', '081200000001', '1990-01-01', '', '', 1, 1, '2026-06-10 15:53:03', 1, '2026-10-28 16:06:17', 1),
 	('USR-B910B246', 'anggie@crm.co.id', 357, 2, '$2b$04$uVlvlM8yXEfyYFcyBSOHI.FwJXTrmFh0LYKikmYxRJ8.LvSBnKp/y', 0, 'abc', 'abc', '123', NULL, '2000-01-01', '', '', 1, 1, '2026-07-30 15:03:04', 1, '2026-07-30 15:03:04', 1),
 	('USR-B99A3272', 'admin2@TOP.COM', 0, 1, '$2b$04$mRE9Rc0Esw0HMGvTHLYCIe4UECOs1e4M7DRlZXMVEyozj2YZxolo.', 14, 'Admin', 'TOP', NULL, NULL, '2000-01-01', 'Division', 'Position', 1, 1, '2026-08-26 15:40:20', 1, '2026-08-26 15:40:20', 1),
 	('USR-CB2038BF', 'admin@cuan.com', 361, 2, '$2b$04$fPkfnSpThH8FDxAq6MxkKuyd4GY.c5Qs85BC2vYKv6SKS45XYdPZ.', 0, 'Admin', 'CUAN', '111111', NULL, '2000-01-01', 'Divisi', 'Posisi', 1, 1, '2026-08-26 15:59:31', 1, '2026-08-26 15:59:31', 1),
@@ -1112,15 +1217,15 @@ INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`,
 	(357, 1, 1006, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:52:59', 1),
 	(358, 1, 1007, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:52:59', 1),
 	(359, 1, 2001, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:52:59', 1),
-	(360, 1, 2002, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:53:00', 1),
+	(360, 1, 2002, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-10-28 15:27:08', 1),
 	(361, 1, 2003, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:53:00', 1),
 	(362, 1, 2004, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:53:00', 1),
 	(363, 1, 5005, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:53:00', 1),
 	(364, 1, 5006, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:53:00', 1),
 	(365, 1, 5007, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:18', 1, '2026-09-11 17:53:00', 1),
-	(366, 1, 6000, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:19', 1, '2026-09-11 17:53:00', 1),
-	(367, 1, 6001, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:19', 1, '2026-09-11 17:53:01', 1),
-	(368, 1, 6002, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:19', 1, '2026-09-11 17:53:01', 1),
+	(366, 1, 6000, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:19', 1, '2026-10-29 17:10:35', 1),
+	(367, 1, 6001, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:19', 1, '2026-10-29 17:10:35', 1),
+	(368, 1, 6002, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:19', 1, '2026-10-29 17:10:35', 1),
 	(369, 2, 1001, 1, 1, 1, 0, 0, 1, '2026-07-08 14:02:30', 1, '2026-09-08 13:33:03', 1),
 	(370, 2, 1002, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:30', 1, '2026-09-08 13:33:03', 1),
 	(371, 2, 1003, 1, 1, 1, 1, 0, 1, '2026-07-08 14:02:30', 1, '2026-09-08 13:33:03', 1),
@@ -1238,7 +1343,7 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=311 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=324 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table thinktank-ticket.user_login_history: ~258 rows (approximately)
 INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `userAgent`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
@@ -1547,7 +1652,20 @@ INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `use
 	(307, 'USR-ADMIN', '2026-10-21 17:47:56', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(308, 'USR-ADMIN', '2026-10-23 13:11:40', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(309, 'USR-ADMIN', '2026-10-23 13:17:45', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
-	(310, 'USR-ADMIN', '2026-10-27 12:15:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
+	(310, 'USR-ADMIN', '2026-10-27 12:15:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(311, 'USR-ADMIN', '2026-10-27 13:59:38', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(312, 'USR-ADMIN', '2026-10-28 15:24:23', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(313, 'USR-ADMIN', '2026-10-28 15:27:10', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(314, 'USR-ADMIN', '2026-10-28 15:44:55', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(315, 'USR-ADMIN', '2026-10-29 17:01:08', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(316, 'USR-ADMIN', '2026-10-29 17:04:42', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(317, 'USR-ADMIN', '2026-10-29 17:05:13', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(318, 'USR-ADMIN', '2026-10-29 17:10:37', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(319, 'USR-ADMIN', '2026-11-05 12:44:11', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(320, 'USR-ADMIN', '2026-11-09 12:11:57', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(321, 'USR-ADMIN', '2026-11-09 17:25:56', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(322, 'USR-ADMIN', '2026-11-09 18:12:07', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(323, 'USR-ADMIN', '2026-11-10 15:24:54', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
 
 -- Dumping structure for table thinktank-ticket.user_product
 CREATE TABLE IF NOT EXISTS `user_product` (
@@ -1561,13 +1679,19 @@ CREATE TABLE IF NOT EXISTS `user_product` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_product: ~3 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_product: ~9 rows (approximately)
 INSERT INTO `user_product` (`id`, `userId`, `productId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-75D1A3D2', 1, 1, 1, '2026-10-27 12:57:18', 'USR-ADMIN', '2026-10-27 12:57:18', 'USR-ADMIN'),
 	(6, 'USR-75D1A3D2', 3, 1, 1, '2026-10-27 12:57:18', 'USR-ADMIN', '2026-10-27 12:57:18', 'USR-ADMIN'),
-	(7, 'USR-ADMIN', 2, 1, 1, '2026-10-27 13:02:44', 'USR-ADMIN', '2026-10-27 13:02:44', 'USR-ADMIN');
+	(7, 'USR-ADMIN', 2, 1, 0, '2026-10-27 13:02:44', 'USR-ADMIN', '2026-10-27 13:37:43', 'USR-ADMIN'),
+	(8, 'USR-ADMIN', 1, 1, 0, '2026-10-27 13:37:43', 'USR-ADMIN', '2026-10-27 13:58:42', 'USR-ADMIN'),
+	(9, 'USR-ADMIN', 3, 1, 0, '2026-10-27 13:37:43', 'USR-ADMIN', '2026-10-27 13:58:42', 'USR-ADMIN'),
+	(10, 'USR-ADMIN', 2, 1, 0, '2026-10-27 13:37:43', 'USR-ADMIN', '2026-10-27 13:58:42', 'USR-ADMIN'),
+	(11, 'USR-ADMIN', 2, 1, 0, '2026-10-27 13:58:42', 'USR-ADMIN', '2026-10-28 15:27:53', 'USR-ADMIN'),
+	(12, 'USR-ADMIN', 1, 1, 0, '2026-10-28 15:27:53', 'USR-ADMIN', '2026-10-28 16:06:17', 'USR-ADMIN'),
+	(13, 'USR-ADMIN', 2, 1, 1, '2026-10-28 16:06:17', 'USR-ADMIN', '2026-10-28 16:06:17', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.user_type
 CREATE TABLE IF NOT EXISTS `user_type` (
@@ -1586,23 +1710,6 @@ CREATE TABLE IF NOT EXISTS `user_type` (
 INSERT INTO `user_type` (`id`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 'Internal', 1, 1, '2025-01-01 00:00:00', '1', '2025-01-01 00:00:00', '1'),
 	(2, 'External', 1, 1, '2025-01-01 00:00:00', '1', '2025-01-01 00:00:00', '1');
-
--- Dumping structure for table thinktank-ticket.ticket_checklist
-CREATE TABLE IF NOT EXISTS `ticket_checklist` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `ticketId` varchar(50) NOT NULL DEFAULT '',
-  `ticketChecklistId` int(11) NOT NULL DEFAULT 0,
-  `status` tinyint(4) NOT NULL DEFAULT 0,
-  `description` text NOT NULL,
-  `sorting` mediumint(9) NOT NULL DEFAULT 999,
-  `presence` tinyint(2) NOT NULL DEFAULT 1,
-  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
-  `inputBy` varchar(50) NOT NULL DEFAULT '',
-  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
-  `updateBy` varchar(50) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `ticketId` (`ticketId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

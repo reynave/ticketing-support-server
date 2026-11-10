@@ -34,6 +34,16 @@ async function list(req, res, next) {
   }
 }
 
+async function listDrafts(req, res, next) {
+  try {
+    const userId = req.user?.id ? String(req.user.id) : '';
+    const data = await projectMasterService.listProjectDrafts({ userId });
+    return res.json(success('Project drafts fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function detail(req, res, next) {
   try {
     const id = parseId(req.params.id);
@@ -75,11 +85,118 @@ async function ticketList(req, res, next) {
 }
 
 
+async function draftTaskList(req, res, next) {
+  try {
+    const filters = {
+      ...(req.query || {}),
+      ticketTypeId: req.query?.ticketTypeId ?? 1,
+    };
+
+    const data = await projectMasterService.draftTaskList(filters);
+    return res.json(success('Draft task list fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+async function createProjectDraftTask(req, res, next) {
+  try {
+    const projectId = String(req.body?.projectId || '').trim();
+
+    if (!projectId) {
+      const error = new Error('projectId is required');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.createProjectDraftTask(projectId, req.body || {}, actorId);
+    return res.status(201).json(success('Draft task created', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+async function updateProjectDraftTask(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.updateProjectDraftTask(id, req.body || {}, actorId);
+    return res.json(success('Draft task updated', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function deleteProjectDraftTask(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.deleteProjectDraftTask(id, actorId);
+    return res.json(success('Draft task deleted', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+async function reorderDraftTasks(req, res, next) {
+  try {
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const items = Array.isArray(req.body?.items) ? req.body.items : [];
+    const data = await projectMasterService.reorderProjectDraftTasks(items, actorId);
+    return res.json(success('Draft tasks reordered', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 async function create(req, res, next) {
   try {
     const actorId = req.user?.id ? String(req.user.id) : '1';
     const data = await projectMasterService.createProject(req.body || {}, actorId);
     return res.status(201).json(success('Project master created', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function createDraft(req, res, next) {
+  try {
+    const actorId = req.user?.id ? String(req.user.id) : '1';
+    const data = await projectMasterService.createProjectDraft(actorId);
+    return res.status(201).json(success('Project draft created', data));
   } catch (error) {
     return next(error);
   }
@@ -168,13 +285,20 @@ async function reorderTasks(req, res, next) {
 
 module.exports = {
   list,
+  listDrafts,
   detail,
   create,
+  createDraft,
   update,
   remove,
   addContact,
   removeContact,
   ticketList,
+  draftTaskList,
+  createProjectDraftTask,
+  updateProjectDraftTask,
+  deleteProjectDraftTask,
+  reorderDraftTasks,
   createProjectTask,
   reorderTasks,
 };

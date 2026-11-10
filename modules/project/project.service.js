@@ -443,6 +443,38 @@ async function listProjects(filters = {}) {
     return rows;
 }
 
+async function listProjectDrafts(filters = {}) {
+    const conditions = ['p.presence = 4'];
+    const params = [];
+
+    if (filters.userId) {
+        conditions.push('p.inputBy = ?');
+        params.push(String(filters.userId));
+    }
+
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+
+    const q = `
+      SELECT
+        p.*,
+        c.name AS clientName,
+        pt.name AS projectTypeName,
+        pb.name AS projectBilleableName,
+        pr.name AS productName
+      FROM project p
+      LEFT JOIN client c ON c.id = p.clientId
+      LEFT JOIN project_type pt ON pt.id = p.projectTypeId
+      LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId
+      LEFT JOIN product pr ON pr.id = p.productId
+      ${whereClause}
+      ORDER BY p.inputDate DESC
+    `;
+
+    const [rows] = await pool.execute(q, params);
+
+    return rows;
+}
+
 async function getProjectDetail(id) {
     const [rows] = await pool.execute(
         `
@@ -465,7 +497,7 @@ async function getProjectDetail(id) {
       LEFT JOIN project_billeable pb ON pb.id = p.projectBilleableId
       LEFT JOIN product pr ON pr.id = p.productId
       left join template as t on t.id = p.templateMaster
-      WHERE p.id = ? AND p.presence = 1
+      WHERE p.id = ? AND p.presence IN (1, 4)
       LIMIT 1
     `,
         [id]
@@ -644,6 +676,27 @@ async function createProject(payload, actorId = '1') {
     return id;
 }
 
+async function createProjectDraft(actorId = '1') {
+    const id = buildProjectId('');
+    const safeActor = String(actorId || '');
+
+    await pool.execute(
+        `
+        INSERT INTO project (
+            id, name, projectTypeId, projectBilleableId, productId, clientId,
+            startDate, endDate, status, templateMaster,
+            presence, inputDate, inputBy, updateDate, updateBy,
+            ticketCategoriesParentId, ticketBaseHours
+        )
+        VALUES (?, '', 0, 0, 0, '0', CURDATE(), CURDATE(), 1, '0',
+            4, NOW(), ?, NOW(), ?, 0, 0)
+        `,
+        [id, safeActor, safeActor]
+    );
+
+    return { id };
+}
+
 async function updateProject(id, payload, actorId = '1') {
     const fields = [];
     const params = [];
@@ -704,69 +757,208 @@ async function updateProject(id, payload, actorId = '1') {
         fields.push('ticketCategoriesParentId = ?');
         params.push(Number(payload.ticketCategoriesId));
     }
-    
-    if (!fields.length) {
+
+    if (payload.ticketCategoriesParentId !== undefined) {
+        fields.push('ticketCategoriesParentId = ?');
+        params.push(Number(payload.ticketCategoriesParentId));
+    }
+
+    if (payload.ticketBaseHours !== undefined) {
+        fields.push('ticketBaseHours = ?');
+        params.push(parseNumeric(payload.ticketBaseHours, 'ticketBaseHours'));
+    }
+
+    if (payload.presence !== undefined) {
+        const presence = Number(payload.presence);
+
+        if (![1, 4].includes(presence)) {
+            const error = new Error('presence must be 1 or 4');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        fields.push('presence = ?');
+        params.push(presence);
+    }
+
+    const projectUsers = Array.isArray(payload.users)
+        ? payload.users
+        : Array.isArray(payload.projectUsers)
+            ? payload.projectUsers
+            : [];
+    const hasUsersPayload = Array.isArray(payload.users) || Array.isArray(payload.projectUsers);
+    const shouldPublish = payload.presence !== undefined && Number(payload.presence) === 1;
+
+    if (!fields.length && !hasUsersPayload && !payload.template) {
         const error = new Error('No valid fields provided');
         error.statusCode = 400;
         throw error;
     }
 
-    const [result] = await pool.execute(
-        `
-      UPDATE project
-      SET ${fields.join(', ')}, updateDate = NOW(), updateBy = ?
-      WHERE id = ? AND presence = 1
-    `,
-        [...params, String(actorId), id]
-    );
+    const connection = await pool.getConnection();
 
-    const q = `
-    DELETE FROM project_users
-    WHERE projectId = '${id}'`;
+    try {
+        await connection.beginTransaction();
 
-    await pool.execute(q);
-    for (const pu of payload.users) {
+        // Verify the target project exists (and is not soft-deleted).
+        const [projectRows] = await connection.execute(
+            'SELECT id FROM project WHERE id = ? AND presence IN (1, 4) LIMIT 1',
+            [id]
+        );
 
-        const q = `
-        INSERT INTO project_users (
-            projectId, userId, asManager,
-            presence, inputDate, inputBy, updateDate, updateBy
-        )
-        VALUES ( 
-            '${id}', '${pu.id}', ${pu.asManager === true ? 1 : 0}, 
-            1, NOW(), '${String(actorId)}', NOW(), '${String(actorId)}')
-        `;
+        if (!projectRows.length) {
+            const error = new Error('Project not found');
+            error.statusCode = 404;
+            throw error;
+        }
 
-        await pool.execute(q);
-    }
+        await connection.execute(
+            `
+            UPDATE project
+            SET ${fields.join(', ')}, updateDate = NOW(), updateBy = ?
+            WHERE id = ? AND presence IN (1, 4)
+            `,
+            [...params, String(actorId), id]
+        );
 
+        if (hasUsersPayload) {
+            await connection.execute('DELETE FROM project_users WHERE projectId = ?', [id]);
 
-    if (!result.affectedRows) {
-        const error = new Error('Project not found');
-        error.statusCode = 404;
+            for (const pu of projectUsers) {
+                if (Array.isArray(payload.projectUsers) && pu?.checked !== true) {
+                    continue;
+                }
+
+                await connection.execute(
+                    `
+                    INSERT INTO project_users (
+                        projectId, userId, asManager,
+                        presence, inputDate, inputBy, updateDate, updateBy
+                    )
+                    VALUES (?, ?, ?, 1, NOW(), ?, NOW(), ?)
+                    `,
+                    [
+                        String(id),
+                        String(pu.id ?? pu.userId ?? ''),
+                        pu.asManager === true ? 1 : 0,
+                        String(actorId),
+                        String(actorId),
+                    ]
+                );
+            }
+        }
+
+        if (payload.template) {
+            const [projectRows] = await connection.execute(
+                'SELECT clientId FROM project WHERE id = ? AND presence IN (1, 4) LIMIT 1',
+                [id]
+            );
+            const clientId = payload.clientId !== undefined
+                ? String(payload.clientId)
+                : String(projectRows?.[0]?.clientId || '0');
+
+            await insertTemplateTickets(connection, payload.template, id, actorId);
+            await insertTemplateContacts(connection, payload.template, id, clientId, actorId);
+        }
+
+        if (shouldPublish) {
+            await connection.execute(
+                'UPDATE project SET status = 1 WHERE id = ?',
+                [String(id)]
+            );
+
+            const [drafts] = await connection.execute(
+                'SELECT * FROM project_ticket_draft WHERE projectId = ? AND presence = 1 ORDER BY projectSorting ASC, inputDate ASC',
+                [String(id)]
+            );
+
+            for (const draft of drafts) {
+                const ticketId = await runningNumber('task');
+
+                await connection.execute(
+                    `
+                    INSERT INTO ticket (
+                        id, ticketTypeId, ticketCategoryId, ticketSeverityId, productChildId,
+                        crNoRef, issueNo, title, description,
+                        targetCompletionDate, projectId, submitBy, submitDate,
+                        assignTo, actualCompletionDate, ticketStatusId,
+                        sorting, projectSorting, presence, inputDate, inputBy, updateDate, updateBy
+                    )
+                    VALUES (?, 1, ?, 0, ?, '', '', ?, ?, ?, ?, ?, NOW(), ?, ?, 1, ?, ?, 1, NOW(), ?, NOW(), ?)
+                    `,
+                    [
+                        ticketId,
+                        Number(draft.ticketCategoryId || 0),
+                        String(draft.productChildId || ''),
+                        String(draft.title || ''),
+                        String(draft.description || ''),
+                        draft.targetCompletionDate,
+                        String(id),
+                        String(actorId),
+                        String(draft.assignTo || ''),
+                        draft.actualCompletionDate,
+                        Number(draft.sorting ?? 999),
+                        Number(draft.projectSorting ?? 999),
+                        String(actorId),
+                        String(actorId),
+                    ]
+                );
+
+                await connection.execute(
+                    'UPDATE project_ticket_draft SET presence = 0, updateDate = NOW(), updateBy = ? WHERE id = ?',
+                    [String(actorId), String(draft.id)]
+                );
+            }
+        }
+
+        await connection.commit();
+    } catch (error) {
+        await connection.rollback();
         throw error;
+    } finally {
+        connection.release();
     }
 
     return getProjectDetail(id);
 }
 
 async function deleteProject(id, actorId = '1') {
-    const [result] = await pool.execute(
-        `
-      UPDATE project
-      SET presence = 0, updateDate = NOW(), updateBy = ?
-      WHERE id = ? AND presence = 1
-    `,
-        [String(actorId), id]
-    );
+    const actor = String(actorId || '');
+    const conn = await pool.getConnection();
 
-    if (!result.affectedRows) {
-        const error = new Error('Project not found');
-        error.statusCode = 404;
+    try {
+        await conn.beginTransaction();
+
+        const [projects] = await conn.execute(
+            'SELECT id FROM project WHERE id = ? AND presence IN (1, 4) LIMIT 1',
+            [String(id)]
+        );
+
+        if (!projects.length) {
+            const error = new Error('Project not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        await conn.execute(
+            `UPDATE project SET presence = 0, updateDate = NOW(), updateBy = ? WHERE id = ? AND presence IN (1, 4)`,
+            [actor, String(id)]
+        );
+
+        await conn.execute(
+            `UPDATE project_ticket_draft SET presence = 0, updateDate = NOW(), updateBy = ? WHERE projectId = ? AND presence = 1`,
+            [actor, String(id)]
+        );
+
+        await conn.commit();
+    } catch (error) {
+        await conn.rollback();
         throw error;
+    } finally {
+        conn.release();
     }
 
-    return { id };
+    return { id: String(id) };
 }
 
 async function addContactToProject(payload) {
@@ -888,6 +1080,292 @@ async function ticketList(filters = {}) {
   return grouped;
 }
 
+async function draftTaskList(filters = {}) {
+    const conditions = ['d.presence = 1', 'd.ticketTypeId = ?'];
+    const params = [String(filters.ticketTypeId ?? '1')];
+
+    if (filters.projectId !== undefined && String(filters.projectId).trim()) {
+        conditions.push('d.projectId = ?');
+        params.push(String(filters.projectId));
+    }
+
+    const whereClause = conditions.join(' AND ');
+
+    const q = `
+      SELECT d.id, d.title, d.projectId, d.submitDate, d.targetCompletionDate,
+        d.ticketStatusId, d.ticketCategoryId, d.rating, d.projectSorting,
+        tt.name AS ticketTypeName,
+        ts.name AS ticketStatusName,
+        tc.name AS ticketCategoryName,
+        tc.id AS ticketCategoryId,
+        tc.sorting AS sorting,
+        d.assignTo, CONCAT(u.firstName, ' ', u.lastName) AS assignToName,
+        d.productChildId, pr.name AS productChildName
+      FROM project_ticket_draft d
+      LEFT JOIN ticket_type tt ON tt.id = d.ticketTypeId
+      LEFT JOIN ticket_status ts ON ts.id = d.ticketStatusId
+      LEFT JOIN ticket_categories AS tc ON tc.id = d.ticketCategoryId
+      LEFT JOIN product AS pr ON pr.id = d.productChildId
+      LEFT JOIN user AS u ON u.id = d.assignTo
+      WHERE ${whereClause}
+      ORDER BY d.projectSorting ASC, d.inputDate DESC
+    `;
+
+    const [rows] = await pool.execute(q, params);
+
+    const groupedMap = new Map();
+
+    for (const row of rows) {
+        const key = row.ticketCategoryId === null || row.ticketCategoryId === undefined
+            ? '__ungrouped__'
+            : String(row.ticketCategoryId);
+
+        if (!groupedMap.has(key)) {
+            groupedMap.set(key, {
+                id: row.ticketCategoryId,
+                name: row.ticketCategoryName || 'Ungrouped',
+                sorting: Number(row.sorting ?? 0),
+                data: [],
+            });
+        }
+
+        groupedMap.get(key).data.push(row);
+    }
+
+    const grouped = Array.from(groupedMap.values()).sort(
+        (a, b) => a.sorting - b.sorting || String(a.name).localeCompare(String(b.name))
+    );
+
+    return grouped;
+}
+
+
+async function createProjectDraftTask(projectId, payload, actorId) {
+    const [projects] = await pool.execute(
+        'SELECT id FROM project WHERE id = ? AND presence IN (1, 4) LIMIT 1',
+        [String(projectId)]
+    );
+
+    if (!projects.length) {
+        const error = new Error('Project not found');
+        error.statusCode = 404;
+        throw error;
+    }
+
+    const title = String(payload.title || '').trim();
+
+    if (!title) {
+        const error = new Error('title is required');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const assignTo = String(payload.assignTo || '').trim();
+
+    if (!assignTo) {
+        const error = new Error('assignTo is required');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const ticketCategoryId = Number(payload.ticketCategoryId || 0);
+
+    if (!Number.isInteger(ticketCategoryId) || ticketCategoryId < 1) {
+        const error = new Error('ticketCategoryId is required');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const description = String(payload.description || '').trim();
+    const targetCompletionDate = normalizeDateTime(payload.targetCompletionDate || new Date());
+    const actualCompletionDate = payload.actualCompletionDate
+        ? normalizeDateTime(payload.actualCompletionDate)
+        : targetCompletionDate;
+
+    const id = `DRFT-${randomUUID().split('-')[0].toUpperCase()}`;
+
+    await pool.execute(
+        `
+        INSERT INTO project_ticket_draft (
+            id, ticketTypeId, issueNo, title, description, projectId,
+            submitBy, submitDate, targetCompletionDate, assignTo,
+            actualCompletionDate, ticketStatusId, ticketCategoryId,
+            presence, inputDate, inputBy, updateDate, updateBy,
+            productChildId
+        )
+        VALUES (?, ?, '', ?, ?, ?, ?, NOW(), ?, ?, ?, 0, ?, 1, NOW(), ?, NOW(), ?, ?)
+        `,
+        [
+            id,
+            1,
+            title,
+            description,
+            String(projectId),
+            String(actorId || ''),
+            targetCompletionDate,
+            assignTo,
+            actualCompletionDate,
+            ticketCategoryId,
+            String(actorId || ''),
+            String(actorId || ''),
+            String(payload.productChildId || ''),
+        ]
+    );
+
+    return { id };
+}
+
+async function updateProjectDraftTask(id, payload, actorId) {
+    const fields = [];
+    const params = [];
+
+    if (payload.title !== undefined) {
+        const title = String(payload.title).trim();
+
+        if (!title) {
+            const error = new Error('title cannot be empty');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        fields.push('title = ?');
+        params.push(title);
+    }
+
+    if (payload.assignTo !== undefined) {
+        const assignTo = String(payload.assignTo).trim();
+
+        if (!assignTo) {
+            const error = new Error('assignTo is required');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        fields.push('assignTo = ?');
+        params.push(assignTo);
+    }
+
+    if (payload.productChildId !== undefined) {
+        fields.push('productChildId = ?');
+        params.push(String(payload.productChildId));
+    }
+
+    if (payload.description !== undefined) {
+        fields.push('description = ?');
+        params.push(String(payload.description));
+    }
+
+    if (payload.ticketCategoryId !== undefined) {
+        const ticketCategoryId = Number(payload.ticketCategoryId || 0);
+
+        if (!Number.isInteger(ticketCategoryId) || ticketCategoryId < 1) {
+            const error = new Error('ticketCategoryId is required');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        fields.push('ticketCategoryId = ?');
+        params.push(ticketCategoryId);
+    }
+
+    if (payload.targetCompletionDate) {
+        const targetCompletionDate = normalizeDateTime(payload.targetCompletionDate);
+
+        if (targetCompletionDate) {
+            fields.push('targetCompletionDate = ?');
+            params.push(targetCompletionDate);
+        }
+    }
+
+    if (!fields.length) {
+        const error = new Error('No valid fields provided');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const [rows] = await pool.execute(
+        'SELECT id FROM project_ticket_draft WHERE id = ? AND presence = 1 LIMIT 1',
+        [String(id)]
+    );
+
+    if (!rows.length) {
+        const error = new Error('Draft task not found');
+        error.statusCode = 404;
+        throw error;
+    }
+
+    await pool.execute(
+        `UPDATE project_ticket_draft SET ${fields.join(', ')}, updateDate = NOW(), updateBy = ? WHERE id = ? AND presence = 1`,
+        [...params, String(actorId || ''), String(id)]
+    );
+
+    return { id: String(id) };
+}
+
+async function deleteProjectDraftTask(id, actorId) {
+    const [rows] = await pool.execute(
+        'SELECT id FROM project_ticket_draft WHERE id = ? AND presence = 1 LIMIT 1',
+        [String(id)]
+    );
+
+    if (!rows.length) {
+        const error = new Error('Draft task not found');
+        error.statusCode = 404;
+        throw error;
+    }
+
+    await pool.execute(
+        `UPDATE project_ticket_draft SET presence = 0, updateDate = NOW(), updateBy = ? WHERE id = ? AND presence = 1`,
+        [String(actorId || ''), String(id)]
+    );
+
+    return { id: String(id) };
+}
+
+async function reorderProjectDraftTasks(items, actorId) {
+    if (!Array.isArray(items) || items.length === 0) {
+        const error = new Error('items is required');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const conn = await pool.getConnection();
+
+    try {
+        await conn.beginTransaction();
+
+        for (const entry of items) {
+            const id = String(entry.id || '').trim();
+            const projectSorting = Number(entry.projectSorting);
+
+            if (!id) {
+                const error = new Error('id is required');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (!Number.isInteger(projectSorting) || projectSorting < 0) {
+                const error = new Error('projectSorting must be a non-negative integer');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            await conn.execute(
+                'UPDATE project_ticket_draft SET projectSorting = ?, updateDate = NOW(), updateBy = ? WHERE id = ? AND presence = 1',
+                [projectSorting, String(actorId || ''), id]
+            );
+        }
+
+        await conn.commit();
+    } catch (error) {
+        await conn.rollback();
+        throw error;
+    } finally {
+        conn.release();
+    }
+
+    return { reordered: items.length };
+}
 
 async function createProjectTask(projectId, payload, actorId) {
   const [projects] = await pool.execute(
@@ -1014,13 +1492,20 @@ async function reorderProjectTasks(items, actorId) {
 
 module.exports = {
     listProjects,
+    listProjectDrafts,
     getProjectDetail,
     createProject,
+    createProjectDraft,
     updateProject,
     deleteProject,
     addContactToProject,
     removeContactFromProject,
     ticketList,
+    draftTaskList,
+    createProjectDraftTask,
+    updateProjectDraftTask,
+    deleteProjectDraftTask,
+    reorderProjectDraftTasks,
     createProjectTask,
     reorderProjectTasks
 };
