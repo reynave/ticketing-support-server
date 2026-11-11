@@ -263,8 +263,22 @@ async function deleteTemplate(id, actorId = 1) {
   return { id: safeId };
 }
 
+async function listTaskTemplates() {
+  const [rows] = await pool.execute(
+    `
+      SELECT id, name, description, version, tempateType, inputDate
+      FROM template
+      WHERE presence = 1 AND tempateType = 'task'
+      ORDER BY inputDate DESC, id DESC
+    `
+  );
+
+  return rows;
+}
+
 module.exports = {
   listTemplates,
+  listTaskTemplates,
   getTemplateDetail,
   createTemplate,
   updateTemplate,

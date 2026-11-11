@@ -48,10 +48,20 @@ async function remove(req, res, next) {
   }
 }
 
+async function listTaskTemplates(req, res, next) {
+  try {
+    const rows = await templateService.listTaskTemplates();
+    res.json({ success: true, data: rows });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
   create,
   update,
   remove,
+  listTaskTemplates,
 };
