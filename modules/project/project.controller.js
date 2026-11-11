@@ -283,6 +283,88 @@ async function reorderTasks(req, res, next) {
   }
 }
 
+async function listTemplates(req, res, next) {
+  try {
+    const data = await projectMasterService.listProjectTemplates(req.query || {});
+    return res.json(success('Project templates fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function saveProjectAsTemplate(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.saveProjectAsTemplate(id, req.body || {}, actorId);
+    return res.status(201).json(success('Template saved', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function instantiateTemplate(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.instantiateTemplate(id, req.body || {}, actorId);
+    return res.status(201).json(success('Draft created from template', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function deleteTemplate(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.deleteTemplate(id, actorId);
+    return res.json(success('Template deleted', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function applyTemplate(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const templateId = parseId(req.params.templateId);
+    const actorId = req.user?.id ? String(req.user.id) : '';
+
+    if (!actorId) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await projectMasterService.applyTemplateToProject(id, templateId, actorId);
+    return res.json(success('Template applied to project', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   listDrafts,
@@ -301,4 +383,9 @@ module.exports = {
   reorderDraftTasks,
   createProjectTask,
   reorderTasks,
+  listTemplates,
+  saveProjectAsTemplate,
+  applyTemplate,
+  instantiateTemplate,
+  deleteTemplate,
 };

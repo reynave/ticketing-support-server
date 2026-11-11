@@ -1490,6 +1490,511 @@ async function reorderProjectTasks(items, actorId) {
   return { reordered: items.length };
 }
 
+async function listProjectTemplates(filters = {}) {
+    const conditions = ['t.presence = 1'];
+    const params = [];
+
+    if (filters.keyword) {
+        conditions.push('(t.name LIKE ? OR t.description LIKE ? OR t.version LIKE ? OR tp.id LIKE ?)');
+        params.push(`%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`, `%${filters.keyword}%`);
+    }
+
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+
+    const q = `
+      SELECT
+        t.id,
+        t.name,
+        t.description,
+        t.version,
+        tp.id AS projectId,
+        tp.projectTypeId,
+        tp.projectBilleableId,
+        tp.productId,
+        tp.clientId,
+        tp.ticketCategoriesParentId,
+        tp.ticketBaseHours,
+        tp.startDate,
+        tp.endDate,
+        tp.status,
+        t.inputDate,
+        c.name AS clientName,
+        pt.name AS projectTypeName,
+        pb.name AS projectBilleableName,
+        pr.name AS productName
+      FROM template t
+      JOIN template_project tp ON tp.templateId = t.id AND tp.presence = 1
+      LEFT JOIN client c ON c.id = tp.clientId
+      LEFT JOIN project_type pt ON pt.id = tp.projectTypeId
+      LEFT JOIN project_billeable pb ON pb.id = tp.projectBilleableId
+      LEFT JOIN product pr ON pr.id = tp.productId
+      ${whereClause}
+      ORDER BY t.inputDate DESC, t.id DESC
+    `;
+
+    const [rows] = await pool.execute(q, params);
+
+    return rows;
+}
+
+const CLONE_TABLES = new Set([
+    'project_users',
+    'template_project_users',
+    'project_contact',
+    'template_project_contact',
+    'project_ticket_draft',
+    'template_project_ticket_draft',
+]);
+
+function cloneTable(name) {
+    if (!CLONE_TABLES.has(name)) {
+        throw new Error(`Invalid clone table: ${name}`);
+    }
+
+    return name;
+}
+
+async function cloneTemplateUsers(connection, sourceTable, targetTable, sourceId, targetId, actor) {
+    const [users] = await connection.execute(
+        `SELECT userId, asManager FROM ${cloneTable(sourceTable)} WHERE projectId = ? AND presence = 1`,
+        [String(sourceId)]
+    );
+
+    for (const u of users) {
+        await connection.execute(
+            `INSERT INTO ${cloneTable(targetTable)} (projectId, userId, asManager, presence, inputDate, inputBy, updateDate, updateBy)
+             VALUES (?, ?, ?, 1, NOW(), ?, NOW(), ?)`,
+            [String(targetId), String(u.userId), u.asManager === 1 ? 1 : 0, String(actor), String(actor)]
+        );
+    }
+}
+
+async function cloneTemplateContacts(connection, sourceTable, targetTable, sourceId, targetId, actor) {
+    const [contacts] = await connection.execute(
+        `SELECT clientId, userId FROM ${cloneTable(sourceTable)} WHERE projectId = ? AND presence = 1`,
+        [String(sourceId)]
+    );
+
+    for (const c of contacts) {
+        await connection.execute(
+            `INSERT INTO ${cloneTable(targetTable)} (clientId, projectId, userId, presence, inputDate, inputBy, updateDate, updateBy)
+             VALUES (?, ?, ?, 1, NOW(), ?, NOW(), ?)`,
+            [String(c.clientId || ''), String(targetId), String(c.userId), String(actor), String(actor)]
+        );
+    }
+}
+
+async function insertTemplateDraftTask(connection, targetTable, sourceTask, targetProjectId, actor) {
+    const newId = `DRFT-${randomUUID().split('-')[0].toUpperCase()}`;
+
+    await connection.execute(
+        `
+        INSERT INTO ${cloneTable(targetTable)} (
+            id, ticketTypeId, issueNo, title, description, projectId,
+            submitBy, submitDate, targetCompletionDate, assignTo,
+            actualCompletionDate, ticketStatusId, ticketCategoryId,
+            presence, inputDate, inputBy, updateDate, updateBy,
+            productChildId, sorting, projectSorting
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, 0, ?, 1, NOW(), ?, NOW(), ?, ?, ?, ?)
+        `,
+        [
+            newId,
+            Number(sourceTask.ticketTypeId || 1),
+            String(sourceTask.issueNo || ''),
+            String(sourceTask.title || ''),
+            String(sourceTask.description || ''),
+            String(targetProjectId),
+            String(sourceTask.submitBy || actor),
+            sourceTask.targetCompletionDate,
+            String(sourceTask.assignTo || ''),
+            sourceTask.actualCompletionDate,
+            Number(sourceTask.ticketCategoryId || 0),
+            String(actor),
+            String(actor),
+            String(sourceTask.productChildId || ''),
+            Number(sourceTask.sorting ?? 999),
+            Number(sourceTask.projectSorting ?? 999),
+        ]
+    );
+}
+
+async function saveProjectAsTemplate(projectId, payload, actorId = '1') {
+    const actor = String(actorId || '');
+    const name = String(payload.name || '').trim();
+    const description = String(payload.description || '').trim();
+    const version = String(payload.version || '').trim();
+
+    if (!name) {
+        const error = new Error('name is required');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const conn = await pool.getConnection();
+
+    try {
+        await conn.beginTransaction();
+
+        const [projects] = await conn.execute(
+            'SELECT * FROM project WHERE id = ? AND presence IN (1, 4) LIMIT 1',
+            [String(projectId)]
+        );
+
+        if (!projects.length) {
+            const error = new Error('Project not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const source = projects[0];
+
+        // 1) metadata (name/description/version) → table template
+        const [templateResult] = await conn.execute(
+            `INSERT INTO template (name, clientId, description, version, tempateType, json, presence, status, inputDate, inputBy, updateDate, updateBy)
+             VALUES (?, ?, ?, ?, 'project', '', 1, 1, NOW(), ?, NOW(), ?)`,
+            [name, String(source.clientId || ''), description, version, actor, actor]
+        );
+
+        const templateId = templateResult.insertId;
+
+        // 2) header project → template_project
+        const templateProjectId = buildProjectId('');
+
+        await conn.execute(
+            `INSERT INTO template_project (
+                id, templateId, name, projectTypeId, projectBilleableId, productId,
+                ticketCategoriesParentId, ticketBaseHours, clientId,
+                startDate, endDate, status, templateMaster,
+                presence, inputDate, inputBy, updateDate, updateBy
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 1, NOW(), ?, NOW(), ?)`,
+            [
+                templateProjectId,
+                templateId,
+                name,
+                Number(source.projectTypeId || 0),
+                Number(source.projectBilleableId || 0),
+                Number(source.productId || 0),
+                Number(source.ticketCategoriesParentId || 0),
+                Number(source.ticketBaseHours || 0),
+                String(source.clientId || '0'),
+                source.startDate,
+                source.endDate,
+                String(source.templateMaster || '0'),
+                actor,
+                actor,
+            ]
+        );
+
+        // 3) team & contact → template_project_users / template_project_contact
+        await cloneTemplateUsers(conn, 'project_users', 'template_project_users', projectId, templateProjectId, actor);
+        await cloneTemplateContacts(conn, 'project_contact', 'template_project_contact', projectId, templateProjectId, actor);
+
+        // 4) blueprint draft task (project_ticket_draft) → template_project_ticket_draft
+        const [drafts] = await conn.execute(
+            'SELECT * FROM project_ticket_draft WHERE projectId = ? AND presence = 1 ORDER BY projectSorting ASC, inputDate ASC',
+            [String(projectId)]
+        );
+
+        for (const d of drafts) {
+            await insertTemplateDraftTask(conn, 'template_project_ticket_draft', d, templateProjectId, actor);
+        }
+
+        // 5) fallback: project published → task blueprint dari ticket (ticketTypeId = 1)
+        const [tickets] = await conn.execute(
+            'SELECT * FROM ticket WHERE projectId = ? AND presence = 1 AND ticketTypeId = 1 ORDER BY projectSorting ASC, inputDate ASC',
+            [String(projectId)]
+        );
+
+        for (const t of tickets) {
+            await insertTemplateDraftTask(conn, 'template_project_ticket_draft', t, templateProjectId, actor);
+        }
+
+        await conn.commit();
+
+        return { id: templateId, projectId: templateProjectId };
+    } catch (error) {
+        await conn.rollback();
+        throw error;
+    } finally {
+        conn.release();
+    }
+}
+
+async function instantiateTemplate(templateId, payload, actorId = '1') {
+    const actor = String(actorId || '');
+    const safeTemplateId = Number(templateId);
+
+    if (!Number.isInteger(safeTemplateId) || safeTemplateId < 1) {
+        const error = new Error('Invalid template id');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const conn = await pool.getConnection();
+
+    try {
+        await conn.beginTransaction();
+
+        const [templates] = await conn.execute(
+            'SELECT * FROM template WHERE id = ? AND presence = 1 LIMIT 1',
+            [safeTemplateId]
+        );
+
+        if (!templates.length) {
+            const error = new Error('Template not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const metadata = templates[0];
+
+        const [projectRows] = await conn.execute(
+            'SELECT * FROM template_project WHERE templateId = ? AND presence = 1 ORDER BY inputDate ASC LIMIT 1',
+            [safeTemplateId]
+        );
+
+        if (!projectRows.length) {
+            const error = new Error('Template project not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const source = projectRows[0];
+        const draftId = buildProjectId('');
+        const name = String(payload.name || '').trim() || String(source.name || metadata.name || '');
+
+        await conn.execute(
+            `INSERT INTO project (
+                id, name, projectTypeId, projectBilleableId, productId,
+                ticketCategoriesParentId, ticketBaseHours, clientId,
+                startDate, endDate, status, templateMaster,
+                presence, inputDate, inputBy, updateDate, updateBy
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 4, NOW(), ?, NOW(), ?)`,
+            [
+                draftId,
+                name,
+                Number(source.projectTypeId || 0),
+                Number(source.projectBilleableId || 0),
+                Number(source.productId || 0),
+                Number(source.ticketCategoriesParentId || 0),
+                Number(source.ticketBaseHours || 0),
+                String(source.clientId || '0'),
+                source.startDate,
+                source.endDate,
+                String(source.templateMaster || '0'),
+                actor,
+                actor,
+            ]
+        );
+
+        await cloneTemplateUsers(conn, 'template_project_users', 'project_users', source.id, draftId, actor);
+        await cloneTemplateContacts(conn, 'template_project_contact', 'project_contact', source.id, draftId, actor);
+
+        const [drafts] = await conn.execute(
+            'SELECT * FROM template_project_ticket_draft WHERE projectId = ? AND presence = 1 ORDER BY projectSorting ASC, inputDate ASC',
+            [String(source.id)]
+        );
+
+        for (const d of drafts) {
+            await insertTemplateDraftTask(conn, 'project_ticket_draft', d, draftId, actor);
+        }
+
+        await conn.commit();
+
+        return { id: draftId };
+    } catch (error) {
+        await conn.rollback();
+        throw error;
+    } finally {
+        conn.release();
+    }
+}
+
+async function applyTemplateToProject(projectId, templateId, actorId = '1') {
+    const actor = String(actorId || '');
+    const safeTemplateId = Number(templateId);
+
+    if (!Number.isInteger(safeTemplateId) || safeTemplateId < 1) {
+        const error = new Error('Invalid template id');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const conn = await pool.getConnection();
+
+    try {
+        await conn.beginTransaction();
+
+        const [projects] = await conn.execute(
+            'SELECT id FROM project WHERE id = ? AND presence IN (1, 4) LIMIT 1',
+            [String(projectId)]
+        );
+
+        if (!projects.length) {
+            const error = new Error('Project not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const [templates] = await conn.execute(
+            'SELECT * FROM template WHERE id = ? AND presence = 1 LIMIT 1',
+            [safeTemplateId]
+        );
+
+        if (!templates.length) {
+            const error = new Error('Template not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const [projectRows] = await conn.execute(
+            'SELECT * FROM template_project WHERE templateId = ? AND presence = 1 ORDER BY inputDate ASC LIMIT 1',
+            [safeTemplateId]
+        );
+
+        if (!projectRows.length) {
+            const error = new Error('Template project not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const source = projectRows[0];
+
+        // 1) header project
+        await conn.execute(
+            `UPDATE project
+             SET name = ?, projectTypeId = ?, projectBilleableId = ?, productId = ?,
+                 ticketCategoriesParentId = ?, ticketBaseHours = ?, clientId = ?,
+                 startDate = ?, endDate = ?, templateMaster = ?,
+                 updateDate = NOW(), updateBy = ?
+             WHERE id = ? AND presence IN (1, 4)`,
+            [
+                String(source.name || ''),
+                Number(source.projectTypeId || 0),
+                Number(source.projectBilleableId || 0),
+                Number(source.productId || 0),
+                Number(source.ticketCategoriesParentId || 0),
+                Number(source.ticketBaseHours || 0),
+                String(source.clientId || '0'),
+                source.startDate,
+                source.endDate,
+                String(safeTemplateId),
+                actor,
+                String(projectId),
+            ]
+        );
+
+        // 2) replace team
+        await conn.execute(
+            'UPDATE project_users SET presence = 0, updateDate = NOW(), updateBy = ? WHERE projectId = ? AND presence = 1',
+            [actor, String(projectId)]
+        );
+        await cloneTemplateUsers(conn, 'template_project_users', 'project_users', source.id, projectId, actor);
+
+        // 3) replace contacts
+        await conn.execute(
+            'UPDATE project_contact SET presence = 0, updateDate = NOW(), updateBy = ? WHERE projectId = ? AND presence = 1',
+            [actor, String(projectId)]
+        );
+        await cloneTemplateContacts(conn, 'template_project_contact', 'project_contact', source.id, projectId, actor);
+
+        // 4) replace draft task blueprint
+        await conn.execute(
+            'UPDATE project_ticket_draft SET presence = 0, updateDate = NOW(), updateBy = ? WHERE projectId = ? AND presence = 1',
+            [actor, String(projectId)]
+        );
+
+        const [drafts] = await conn.execute(
+            'SELECT * FROM template_project_ticket_draft WHERE projectId = ? AND presence = 1 ORDER BY projectSorting ASC, inputDate ASC',
+            [String(source.id)]
+        );
+
+        for (const d of drafts) {
+            await insertTemplateDraftTask(conn, 'project_ticket_draft', d, String(projectId), actor);
+        }
+
+        await conn.commit();
+    } catch (error) {
+        await conn.rollback();
+        throw error;
+    } finally {
+        conn.release();
+    }
+
+    return getProjectDetail(String(projectId));
+}
+
+async function deleteTemplate(templateId, actorId = '1') {
+    const actor = String(actorId || '');
+    const safeTemplateId = Number(templateId);
+
+    if (!Number.isInteger(safeTemplateId) || safeTemplateId < 1) {
+        const error = new Error('Invalid template id');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const conn = await pool.getConnection();
+
+    try {
+        await conn.beginTransaction();
+
+        const [templates] = await conn.execute(
+            'SELECT id FROM template WHERE id = ? AND presence = 1 LIMIT 1',
+            [safeTemplateId]
+        );
+
+        if (!templates.length) {
+            const error = new Error('Template not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        await conn.execute(
+            'UPDATE template SET presence = 0, updateDate = NOW(), updateBy = ? WHERE id = ? AND presence = 1',
+            [actor, safeTemplateId]
+        );
+
+        const [projects] = await conn.execute(
+            'SELECT id FROM template_project WHERE templateId = ? AND presence = 1',
+            [safeTemplateId]
+        );
+
+        for (const project of projects) {
+            const pid = String(project.id);
+
+            await conn.execute(
+                'UPDATE template_project SET presence = 0, updateDate = NOW(), updateBy = ? WHERE id = ? AND presence = 1',
+                [actor, pid]
+            );
+            await conn.execute(
+                'UPDATE template_project_users SET presence = 0, updateDate = NOW(), updateBy = ? WHERE projectId = ? AND presence = 1',
+                [actor, pid]
+            );
+            await conn.execute(
+                'UPDATE template_project_ticket_draft SET presence = 0, updateDate = NOW(), updateBy = ? WHERE projectId = ? AND presence = 1',
+                [actor, pid]
+            );
+            await conn.execute(
+                'UPDATE template_project_contact SET presence = 0, updateDate = NOW(), updateBy = ? WHERE projectId = ? AND presence = 1',
+                [actor, pid]
+            );
+        }
+
+        await conn.commit();
+    } catch (error) {
+        await conn.rollback();
+        throw error;
+    } finally {
+        conn.release();
+    }
+
+    return { id: safeTemplateId };
+}
+
 module.exports = {
     listProjects,
     listProjectDrafts,
@@ -1507,5 +2012,10 @@ module.exports = {
     deleteProjectDraftTask,
     reorderProjectDraftTasks,
     createProjectTask,
-    reorderProjectTasks
+    reorderProjectTasks,
+    listProjectTemplates,
+    saveProjectAsTemplate,
+    applyTemplateToProject,
+    instantiateTemplate,
+    deleteTemplate
 };
