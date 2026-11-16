@@ -685,6 +685,46 @@ async function listUserClients(id) {
   return rows;
 }
 
+async function listUserAttendance(id) {
+  await getUserForUpdate(id);
+
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        a.id,
+        a.userId,
+        a.workDate,
+        a.checkIn,
+        a.checkInDateTime,
+        a.checkInLng,
+        a.checkInLat,
+        a.checkInIp,
+        a.checkInUserAgent,
+        a.checkInAddress,
+        a.checkOut,
+        a.checkOutDateTime,
+        a.checkOutLng,
+        a.checkOutLat,
+        a.checkOutIp,
+        a.checkOutUserAgent,
+        a.checkOutAddress,
+        a.presence,
+        a.status,
+        a.inputDate,
+        a.inputBy,
+        a.updateDate,
+        a.updateBy
+      FROM attendance AS a
+      WHERE a.userId = ? AND a.presence = 1
+      ORDER BY a.checkInDateTime DESC
+      LIMIT 60
+    `,
+    [id]
+  );
+
+  return rows;
+}
+
 module.exports = {
   INTERNAL_USER_TYPE_ID,
   EXTERNAL_USER_TYPE_ID,
@@ -700,4 +740,5 @@ module.exports = {
   saveUserProducts,
   listUserProjects,
   listUserClients,
+  listUserAttendance,
 };

@@ -14,6 +14,36 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+-- Dumping structure for table thinktank-ticket.attendance
+CREATE TABLE IF NOT EXISTS `attendance` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` varchar(250) NOT NULL,
+  `workDate` date DEFAULT NULL,
+  `checkIn` tinyint(4) NOT NULL DEFAULT 0,
+  `checkInDateTime` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `checkInLng` decimal(20,6) DEFAULT NULL,
+  `checkInLat` decimal(20,6) DEFAULT NULL,
+  `checkInIp` varchar(50) DEFAULT NULL,
+  `checkInUserAgent` varchar(250) DEFAULT NULL,
+  `checkInAddress` varchar(250) DEFAULT NULL,
+  `checkOut` tinyint(4) NOT NULL DEFAULT 0,
+  `checkOutDateTime` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `checkOutLat` decimal(20,6) DEFAULT NULL,
+  `checkOutLng` decimal(20,6) DEFAULT NULL,
+  `checkOutIp` varchar(50) DEFAULT NULL,
+  `checkOutUserAgent` varchar(250) DEFAULT NULL,
+  `checkOutAddress` varchar(250) DEFAULT NULL,
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `status` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` varchar(50) NOT NULL DEFAULT '',
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table thinktank-ticket.attendance: ~0 rows (approximately)
+
 -- Dumping structure for table thinktank-ticket.auto_number
 CREATE TABLE IF NOT EXISTS `auto_number` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -30,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `auto_number` (
 INSERT INTO `auto_number` (`id`, `name`, `prefix`, `digit`, `runningNumber`, `lastRecord`, `updateDate`) VALUES
 	(324, 'project', 'P', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(325, 'client', 'C', 6, 0, NULL, '2024-01-01 00:00:00'),
-	(326, 'task', 'TA', 6, 98, 'TA000098', '2026-11-10 18:12:17'),
+	(326, 'task', 'TA', 6, 99, 'TA000099', '2026-11-11 16:03:51'),
 	(327, 'issue', 'IS', 6, 81, 'IS000081', '2026-10-14 21:47:51'),
 	(328, 'cr', 'CR', 6, 7, 'CR000007', '2026-09-28 15:47:59');
 
@@ -84,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `client_product` (
   KEY `clientId` (`clientId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.client_product: ~13 rows (approximately)
+-- Dumping data for table thinktank-ticket.client_product: ~14 rows (approximately)
 INSERT INTO `client_product` (`id`, `clientId`, `productId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 351, 1, 1, 0, '2026-10-27 13:10:33', 'USR-ADMIN', '2026-10-27 13:43:54', 'USR-ADMIN'),
 	(6, 357, 1, 1, 1, '2026-10-27 13:10:38', 'USR-ADMIN', '2026-10-27 13:10:38', 'USR-ADMIN'),
@@ -145,6 +175,30 @@ INSERT INTO `industry` (`id`, `name`, `status`, `presence`, `inputDate`, `inputB
 	(359, 'CONSULTATION', 1, 0, '2026-09-09 13:20:15', 1, '2026-09-09 13:35:18', 1),
 	(360, 'JSCONSULTATION', 1, 1, '2026-09-09 17:26:58', 1, '2026-09-09 17:26:58', 1);
 
+-- Dumping structure for table thinktank-ticket.location
+CREATE TABLE IF NOT EXISTS `location` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `asDefault` tinyint(4) NOT NULL DEFAULT 0,
+  `name` varchar(250) NOT NULL,
+  `address` varchar(250) NOT NULL,
+  `lat` decimal(20,6) NOT NULL DEFAULT 0.000000,
+  `lng` decimal(20,6) NOT NULL,
+  `radius` smallint(6) NOT NULL DEFAULT 0,
+  `officeHourEnd` time NOT NULL DEFAULT '17:00:00',
+  `officeHourStart` time NOT NULL DEFAULT '09:00:00',
+  `presence` tinyint(2) NOT NULL DEFAULT 1,
+  `status` tinyint(2) NOT NULL DEFAULT 1,
+  `inputDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `inputBy` varchar(50) NOT NULL DEFAULT '',
+  `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
+  `updateBy` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table thinktank-ticket.location: ~1 rows (approximately)
+INSERT INTO `location` (`id`, `asDefault`, `name`, `address`, `lat`, `lng`, `radius`, `officeHourEnd`, `officeHourStart`, `presence`, `status`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(15, 1, 'Kantor Utama', 'ini alamat kantor, tapi hanya sebagai note saja', -6.201907, 106.798959, 100, '17:00:00', '09:00:00', 1, 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
+
 -- Dumping structure for table thinktank-ticket.module
 CREATE TABLE IF NOT EXISTS `module` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -152,7 +206,7 @@ CREATE TABLE IF NOT EXISTS `module` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6003 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table thinktank-ticket.module: ~19 rows (approximately)
+-- Dumping data for table thinktank-ticket.module: ~24 rows (approximately)
 INSERT INTO `module` (`id`, `name`) VALUES
 	(1001, 'Industri'),
 	(1002, 'Product'),
@@ -176,7 +230,8 @@ INSERT INTO `module` (`id`, `name`) VALUES
 	(5106, 'Case Verification'),
 	(6000, 'Login'),
 	(6001, 'Ticket Balance'),
-	(6002, 'log activities');
+	(6002, 'log activities'),
+	(7001, 'Attendance');
 
 -- Dumping structure for table thinktank-ticket.product
 CREATE TABLE IF NOT EXISTS `product` (
@@ -192,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.product: ~19 rows (approximately)
+-- Dumping data for table thinktank-ticket.product: ~22 rows (approximately)
 INSERT INTO `product` (`id`, `parentId`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 0, 'Acumatica ERP', 1, 1, '2025-01-01 00:00:00', 1, '2026-08-04 15:09:53', 1),
 	(2, 0, 'SAP B1', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
@@ -239,13 +294,15 @@ CREATE TABLE IF NOT EXISTS `project` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project: ~7 rows (approximately)
+-- Dumping data for table thinktank-ticket.project: ~9 rows (approximately)
 INSERT INTO `project` (`id`, `name`, `projectTypeId`, `projectBilleableId`, `productId`, `ticketCategoriesParentId`, `ticketBaseHours`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('PRJ-0C41009D', 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 4, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-11 15:05:06', 'USR-ADMIN'),
 	('PRJ-2E85C598', 'TEST 3', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '', 1, '2026-11-10 18:11:38', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN'),
 	('PRJ-32E08A77', '', 0, 0, 0, 113, 0, '0', '2026-11-10', '2026-11-10', 1, '0', 4, '2026-11-10 18:15:57', 'USR-ADMIN', '2026-11-10 18:27:56', 'USR-ADMIN'),
 	('PRJ-5531ACE6', 'Test 1', 1, 2, 1, 113, 10, '351', '2026-11-10', '2026-11-10', 1, '', 1, '2026-11-10 18:03:12', 'USR-ADMIN', '2026-11-10 18:04:46', 'USR-ADMIN'),
 	('PRJ-9B75E8C1', 'cika', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 100, '2026-11-11 14:10:41', 'USR-ADMIN', '2026-11-11 14:10:41', 'USR-ADMIN'),
 	('PRJ-AD1F6D4B', 'AkanShari', 1, 1, 3, 108, 2, '357', '2026-11-10', '2026-11-10', 1, '0', 1, '2026-11-10 18:05:27', 'USR-ADMIN', '2026-11-10 18:11:34', 'USR-ADMIN'),
+	('PRJ-B287D0E1', 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '13', 4, '2026-11-11 15:04:47', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN'),
 	('PRJ-EB4A08BB', '', 0, 1, 0, 113, 0, '0', '2026-11-10', '2026-11-10', 1, '0', 4, '2026-11-10 18:28:43', 'USR-ADMIN', '2026-11-11 13:16:52', 'USR-ADMIN'),
 	('PRJ-F0326A17', 'cline 1', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 100, '2026-11-11 14:01:45', 'USR-ADMIN', '2026-11-11 14:01:45', 'USR-ADMIN');
 
@@ -283,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `project_contact` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_contact: ~28 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_contact: ~29 rows (approximately)
 INSERT INTO `project_contact` (`id`, `clientId`, `projectId`, `userId`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(43, '351', 'PRJ-FA50EC5D', 'USR-39C10981', 0, '2026-07-23 16:45:45', 'USR-ADMIN', '2026-07-23 17:10:39', 'USR-ADMIN'),
 	(44, '351', 'PRJ-FA50EC5D', 'DEMO1', 0, '2026-07-23 16:45:45', 'USR-ADMIN', '2026-07-23 17:10:39', 'USR-ADMIN'),
@@ -358,7 +415,7 @@ CREATE TABLE IF NOT EXISTS `project_ticket_draft` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_ticket_draft: ~9 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_ticket_draft: ~12 rows (approximately)
 INSERT INTO `project_ticket_draft` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `projectSorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	('DRFT-0B2F85F3', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-9B75E8C1', 'USR-ADMIN', '2026-11-11 14:10:41', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 100, '2026-11-11 14:10:41', 'USR-ADMIN', '2026-11-11 14:10:41', 'USR-ADMIN'),
 	('DRFT-0EB51311', 1, 121, 0, '6', '', '', '123', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-A16D157E', 'USR-ADMIN', '2026-11-10 17:11:14', '2026-01-01 00:00:00', '2026-11-10 17:11:14', 'USR-ADMIN', '', '2026-11-10 17:11:14', 0, 0, '', 0, 0, 999, 1, 1, '2026-11-10 17:11:14', 'USR-ADMIN', '2026-11-10 17:36:02', 'USR-ADMIN'),
@@ -366,9 +423,12 @@ INSERT INTO `project_ticket_draft` (`id`, `ticketTypeId`, `ticketCategoryId`, `t
 	('DRFT-556DB018', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-F0326A17', 'USR-ADMIN', '2026-11-11 14:01:45', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 100, '2026-11-11 14:01:45', 'USR-ADMIN', '2026-11-11 14:01:45', 'USR-ADMIN'),
 	('DRFT-55A8E7F0', 1, 121, 0, '8', '', '', 'tesr2', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-A16D157E', 'USR-ADMIN', '2026-11-10 17:37:08', '2026-01-01 00:00:00', '2026-11-11 00:00:00', 'USR-ADMIN', '', '2026-11-11 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:37:08', 'USR-ADMIN', '2026-11-10 17:37:23', 'USR-ADMIN'),
 	('DRFT-6343BFE9', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-2E85C598', 'USR-ADMIN', '2026-11-10 18:12:12', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 18:12:12', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN'),
+	('DRFT-864C6DCB', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-0C41009D', 'USR-ADMIN', '2026-11-11 15:05:06', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 1, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-11 15:05:06', 'USR-ADMIN'),
 	('DRFT-9956D6D5', 1, 121, 0, '6', '', '', 'tesr 3', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-A16D157E', 'USR-ADMIN', '2026-11-10 17:14:21', '2026-01-01 00:00:00', '2026-11-13 00:00:00', 'USR-8E476F10', '', '2026-11-10 17:14:21', 0, 0, '', 0, 0, 999, 2, 1, '2026-11-10 17:14:21', 'USR-ADMIN', '2026-11-10 17:36:02', 'USR-ADMIN'),
+	('DRFT-C234677F', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-11-11 15:35:49', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-11 15:35:49', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN'),
 	('DRFT-D8D80021', 1, 121, 0, '19', '', '', 'test 1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-852BF056', 'USR-ADMIN', '2026-11-10 17:51:57', '2026-01-01 00:00:00', '2026-11-10 00:00:00', 'USR-ADMIN', '', '2026-11-10 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:51:57', 'USR-ADMIN', '2026-11-10 17:57:02', 'USR-ADMIN'),
-	('DRFT-E43A4188', 1, 120, 0, '14', '', '', 'uat1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-852BF056', 'USR-ADMIN', '2026-11-10 17:52:17', '2026-01-01 00:00:00', '2026-11-22 00:00:00', 'USR-ADMIN', '', '2026-11-22 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:52:17', 'USR-ADMIN', '2026-11-10 17:57:02', 'USR-ADMIN');
+	('DRFT-E43A4188', 1, 120, 0, '14', '', '', 'uat1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-852BF056', 'USR-ADMIN', '2026-11-10 17:52:17', '2026-01-01 00:00:00', '2026-11-22 00:00:00', 'USR-ADMIN', '', '2026-11-22 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:52:17', 'USR-ADMIN', '2026-11-10 17:57:02', 'USR-ADMIN'),
+	('DRFT-F1E3EDD3', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-11-11 15:43:06', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 1, '2026-11-11 15:43:06', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.project_type
 CREATE TABLE IF NOT EXISTS `project_type` (
@@ -405,9 +465,9 @@ CREATE TABLE IF NOT EXISTS `project_users` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=521 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=524 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_users: ~109 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_users: ~112 rows (approximately)
 INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(7, 'PRJ-54E3A483', 'USR-8C76A791', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
 	(8, 'PRJ-54E3A483', 'USR-ADMIN', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
@@ -517,7 +577,10 @@ INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence
 	(517, 'PRJ-EB4A08BB', 'USR-8E476F10', 0, 1, '2026-11-11 13:16:52', 'USR-ADMIN', '2026-11-11 13:16:52', 'USR-ADMIN'),
 	(518, 'PRJ-EB4A08BB', 'USR-ADMIN', 0, 1, '2026-11-11 13:16:52', 'USR-ADMIN', '2026-11-11 13:16:52', 'USR-ADMIN'),
 	(519, 'PRJ-F0326A17', 'USR-ADMIN', 1, 100, '2026-11-11 14:01:45', 'USR-ADMIN', '2026-11-11 14:01:45', 'USR-ADMIN'),
-	(520, 'PRJ-9B75E8C1', 'USR-ADMIN', 1, 100, '2026-11-11 14:10:41', 'USR-ADMIN', '2026-11-11 14:10:41', 'USR-ADMIN');
+	(520, 'PRJ-9B75E8C1', 'USR-ADMIN', 1, 100, '2026-11-11 14:10:41', 'USR-ADMIN', '2026-11-11 14:10:41', 'USR-ADMIN'),
+	(521, 'PRJ-0C41009D', 'USR-ADMIN', 1, 1, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-11 15:05:06', 'USR-ADMIN'),
+	(522, 'PRJ-B287D0E1', 'USR-ADMIN', 1, 0, '2026-11-11 15:35:49', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN'),
+	(523, 'PRJ-B287D0E1', 'USR-ADMIN', 1, 1, '2026-11-11 15:43:06', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.rating
 CREATE TABLE IF NOT EXISTS `rating` (
@@ -556,14 +619,12 @@ CREATE TABLE IF NOT EXISTS `template` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template: ~4 rows (approximately)
+-- Dumping data for table thinktank-ticket.template: ~2 rows (approximately)
 INSERT INTO `template` (`id`, `name`, `clientId`, `description`, `version`, `tempateType`, `json`, `presence`, `status`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(1, 'test 1', '', 'test 1', '20260810', 'project', '{"projectId":"PRJ-FA50EC5D","projectName":"Project Fitfirst gold","project":{"id":"PRJ-FA50EC5D","name":"Project Fitfirst gold","projectTypeId":3,"projectBilleableId":1,"productId":1,"ticketCategoriesParentId":10,"clientId":"351","startDate":"2026-07-13","endDate":"2026-10-30","status":1,"templateMaster":"0","presence":1,"inputDate":"2026-07-13 16:50:13","inputBy":"USR-ADMIN","updateDate":"2026-08-06 13:25:09","updateBy":"USR-ADMIN","clientName":"PT XYZ Jp.co","projectTypeName":"Software Support Fixed Cost","projectBilleableName":"Chrageable","productName":"Acumatica ERP","ticketBased":0,"users":[{"id":"USR-12788040","name":"Internal Tester","email":"781164843@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-405F00F4","name":"Internal Tester","email":"1781164861@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-ADMIN","name":"System Admin","email":"admin@thinktank.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":1,"checked":1},{"id":"USR-62199DD8","name":"Temp Updated User","email":"temp.user.crud@thinktank.local","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-8C76A791","name":"baba cdcd","email":"cso12333@email.com","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-E5A4B811","name":"abb abb","email":"anggie123@crm.co.id","userAuthLevel":"Administrator","division":"Division 1","position":"Position 2","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0}],"ticketCategories":[{"id":100,"name":"Blueprint"},{"id":102,"name":"Configuration"},{"id":105,"name":"Deployement"},{"id":106,"name":"GO LIVE"},{"id":103,"name":"SIT & UAT"},{"id":104,"name":"Training"}],"ticketBalance":{"ticketIn":"2146","ticketOut":"30","balance":"2116"},"contacts":[{"id":46,"userId":"DEMO1","name":"Client 200 Demo","phone":"021111111","email":"client2.demo@thinktank.local","projectId":"PRJ-FA50EC5D","division":"Division","position":"Position"},{"id":47,"userId":"DEMO2","name":"Client 300 Demo","phone":"021111111","email":"client3.demo@thinktank.local","projectId":"PRJ-FA50EC5D","division":"","position":""},{"id":52,"userId":"USR-9A0C9A66","name":"Abang Abang","phone":"234234","email":"ag@jagoan.com","projectId":"PRJ-FA50EC5D","division":"Division","position":"Position"}],"modules":[{"productId":1,"id":4,"name":"Module AR"},{"productId":1,"id":5,"name":"Module Fix Asset"}],"task":[{"id":100,"name":"Blueprint","data":[]},{"id":102,"name":"Configuration","data":[]},{"id":105,"name":"Deployement","data":[]},{"id":106,"name":"GO LIVE","data":[]},{"id":103,"name":"SIT & UAT","data":[]},{"id":104,"name":"Training","data":[]}],"cases":[{"id":100,"name":"Blueprint","data":[]},{"id":102,"name":"Configuration","data":[]},{"id":105,"name":"Deployement","data":[]},{"id":106,"name":"GO LIVE","data":[]},{"id":103,"name":"SIT & UAT","data":[]},{"id":104,"name":"Training","data":[]}],"cr":[{"id":100,"name":"Blueprint","data":[]},{"id":102,"name":"Configuration","data":[]},{"id":105,"name":"Deployement","data":[]},{"id":106,"name":"GO LIVE","data":[]},{"id":103,"name":"SIT & UAT","data":[]},{"id":104,"name":"Training","data":[]}]}}', 1, 1, '2026-08-10 17:12:18', 'USR-ADMIN', '2026-08-10 17:12:31', 'USR-ADMIN'),
-	(2, 'test Felix', '', '', '20260818', 'project', '{"projectId":"PRJ-B9FA8571","projectName":"CRM Project by Felix","project":{"id":"PRJ-B9FA8571","name":"CRM Project by Felix","projectTypeId":1,"projectBilleableId":2,"productId":1,"ticketCategoriesParentId":108,"clientId":"357","startDate":"2026-08-18","endDate":"2026-08-18","status":1,"templateMaster":"","presence":1,"inputDate":"2026-08-18 15:59:06","inputBy":"USR-ADMIN","updateDate":"2026-08-18 15:59:06","updateBy":"USR-ADMIN","clientName":"Astra Otto","projectTypeName":"Software Implementation","projectBilleableName":"Internal","productName":"Acumatica ERP","ticketBased":0,"users":[{"id":"USR-62199DD8","name":"Temp Updated User","email":"temp.user.crud@thinktank.local","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-ADMIN","name":"System Admin","email":"admin@thinktank.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":1,"checked":1},{"id":"USR-12788040","name":"Internal Tester","email":"781164843@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-405F00F4","name":"Internal Tester","email":"1781164861@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-8C76A791","name":"baba cdcd","email":"cso12333@email.com","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-ACF74981","name":"Admin3 ABC","email":"ABC3@admin.com","userAuthLevel":"Client Team","division":"Divisi","position":"Posisi","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-E5A4B811","name":"abb abb","email":"anggie123@crm.co.id","userAuthLevel":"Administrator","division":"Division 1","position":"Position 2","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-EF278E46","name":"Admin2 thinktank","email":"admin2@thinktank.local","userAuthLevel":"Administrator","division":"Divisi","position":"posisi","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0}],"ticketCategories":[{"id":110,"name":"Blue print"},{"id":112,"name":"development"},{"id":111,"name":"Testing"}],"ticketBalance":{"ticketIn":"0","ticketOut":"0","balance":"0"},"contacts":[],"modules":[{"productId":1,"id":4,"name":"Module AR"},{"productId":1,"id":5,"name":"Module Fixed Asset"},{"productId":1,"id":10,"name":"Module AP"},{"productId":1,"id":11,"name":"Module Finance"},{"productId":1,"id":12,"name":"Module Banking"},{"productId":1,"id":13,"name":"Module Purchase"},{"productId":1,"id":14,"name":"Module Sales"},{"productId":1,"id":15,"name":"Module Inventory"}],"templateName":null,"task":[{"id":110,"name":"Blue print","data":[]},{"id":112,"name":"development","data":[]},{"id":111,"name":"Testing","data":[]}],"cases":[{"id":110,"name":"Blue print","data":[]},{"id":112,"name":"development","data":[]},{"id":111,"name":"Testing","data":[]}],"cr":[{"id":110,"name":"Blue print","data":[]},{"id":112,"name":"development","data":[]},{"id":111,"name":"Testing","data":[]}]}}', 1, 1, '2026-08-18 16:00:53', 'USR-ADMIN', '2026-08-18 16:00:53', 'USR-ADMIN'),
-	(3, 'PRJ CUAN01', '', 'Project Harap Cuan', '20260826', 'project', '{"projectId":"PRJ-C8044CCC","projectName":"Project HARAP CUAN","project":{"id":"PRJ-C8044CCC","name":"Project HARAP CUAN","projectTypeId":2,"projectBilleableId":1,"productId":1,"ticketCategoriesParentId":123,"clientId":"361","startDate":"2026-08-26","endDate":"2026-08-26","status":1,"templateMaster":"","presence":1,"inputDate":"2026-08-26 16:13:12","inputBy":"USR-EF278E46","updateDate":"2026-08-26 16:13:12","updateBy":"USR-EF278E46","clientName":"PT. CUAN","projectTypeName":"Software Support Ticket Based","projectBilleableName":"Chrageable","productName":"Acumatica ERP","ticketBased":1,"users":[{"id":"USR-9B2C12BE","name":"admin2 Cuam","email":"admin2@cuan.com","userAuthLevel":"Client Team","division":"Divisi","position":"Position","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-EF278E46","name":"Admin2 thinktank","email":"admin2@thinktank.local","userAuthLevel":"Administrator","division":"Divisi","position":"posisi","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":1},{"id":"USR-ADMIN","name":"System Admin","email":"admin@thinktank.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":1,"checked":1},{"id":"USR-12788040","name":"Internal Tester","email":"781164843@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-405F00F4","name":"Internal Tester","email":"1781164861@client.local","userAuthLevel":"Administrator","division":"","position":"","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-62199DD8","name":"Temp Updated User","email":"temp.user.crud@thinktank.local","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-8C76A791","name":"baba cdcd","email":"cso12333@email.com","userAuthLevel":"ThinkTank Admin","division":"","position":"","userAuthLevelId":2,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-ACF74981","name":"Admin3 ABC","email":"ABC3@admin.com","userAuthLevel":"Client Team","division":"Divisi","position":"Posisi","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-B99A3272","name":"Admin TOP","email":"admin2@TOP.COM","userAuthLevel":"Client Team","division":"Division","position":"Position","userAuthLevelId":14,"userTypeId":1,"asManager":0,"checked":0},{"id":"USR-E5A4B811","name":"abb abb","email":"anggie123@crm.co.id","userAuthLevel":"Administrator","division":"Division 1","position":"Position 2","userAuthLevelId":1,"userTypeId":1,"asManager":0,"checked":0}],"ticketCategories":[{"id":124,"name":"BUGS"},{"id":125,"name":"Configuration & Settingan"},{"id":128,"name":"Consultation"},{"id":127,"name":"Enhancement"},{"id":126,"name":"Perbaikan Data"},{"id":131,"name":"Upgrade"}],"ticketBalance":{"ticketIn":"0","ticketOut":"0","balance":"0"},"contacts":[],"modules":[{"productId":1,"id":4,"name":"Module AR"},{"productId":1,"id":5,"name":"Module Fixed Asset"},{"productId":1,"id":10,"name":"Module AP"},{"productId":1,"id":11,"name":"Module Finance"},{"productId":1,"id":12,"name":"Module Banking"},{"productId":1,"id":13,"name":"Module Purchase"},{"productId":1,"id":14,"name":"Module Sales"},{"productId":1,"id":15,"name":"Module Inventory"}],"templateName":null,"task":[{"id":124,"name":"BUGS","data":[]},{"id":125,"name":"Configuration & Settingan","data":[]},{"id":128,"name":"Consultation","data":[]},{"id":127,"name":"Enhancement","data":[]},{"id":126,"name":"Perbaikan Data","data":[]},{"id":131,"name":"Upgrade","data":[]}],"cases":[{"id":124,"name":"BUGS","data":[]},{"id":125,"name":"Configuration & Settingan","data":[]},{"id":128,"name":"Consultation","data":[]},{"id":127,"name":"Enhancement","data":[]},{"id":126,"name":"Perbaikan Data","data":[]},{"id":131,"name":"Upgrade","data":[]}],"cr":[{"id":124,"name":"BUGS","data":[]},{"id":125,"name":"Configuration & Settingan","data":[]},{"id":128,"name":"Consultation","data":[]},{"id":127,"name":"Enhancement","data":[]},{"id":126,"name":"Perbaikan Data","data":[]},{"id":131,"name":"Upgrade","data":[]}]}}', 1, 1, '2026-08-26 16:21:18', 'USR-EF278E46', '2026-08-26 16:21:18', 'USR-EF278E46'),
-	(4, 'Task baru 1111', '', 'Follow up from case IS000078', '20261019', 'task', '{"taskId":"TA000077","taskTitle":"ok task","task":{"id":"TA000077","ticketTypeId":1,"ticketCategoryId":131,"ticketSeverityId":0,"productChildId":"5","crNoRef":"","issueNo":"IS000078","title":"ok task","description":"Follow up from case IS000078","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-6628F029","submitBy":"USR-ADMIN","submitDate":"2026-10-07 18:15:31","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-10-16 21:07:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-10-16 21:07:00","ticketStatusId":1,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":3,"presence":1,"inputDate":"2026-10-07 18:15:31","inputBy":"USR-ADMIN","updateDate":"2026-10-19 22:14:05","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Open","projectName":"Project 01 CUCOK","productName":"Acumatica ERP","clientName":"PT. CUCOKLOGI KONSULTASI","projectType":"Software Support Ticket Based","submitByName":"System Admin","ticketCategory":"Upgrade","productChildName":"Module Fixed Asset","ParentCategoryName":"Acumatica Support","ticketCategoriesParentId":123}}', 1, 1, '2026-10-19 22:57:28', 'USR-ADMIN', '2026-10-19 22:57:28', 'USR-ADMIN');
+	(13, 'test 123', '351', '', '20261111', 'project', '', 1, 1, '2026-11-11 15:01:27', 'USR-ADMIN', '2026-11-11 15:01:27', 'USR-ADMIN'),
+	(14, 'tas 1', '', '', '20261111', 'task', '{"taskId":"TA000098","taskTitle":"gogg","task":{"id":"TA000098","ticketTypeId":1,"ticketCategoryId":122,"ticketSeverityId":0,"productChildId":"14","crNoRef":"","issueNo":"","title":"gogg","description":"","responseDateTime":"2026-01-01 00:00:00","lockTime":0,"targetCompletationDateTime":"2026-01-01 00:00:00","actualWorkingDateTime":"2026-01-01 00:00:00","verificationDateTime":"2026-01-01 00:00:00","verificationHour":0,"actualWorkingHour":0,"ticketSolutionTimeId":0,"responseHour":0,"projectId":"PRJ-2E85C598","submitBy":"USR-ADMIN","submitDate":"2026-11-10 18:12:17","deadlineDateTime":"2026-01-01 00:00:00","targetCompletionDate":"2026-11-28 00:00:00","assignTo":"USR-ADMIN","taskSolution":"","actualCompletionDate":"2026-11-28 00:00:00","ticketStatusId":1,"rating":0,"ratesBy":"","ticketEstimationCost":0,"hours":0,"sorting":999,"projectSorting":999,"presence":1,"inputDate":"2026-11-10 18:12:17","inputBy":"USR-ADMIN","updateDate":"2026-11-10 18:12:17","updateBy":"USR-ADMIN","ticketTypeName":"Task","ticketStatusName":"Open","projectName":"TEST 3","productName":"Acumatica ERP","clientName":"PT XYZ Jp.co","projectType":"Software Implementation","submitByName":"System Admin","ticketCategory":"GO Live","productChildName":"Module Sales","ParentCategoryName":"Acumatica Implementasi","ticketCategoriesParentId":113}}', 1, 1, '2026-11-11 15:43:18', 'USR-ADMIN', '2026-11-11 15:43:18', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.template_project
 CREATE TABLE IF NOT EXISTS `template_project` (
@@ -588,7 +649,9 @@ CREATE TABLE IF NOT EXISTS `template_project` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template_project: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.template_project: ~1 rows (approximately)
+INSERT INTO `template_project` (`id`, `templateId`, `name`, `projectTypeId`, `projectBilleableId`, `productId`, `ticketCategoriesParentId`, `ticketBaseHours`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('PRJ-920C04C1', 13, 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 1, '2026-11-11 15:01:27', 'USR-ADMIN', '2026-11-11 15:01:27', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.template_project_contact
 CREATE TABLE IF NOT EXISTS `template_project_contact` (
@@ -649,7 +712,9 @@ CREATE TABLE IF NOT EXISTS `template_project_ticket_draft` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template_project_ticket_draft: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.template_project_ticket_draft: ~1 rows (approximately)
+INSERT INTO `template_project_ticket_draft` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `projectSorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('DRFT-7C75E12D', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-920C04C1', 'USR-ADMIN', '2026-11-11 15:01:27', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 1, '2026-11-11 15:01:27', 'USR-ADMIN', '2026-11-11 15:01:27', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.template_project_users
 CREATE TABLE IF NOT EXISTS `template_project_users` (
@@ -663,9 +728,11 @@ CREATE TABLE IF NOT EXISTS `template_project_users` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=521 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=522 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template_project_users: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.template_project_users: ~1 rows (approximately)
+INSERT INTO `template_project_users` (`id`, `projectId`, `userId`, `asManager`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(521, 'PRJ-920C04C1', 'USR-ADMIN', 1, 1, '2026-11-11 15:01:27', 'USR-ADMIN', '2026-11-11 15:01:27', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket
 CREATE TABLE IF NOT EXISTS `ticket` (
@@ -710,9 +777,10 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket: ~2 rows (approximately)
 INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `projectSorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	('TA000098', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-2E85C598', 'USR-ADMIN', '2026-11-10 18:12:17', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 1, 0, '', 0, 0, 999, 999, 1, '2026-11-10 18:12:17', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN');
+	('TA000098', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-2E85C598', 'USR-ADMIN', '2026-11-10 18:12:17', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 1, 0, '', 0, 0, 999, 999, 1, '2026-11-10 18:12:17', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN'),
+	('TA000099', 1, 122, 0, '14', '', '', 'gogg', 'ok', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-2E85C598', 'USR-ADMIN', '2026-11-11 16:03:51', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 1, 0, '', 0, 0, 999, 999, 1, '2026-11-11 16:03:52', '1', '2026-11-11 16:03:52', '1');
 
 -- Dumping structure for table thinktank-ticket.ticket_balance
 CREATE TABLE IF NOT EXISTS `ticket_balance` (
@@ -732,7 +800,7 @@ CREATE TABLE IF NOT EXISTS `ticket_balance` (
   KEY `projectId` (`projectId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_balance: ~44 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_balance: ~47 rows (approximately)
 INSERT INTO `ticket_balance` (`id`, `projectId`, `note`, `ticketId`, `date`, `ticketIn`, `ticketOut`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(4, 't3', '', '', '2026-06-10 16:58:11', 10, 0, 1, '2026-06-10 16:58:11', 1, '2026-06-10 16:58:11', 1),
 	(5, 't3', '', '', '2026-06-10 16:58:11', 0, 3, 1, '2026-06-10 16:58:11', 1, '2026-06-10 16:58:11', 1),
@@ -877,7 +945,7 @@ CREATE TABLE IF NOT EXISTS `ticket_logs` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=364 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_logs: ~37 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_logs: ~41 rows (approximately)
 INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeDateTime`, `description`, `presence`, `inputBySystem`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(323, 0, 'TA000079', '2026-10-12 21:12:00', '2026-10-12 21:13:00', '<p>admin2@<a href="thinktank.local" target="_blank">thinktank.local</a></p>', 1, 0, '2026-10-12 21:12:43', 'USR-ADMIN', '2026-10-12 21:12:43', 'USR-ADMIN'),
 	(324, 0, 'TA000079', '2026-10-12 21:13:00', '2026-10-12 21:14:00', '<p>admin</p>', 1, 0, '2026-10-12 21:13:18', 'USR-ADMIN', '2026-10-12 21:13:18', 'USR-ADMIN'),
@@ -936,7 +1004,7 @@ CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table thinktank-ticket.ticket_logs_attachments: ~19 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_logs_attachments: ~23 rows (approximately)
 INSERT INTO `ticket_logs_attachments` (`id`, `ticketId`, `ticketLogId`, `originalName`, `filename`, `mimetype`, `size`, `url`, `inputDate`, `inputBy`) VALUES
 	(1, 'C22', 33, '9f602d89e09afc00586c4531712d98c0.jpg', '1782373257961-575028619.jpg', 'image/jpeg', 78999, 'http://localhost:3000/uploads/1782373257961-575028619.jpg', '2026-06-25 14:40:57', 'USR-ADMIN'),
 	(2, 'C22', 34, 'af9ba7cec186ceed2959188052710d88.jpg', '1782374733014-180734174.jpg', 'image/jpeg', 75719, 'http://localhost:3000/uploads/1782374733014-180734174.jpg', '2026-06-25 15:05:33', 'USR-ADMIN'),
@@ -976,7 +1044,7 @@ CREATE TABLE IF NOT EXISTS `ticket_rating` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_rating: ~91 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_rating: ~110 rows (approximately)
 INSERT INTO `ticket_rating` (`id`, `ticketId`, `value`, `ratingId`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(10, 'IS000022', 3, 10, 1, '2026-07-31 15:30:27', '0', '2026-07-31 15:30:27', '0'),
 	(11, 'IS000022', 3, 11, 1, '2026-07-31 15:30:27', '0', '2026-07-31 15:30:27', '0'),
@@ -1214,7 +1282,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user: ~48 rows (approximately)
+-- Dumping data for table thinktank-ticket.user: ~49 rows (approximately)
 INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAuthLevelId`, `firstName`, `lastName`, `phone`, `mobile`, `birthday`, `division`, `position`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	('DEMO1', 'client2.demo@thinktank.local', 351, 2, '$2b$04$vpl.W2psDhKPJt3CdgMOUOPqdxu6dG3ORdEMUCHl5Fo65ZMzeTD3S', 2, 'Client 200', 'Demo', '021111111', '081200000002', '1992-02-02', 'Division', 'Position', 1, 1, '2026-06-10 15:53:03', 1, '2026-08-04 17:27:58', 1),
 	('DEMO2', 'client3.demo@thinktank.local', 351, 2, '$2b$04$vpl.W2psDhKPJt3CdgMOUOPqdxu6dG3ORdEMUCHl5Fo65ZMzeTD3S', 2, 'Client 300', 'Demo', '021111111', '081200000002', '1992-02-02', '', '', 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
@@ -1284,7 +1352,7 @@ CREATE TABLE IF NOT EXISTS `user_access_right` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=447 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_access_right: ~92 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_access_right: ~96 rows (approximately)
 INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`, `d`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(351, 1, 0, 0, 0, 0, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(352, 1, 1001, 1, 1, 1, 1, 0, 1, '2026-07-08 13:49:46', 1, '2026-09-11 17:52:58', 1),
@@ -1421,9 +1489,9 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=325 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=326 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_login_history: ~258 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_login_history: ~321 rows (approximately)
 INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `userAgent`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-ADMIN', '2026-07-15 12:39:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(6, 'USR-ADMIN', '2026-07-15 17:50:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
@@ -1744,7 +1812,8 @@ INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `use
 	(321, 'USR-ADMIN', '2026-11-09 17:25:56', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(322, 'USR-ADMIN', '2026-11-09 18:12:07', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(323, 'USR-ADMIN', '2026-11-10 15:24:54', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
-	(324, 'USR-ADMIN', '2026-11-11 13:13:00', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
+	(324, 'USR-ADMIN', '2026-11-11 13:13:00', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(325, 'USR-ADMIN', '2026-11-16 13:53:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
 
 -- Dumping structure for table thinktank-ticket.user_product
 CREATE TABLE IF NOT EXISTS `user_product` (
@@ -1760,7 +1829,7 @@ CREATE TABLE IF NOT EXISTS `user_product` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_product: ~11 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_product: ~12 rows (approximately)
 INSERT INTO `user_product` (`id`, `userId`, `productId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-75D1A3D2', 1, 1, 1, '2026-10-27 12:57:18', 'USR-ADMIN', '2026-10-27 12:57:18', 'USR-ADMIN'),
 	(6, 'USR-75D1A3D2', 3, 1, 1, '2026-10-27 12:57:18', 'USR-ADMIN', '2026-10-27 12:57:18', 'USR-ADMIN'),

@@ -42,6 +42,7 @@ const adminReportRoutes = require('./modules/admin-report/admin-report.route');
 const clientTicketRoutes = require('./modules/client-ticket/client-ticket.route');
 const verificationRoutes = require('./modules/verification/verification.route');
 const checklistRoutes = require('./modules/checklist/checklist.route');
+const attendanceRoutes = require('./modules/attendance/attendance.route');
 const errorHandler = require('./middlewares/errorHandler');
 const { testConnection } = require('./config/db');
 const path = require('path'); 
@@ -94,6 +95,7 @@ app.use(`${PREFIX_SERVER}/adminReport`, adminReportRoutes);
 app.use(`${PREFIX_SERVER}/client-ticket`, clientTicketRoutes);
 app.use(`${PREFIX_SERVER}/verification`, verificationRoutes);
 app.use(`${PREFIX_SERVER}/checklist`, checklistRoutes);
+app.use(`${PREFIX_SERVER}/attendance`, attendanceRoutes);
 app.use(`${PREFIX_SERVER}/home`, homeRoutes);
 
 app.use(errorHandler);

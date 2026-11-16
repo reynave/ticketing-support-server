@@ -110,6 +110,16 @@ async function listClients(req, res, next) {
   }
 }
 
+async function listAttendance(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const data = await userService.listUserAttendance(id);
+    return res.json(success('User attendance fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   list,
   detail,
@@ -121,4 +131,5 @@ module.exports = {
   saveProducts,
   listProjects,
   listClients,
+  listAttendance,
 };

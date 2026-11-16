@@ -16,6 +16,7 @@ router.put('/:id/products', authMiddleware, userController.saveProducts);
 
 router.get('/:id/projects', authMiddleware, userController.listProjects);
 router.get('/:id/clients', authMiddleware, userController.listClients);
+router.get('/:id/attendance', authMiddleware, userController.listAttendance);
 
 router.delete('/:id', authMiddleware, userController.remove);
 
