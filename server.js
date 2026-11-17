@@ -30,7 +30,16 @@ const productMasterRoutes = require('./modules/product-master/product-master.rou
 const clientRoutes = require('./modules/client/client.route');
 const projectRoutes = require('./modules/project/project.route');
 const ticketRoutes = require('./modules/ticket/ticket.route');
-const caseRoutes = require('./modules/cases/case.route'); 
+const caseRoutes = require('./modules/cases/case.route');
+// Client Portal (ng18-client) - separate REST API under /client-portal/*
+const clientPortalCaseRoutes = require('./modules-clients/cases/case.route');
+const clientPortalChangeRequestRoutes = require('./modules-clients/change-requests/change-request.route');
+const clientPortalProjectRoutes = require('./modules-clients/projects/project.route');
+const clientPortalTicketBalanceRoutes = require('./modules-clients/ticket-balance/ticket-balance.route');
+const clientPortalClientTicketRoutes = require('./modules-clients/client-ticket/client-ticket.route');
+const clientPortalRatingRoutes = require('./modules-clients/rating/rating.route');
+const clientPortalMasterRoutes = require('./modules-clients/master/master.route');
+const clientPortalTicketCategoriesRoutes = require('./modules-clients/ticket-categories/ticket-categories.route'); 
 const changeRequestRoutes = require('./modules/change-requests/change-request.route');
 const homeRoutes = require('./modules/home/home.route');
 const ratingRoutes = require('./modules/rating/rating.route');
@@ -97,6 +106,17 @@ app.use(`${PREFIX_SERVER}/verification`, verificationRoutes);
 app.use(`${PREFIX_SERVER}/checklist`, checklistRoutes);
 app.use(`${PREFIX_SERVER}/attendance`, attendanceRoutes);
 app.use(`${PREFIX_SERVER}/home`, homeRoutes);
+
+
+app.use(`${PREFIX_SERVER}/client-portal/cases`, clientPortalCaseRoutes);
+app.use(`${PREFIX_SERVER}/client-portal/change-requests`, clientPortalChangeRequestRoutes);
+app.use(`${PREFIX_SERVER}/client-portal/projects`, clientPortalProjectRoutes);
+app.use(`${PREFIX_SERVER}/client-portal/ticket-balance`, clientPortalTicketBalanceRoutes);
+app.use(`${PREFIX_SERVER}/client-portal/client-ticket`, clientPortalClientTicketRoutes);
+app.use(`${PREFIX_SERVER}/client-portal/rating`, clientPortalRatingRoutes);
+app.use(`${PREFIX_SERVER}/client-portal/master`, clientPortalMasterRoutes);
+app.use(`${PREFIX_SERVER}/client-portal/ticket-categories`, clientPortalTicketCategoriesRoutes);
+
 
 app.use(errorHandler);
 

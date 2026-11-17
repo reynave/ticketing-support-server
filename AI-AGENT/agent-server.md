@@ -1,7 +1,7 @@
 # Agent: Server Builder — Thinktank Ticketing System
 
 > 📌 **Dokumen ini adalah sumber kebenaran (single source of truth) untuk backend.**
-> Terakhir di-sync dengan kode: **10 November 2026** (draft project + draft task).
+> Terakhir di-sync dengan kode: **17 November 2026** (draft project + draft task + attendance + checklist + home dashboard).
 > Jika ada perubahan kode, dokumen ini **wajib** di-update pada sesi yang sama.
 
 ---
@@ -11,6 +11,7 @@
 - ✅ **Selesai**: Auth (internal + client), Master Data, Client, Project, User, Ticket Balance.
 - ✅ **Selesai**: Modul transaksi **Task / Case / Change Request** + Logs + Status Logs + Rating + Attachment upload.
 - ✅ **Selesai**: Modul pendukung — Template, Product Master, Ticket Categories, User Login History, Admin Report, Client Ticket (portal).
+- ✅ **Selesai**: Modul **Attendance (absen)** — check-in/check-out (geo + IP + user-agent) & rekap admin (list, dashboard harian live, rekap bulanan) — module `7001`. Plus modul **Home dashboard** & **Checklist** task (`ticket_checklist`).
 - ✅ **Selesai**: Draft Project (`presence = 4`) + Draft Task (`project_ticket_draft`) — create, auto-save, publish (copy draft task → `ticket`), cascade delete.
 - 🟡 **Sebagian**: Socket.io — hanya event `connected` & `notification`. Realtime per-ticket **belum** diimplementasikan.
 - ⏳ **Belum ada**: refresh token / blacklisting token, unit test, pagination server-side, validasi `express-validator` di modul selain auth.
@@ -26,6 +27,7 @@
 - Client (external user) hanya melihat Case/CR milik project tempat ia tercatat di `project_contact`.
 - Draft project memakai `project.presence = 4` (belum publish); saat publish berubah jadi `presence = 1` & `status = 1`.
 - Draft task disimpan di tabel **`project_ticket_draft`** (mirror `ticket`). Saat project di-publish (`presence 4→1`), draft task di-copy ke `ticket` (`ticketTypeId = 1`, `ticketStatusId = 1`) lalu soft-delete di `project_ticket_draft`.
+- **Attendance (absen)** dicatat pegawai (user `userTypeId = 1`) via `POST /attendance/check-in` & `PUT /attendance/check-out` (geo `lat`/`lng`, IP, user-agent, alamat). Satu baris = satu hari kerja (`workDate`) dengan flag `checkIn`/`checkOut` 0/1. Rekap admin dibaca dari tabel `attendance`; access right module `7001`.
 
 ---
 
@@ -113,9 +115,14 @@ server/
 │   ├── template/                   # Template (JSON-based, auto-create table)
 │   ├── admin-report/               # Rekap task/case/CR closed
 │   ├── client-ticket/              # Portal client: list case/CR + saldo
+│   ├── verification/               # Verifikasi case oleh client (ticketStatusId = 400)
+│   ├── checklist/                  # Checklist item task (tabel `ticket_checklist`)
+│   ├── attendance/                 # Check-in/check-out + rekap attendance
+│   ├── home/                       # Dashboard home (task/case/CR kanban + sorting)
 │   └── user-login-history/         # Riwayat login
 ├── scripts/
-│   └── seed-dummy-data.js          # Seed admin + client demo (npm run seed:dummy)
+│   ├── seed-dummy-data.js          # Seed admin + client demo (npm run seed:dummy)
+│   └── seed-attendance.js          # Seed data attendance dummy (~40 baris; manual, belum ada npm script)
 ├── uploads/                        # Hasil multer, disajikan statis di /uploads
 ├── .env / .env.example
 ├── app.log                         # Log stdout+stderr (di-intercept di server.js)
@@ -401,6 +408,31 @@ presence, status, audit...
 > ⚠️ Nama kolom **`tempateType`** (typo, bukan `templateType`).
 > ⚠️ `template.service.js` punya `ensureTemplateTable()` yang menjalankan `CREATE TABLE IF NOT EXISTS` dengan skema **berbeda** dari `master-table.sql` (tanpa `clientId`/`status`, charset `utf8mb4_unicode_ci`) dan meng-cache flag di memori modul. Perhatikan ini saat menambah field.
 
+### Tabel Transaksi — Attendance & Checklist
+
+#### `attendance`
+```sql
+id INT(11) AI PK, userId VARCHAR(250) NOT NULL, workDate DATE,
+checkIn TINYINT(4) DEFAULT 0, checkInDateTime DATETIME DEFAULT '2000-01-01 00:00:00',
+checkInLng DECIMAL(20,6), checkInLat DECIMAL(20,6),
+checkInIp VARCHAR(50), checkInUserAgent VARCHAR(250), checkInAddress VARCHAR(250),
+checkOut TINYINT(4) DEFAULT 0, checkOutDateTime DATETIME DEFAULT '2000-01-01 00:00:00',
+checkOutLat DECIMAL(20,6), checkOutLng DECIMAL(20,6),
+checkOutIp VARCHAR(50), checkOutUserAgent VARCHAR(250), checkOutAddress VARCHAR(250),
+presence TINYINT(2) DEFAULT 1, status TINYINT(2) DEFAULT 1, audit (inputBy/updateBy varchar(50))...
+```
+> Satu baris = satu hari kerja per user. `checkIn`/`checkOut` adalah flag 0/1; timestamp, geo, IP, user-agent, dan alamat hanya terisi saat flag terkait = 1.
+> Sudah ada di `master-table.sql` (sekitar baris 18).
+
+#### `ticket_checklist`
+```sql
+id INT(11) AI PK, ticketId VARCHAR(50) NOT NULL DEFAULT '',
+ticketChecklistId INT(11) DEFAULT 0,   -- 0 = root, >0 = sub-item
+status TINYINT(4) DEFAULT 0, description TEXT NOT NULL,
+sorting MEDIUMINT(9) DEFAULT 999, presence TINYINT(2) DEFAULT 1, audit (varchar)...
+```
+> **Di-auto-create** via `checklist.service.js` → `ensureChecklistTable()`. Belum ada di `master-table.sql` (mirror kasus `template`).
+
 ### Nilai Default Hard-coded di Kode
 
 | Konstanta | Nilai | Lokasi |
@@ -412,6 +444,8 @@ presence, status, audit...
 | `INTERNAL_USER_TYPE_ID` | `1` | `user.service.js` |
 | `EXTERNAL_USER_TYPE_ID` | `2` | `user.service.js` |
 | Client id untuk internal user | `0` | filter login internal |
+| `LATE_THRESHOLD` | `'08:15:00'` | `attendance.service.js` |
+| `END_HOURS` | `'17:00:00'` | `attendance.service.js` |
 
 ---
 
@@ -550,6 +584,7 @@ Health check: `GET /api` → `{ status: true, message: 'Server is running', data
 | POST | `/api/user` | Create user (bcrypt hash, saltRounds 4) |
 | PUT | `/api/user/:id` | Update user (partial) |
 | PUT | `/api/user/:id/password` | Ganti password |
+| GET | `/api/user/:id/attendance` | Riwayat attendance per user |
 | DELETE | `/api/user/:id` | Soft delete + acak email |
 
 > **Soft delete user**: set `presence = 0`, `status = 0`, dan email diacak jadi `delete.<RANDOM>.<EMAIL_LAMA>` (agar tidak bentrok dengan UNIQUE email).
@@ -702,6 +737,44 @@ Health check: `GET /api` → `{ status: true, message: 'Server is running', data
 > Filter tambahan: `keyword` (id/title/crNoRef/issueNo).
 > ⚠️ **BUG (SQL Injection)**: `getClientBalance` menyisipkan `projectId` langsung ke string query tanpa binding parameter. **Wajib diperbaiki** sebelum dipakai di produksi.
 
+### Attendance (`modules/attendance`)
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/attendance` | List rekap attendance (filter `userId`, `workDateFrom`, `workDateTo`, `keyword`) |
+| GET | `/api/attendance/summary` | ⚠️ **Dashboard harian live** — `kpi` (`totalEmployees`, `checkedInToday`, `lateArrivals`, `notCheckedInToday`, `missingCheckOut`, `avgWorkHoursPerDay`), `trend`, `locations`, `needsAttention`, `today` |
+| GET | `/api/attendance/dashboard` | ⚠️ **Rekap bulanan** per karyawan — `month`, `periodLabel`, `workingDays`, `employees[]` (present/late/absent/missingOut/totalHours/avgPerDay/rate), `totals`. Filter `month` format `YYYY-MM` |
+| GET | `/api/attendance/status` | Status check-in user login (`{ checkedIn, record, lastRecord }`) |
+| GET | `/api/attendance/my` | Riwayat attendance user login (limit 60) |
+| POST | `/api/attendance/check-in` | Check-in (body `lng`/`lat`, `address`; IP & user-agent auto dari request) |
+| PUT | `/api/attendance/check-out` | Check-out (body sama seperti check-in) |
+
+```json
+// POST /api/attendance/check-in
+{ "lng": 106.798959, "lat": -6.201907, "address": "Kantor Utama" }
+```
+
+> ⚠️ **Nama route tertukar dari intuisi**: `/attendance/summary` = **dashboard harian live**, sedangkan `/attendance/dashboard` = **rekap bulanan**. Jangan bingung saat menambah/membaca fitur.
+> ⚠️ `check-in` menolak (400 `You are already checked in...`) bila masih ada check-in terbuka; `check-out` menolak (400 `You have not checked in yet.`) bila tidak ada check-in terbuka. Satu check-out hanya menutup record check-in **terakhir** yang masih terbuka.
+> ⚠️ Ambang telat & jam normal pulang hard-coded di `attendance.service.js`: `LATE_THRESHOLD = '08:15:00'`, `END_HOURS = '17:00:00'`.
+
+### Checklist (`modules/checklist`)
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/checklist/:ticketId` | List checklist item milik ticket |
+| POST | `/api/checklist` | Create item (`ticketId`, `description`; `ticketChecklistId` = 0 root / >0 sub-item) |
+| PUT | `/api/checklist/reorder` | Simpan urutan (`items[]` berisi `id` + `sorting`) — ⚠️ daftar **sebelum** `/:id` |
+| PUT | `/api/checklist/:id` | Update item (`description`, `status`, `sorting`) |
+| DELETE | `/api/checklist/:id` | Soft delete item + cascade sub-item (`ticketChecklistId`) |
+
+> Tabel **`ticket_checklist`** di-auto-create via `checklist.service.js` → `ensureChecklistTable()`, **belum** ada di `master-table.sql`.
+
+### Home (`modules/home`)
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/home` | Dashboard kanban user login (`tasks`, `cases`, `changeRequests` + total open per tipe) |
+| GET | `/api/home/users` | Daftar user untuk filter assignee |
+| PUT | `/api/home/sorting` | Simpan urutan kanban (body `ticketTypeId` + `ids[]`) |
+
 ---
 
 ## Socket.io
@@ -750,6 +823,9 @@ Diinisialisasi inline di `server.js` (tidak ada folder `socket/`), dengan `cors.
 | 🟢 Rendah | `.env.example` kurang `PRODUCTION` & `PREFIX_SERVER` | `.env.example` |
 | 🟢 Rendah | `console.log` debug tersisa di beberapa service/controller | lihat `app.log` |
 | 🟢 Rendah | `saltRounds = 4` lemah untuk produksi | `user.service.js` |
+| 🟡 Sedang | Nama route attendance tertukar dari intuisi: `/attendance/summary` = dashboard harian, `/attendance/dashboard` = rekap bulanan | `attendance.route.js` |
+| 🟢 Rendah | `scripts/seed-attendance.js` belum terdaftar di `package.json` | `package.json` |
+| 🟡 Sedang | Tabel `ticket_checklist` di-auto-create via `ensureChecklistTable()`, belum ada di `master-table.sql` | `checklist.service.js` |
 
 ---
 
@@ -760,6 +836,7 @@ Diinisialisasi inline di `server.js` (tidak ada folder `socket/`), dengan `cors.
 | `npm start` | Jalankan server (`node server.js`) |
 | `npm run dev` | Jalankan dengan nodemon |
 | `npm run seed:dummy` | Seed data dummy (admin + client demo) |
+| `node scripts/seed-attendance.js` | Seed data attendance dummy (~40 baris); **belum** terdaftar di `package.json` |
 | `npm test` | **Belum diimplementasikan** (selalu exit 1) |
 
 Dummy login hasil seed:
@@ -794,6 +871,6 @@ Dummy login hasil seed:
 | `AI-AGENT/description.md` | Deskripsi bisnis aplikasi |
 | `AI-AGENT/todo-list-server.md` | Todo list per phase |
 | `AI-AGENT/master-table.sql` | DDL + data master & transaksi |
-| `AI-AGENT/alterTable.sql` | DDL tambahan (`ticket_solution_time`) |
+| `AI-AGENT/alterTable.sql` | DDL tambahan (`ticket_solution_time` + modul `7001 Attendance`) |
 | `AI-AGENT/flowchard.drawio` | Diagram alur (CASES / TASK) |
 | `server/README.md` | README ringkas backend |
