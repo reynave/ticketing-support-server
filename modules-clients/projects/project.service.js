@@ -35,6 +35,43 @@ async function listProjectsForClient(filters = {}) {
 
   const [rows] = await pool.execute(q, params);
 
+  // Lampirkan member internal projek (untuk referensi assign)
+  const [users] = await pool.execute(
+    `
+      SELECT p.projectId, p.userId, CONCAT(c.firstName, ' ', c.lastName) AS name, p.asManager
+      FROM project_users p
+      LEFT JOIN user c ON c.id = p.userId
+      WHERE p.presence = 1
+    `
+  );
+  const projectUsersMap = {};
+  for (const user of users) {
+    if (!projectUsersMap[user.projectId]) {
+      projectUsersMap[user.projectId] = [];
+    }
+    projectUsersMap[user.projectId].push({
+      id: user.userId,
+      name: user.name,
+      asManager: user.asManager === 1,
+    });
+  }
+
+  // Lampirkan module product (child product) yang cocok dengan product projek
+  const [products] = await pool.execute(
+    `
+      SELECT p.parentId AS productId, p.id, p.name
+      FROM product AS p
+      WHERE p.presence = 1 AND p.status = 1 AND p.parentId > 0
+    `
+  );
+
+  for (const project of rows) {
+    project.users = projectUsersMap[project.id] || [];
+    project.modules = products.filter(
+      (product) => product.productId === project.productId
+    );
+  }
+
   return rows;
 }
 

@@ -29,7 +29,7 @@ async function listByProject(projectId) {
 
   const [rows] = await pool.execute(
     `
-      SELECT tb.id, tb.projectId, tb.date, tb.ticketIn, tb.ticketOut, 0 as balance, t.title, tb.note, tb.ticketId, t.ticketTypeId
+      SELECT tb.id, tb.projectId, tb.date, tb.ticketIn, tb.ticketOut, 0 as balance, t.title, tb.note, tb.ticketId, tb.ticketId AS caseId, t.ticketTypeId
       FROM ticket_balance as tb
       LEFT JOIN ticket as t on tb.ticketId = t.id
       WHERE tb.projectId = ? AND tb.presence = 1

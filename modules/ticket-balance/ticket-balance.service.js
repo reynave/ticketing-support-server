@@ -38,7 +38,7 @@ async function listByProject(projectId) {
   const [rows] = await pool.execute(
     `
       SELECT tb.id, tb.projectId, tb.date, tb.ticketIn, tb.ticketOut, 0 as balance, t.title , tb.note, tb.ticketId,
-       t.ticketTypeId
+       tb.ticketId AS caseId, t.ticketTypeId
       FROM ticket_balance as tb
       LEFT JOIN ticket as t on tb.ticketId = t.id 
       WHERE tb.projectId = ? AND tb.presence = 1
@@ -150,7 +150,7 @@ async function createTransaction(payload) {
     throw error;
   }
 
-  const hhiiss = new Date().toISOString().slice(11, 19);
+  const hhiiss = payload.curTime || new Date().toTimeString().split(' ')[0]; // Use provided time or current time in HH:MM:SS format
 
   const [result] = await pool.execute(
     `

@@ -2,6 +2,50 @@ const { pool } = require('../../config/db');
 const { runningNumber } = require('../../helpers/autoNumber');
 
 const CHANGE_REQUEST_TYPE_ID = 3;
+const DEFAULT_TICKET_STATUS_ID = 1;
+
+function createError(message, statusCode) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  throw error;
+}
+
+function pad2(value) {
+  return String(value).padStart(2, '0');
+}
+
+function formatDateTime(date) {
+  return (
+    `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())} ` +
+    `${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}`
+  );
+}
+
+/**
+ * Normalisasi nilai tanggal/waktu menjadi format MySQL DATETIME 'YYYY-MM-DD HH:mm:ss'.
+ * Menerima 'YYYY-MM-DD', 'YYYY-MM-DD HH:mm[:ss]', 'YYYY-MM-DDTHH:mm[:ss]' (dipakai frontend),
+ * string ISO, atau object Date. Mengembalikan '' bila nilainya kosong.
+ */
+function normalizeDateTime(value, fieldName) {
+  if (value === undefined || value === null || String(value).trim() === '') {
+    return '';
+  }
+
+  const raw = String(value).trim();
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+
+  if (match) {
+    return `${match[1]}-${match[2]}-${match[3]} ${match[4] || '00'}:${match[5] || '00'}:${match[6] || '00'}`;
+  }
+
+  const parsed = value instanceof Date ? value : new Date(raw);
+
+  if (Number.isNaN(parsed.getTime())) {
+    createError(`${fieldName} must be a valid date/time`, 400);
+  }
+
+  return formatDateTime(parsed);
+}
 
 function parseNonNegativeNumber(value, fieldName) {
   const parsed = Number(value);
@@ -32,22 +76,106 @@ async function buildTicketId(inputId) {
 }
 
 function normalizeCreatePayload(payload) {
+  const title = String(payload.title || '').trim();
+  const description = String(payload.description || '').trim();
+  const projectId = String(payload.projectId || '').trim();
+
+  if (!title) {
+    createError('title is required', 400);
+  }
+
+  if (!projectId) {
+    createError('projectId is required', 400);
+  }
+
+  const now = new Date();
+  const submitDate = normalizeDateTime(payload.submitDate, 'submitDate') || formatDateTime(now);
+  const targetCompletionDate =
+    normalizeDateTime(payload.targetCompletionDate, 'targetCompletionDate') || submitDate;
+  const deadlineDateTime =
+    normalizeDateTime(payload.deadlineDateTime, 'deadlineDateTime') || targetCompletionDate;
+  const actualCompletionDate =
+    normalizeDateTime(payload.actualCompletionDate, 'actualCompletionDate') || targetCompletionDate;
+
   return {
     ticketTypeId: CHANGE_REQUEST_TYPE_ID,
-    title: String(payload.title || '').trim(),
-    description: String(payload.description || '').trim(),
-    projectId: String(payload.projectId).trim(),
-    submitBy: payload.submitBy,
-    submitDate: payload.submitDate,
-    targetCompletionDate: payload.targetCompletionDate,
-    assignTo: payload.assignTo,
-    actualCompletionDate: payload.actualCompletionDate || payload.targetCompletionDate,
-    ticketStatusId: parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
-    ticketCategoryId: payload.ticketCategoryId !== undefined
-      ? parseOptionalNumber(payload.ticketCategoryId, 'ticketCategoryId')
-      : null,
-    severityId: payload.severityId !== undefined ? parseOptionalNumber(payload.severityId, 'severityId') : null,
+    title,
+    description,
+    projectId,
+    // submitBy selalu diisi controller dari token (req.user.id).
+    submitBy: String(payload.submitBy || '').trim(),
+    submitDate,
+    targetCompletionDate,
+    deadlineDateTime,
+    actualCompletionDate,
+    // assignTo divalidasi/di-resolve ke project_users pada createTicket.
+    assignTo: String(payload.assignTo || '').trim(),
+    ticketStatusId:
+      payload.ticketStatusId === undefined ||
+      payload.ticketStatusId === null ||
+      payload.ticketStatusId === ''
+        ? DEFAULT_TICKET_STATUS_ID
+        : parseNonNegativeNumber(payload.ticketStatusId, 'ticketStatusId'),
+    // Kolom NOT NULL tanpa default di tabel `ticket` → jangan pernah kirim null/undefined.
+    ticketCategoryId: parseOptionalNumber(payload.ticketCategoryId, 'ticketCategoryId') || 0,
+    severityId: parseOptionalNumber(payload.severityId ?? payload.ticketSeverityId, 'severityId') || 0,
+    productChildId: String(payload.productChildId ?? '').trim(),
+    taskSolution: String(payload.taskSolution || '').trim(),
   };
+}
+
+/**
+ * Client hanya boleh membuat CR pada project tempat ia terdaftar di project_contact
+ * (userId + projectId + presence = 1) dan project tersebut belum soft-delete.
+ */
+async function assertProjectAccess(projectId, userId) {
+  const [rows] = await pool.execute(
+    `
+      SELECT p.id
+      FROM project AS p
+      INNER JOIN project_contact AS pc
+        ON pc.projectId = p.id AND pc.userId = ? AND pc.presence = 1
+      WHERE p.id = ? AND p.presence = 1
+      LIMIT 1
+    `,
+    [String(userId || ''), String(projectId || '')]
+  );
+
+  if (rows.length === 0) {
+    createError('Forbidden', 403);
+  }
+}
+
+/**
+ * Tentukan assignTo: pakai userId yang dikirim bila terdaftar di project_users,
+ * jika tidak fallback ke manager (asManager = 1) lalu user project pertama.
+ */
+async function resolveAssignee(projectId, assignTo) {
+  const [rows] = await pool.execute(
+    `
+      SELECT userId, asManager
+      FROM project_users
+      WHERE projectId = ? AND presence = 1
+      ORDER BY asManager DESC, id ASC
+    `,
+    [String(projectId || '')]
+  );
+
+  if (rows.length === 0) {
+    return String(assignTo || '').trim() || '0';
+  }
+
+  const requested = String(assignTo || '').trim();
+
+  if (requested) {
+    const matched = rows.find((row) => String(row.userId) === requested);
+
+    if (matched) {
+      return String(matched.userId);
+    }
+  }
+
+  return String(rows[0].userId);
 }
 
 async function listTicketsForClient(filters = {}) {
@@ -246,39 +374,54 @@ async function getTicketLogs(id) {
 }
 async function createTicket(payload) {
   const data = normalizeCreatePayload(payload);
+
+  if (!data.submitBy) {
+    createError('Unauthorized', 401);
+  }
+
+  // Client hanya boleh membuat CR pada project yang terhubung di project_contact.
+  await assertProjectAccess(data.projectId, data.submitBy);
+
+  const assignTo = await resolveAssignee(data.projectId, data.assignTo);
   const generatedId = await buildTicketId(payload.id);
 
   const q = `
     INSERT INTO ticket (
-      id, ticketTypeId, title, description, projectId,
-      submitBy, submitDate, targetCompletionDate, assignTo,
-      actualCompletionDate, ticketStatusId, ticketCategoryId,
-      presence, inputDate, inputBy, updateDate, updateBy,
-      deadlineDateTime,
-      productChildId
+      id, ticketTypeId, ticketCategoryId, ticketSeverityId, productChildId,
+      title, description, projectId, submitBy, submitDate,
+      deadlineDateTime, targetCompletionDate, assignTo, taskSolution,
+      actualCompletionDate, ticketStatusId, rating, ticketEstimationCost,
+      hours, actualWorkingHour, presence, inputDate, inputBy, updateDate, updateBy
     )
     VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-      1, NOW(), '1', NOW(), '1',
-      ?, ?
+      ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?,
+      ?, ?, ?, ?,
+      ?, ?, 0, 0,
+      0, 0, 1, NOW(), ?, NOW(), ?
     )
   `;
 
   const params = [
     generatedId,
     data.ticketTypeId,
+    data.ticketCategoryId,
+    data.severityId,
+    data.productChildId,
     data.title,
     data.description,
     data.projectId,
     data.submitBy,
     data.submitDate,
+    data.deadlineDateTime,
     data.targetCompletionDate,
-    data.assignTo,
+    assignTo,
+    data.taskSolution,
     data.actualCompletionDate,
-    1,
-    data.ticketCategoryId,
-    payload.deadlineDateTime,
-    payload.productChildId,
+    data.ticketStatusId,
+    // inputBy/updateBy memakai user dari token (bukan hard-code '1').
+    data.submitBy,
+    data.submitBy,
   ];
 
   await pool.execute(q, params);
