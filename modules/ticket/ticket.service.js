@@ -546,6 +546,75 @@ async function updateTicket(id, payload, submitBy) {
   return true;
 }
 
+async function updateTicketStatus(id, ticketStatusId, submitBy) {
+  const statusId = parseNonNegativeNumber(ticketStatusId, 'ticketStatusId');
+
+  if (!Number.isInteger(statusId) || statusId < 1) {
+    const error = new Error('ticketStatusId must be a positive integer');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const [existing] = await pool.execute(
+    `SELECT id, ticketStatusId FROM ticket WHERE id = ? AND presence = 1 LIMIT 1`,
+    [String(id)]
+  );
+
+  if (!existing.length) {
+    const error = new Error('Ticket not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const previousStatusId = existing[0].ticketStatusId;
+
+  await pool.execute(
+    `
+      UPDATE ticket
+      SET ticketStatusId = ?, updateDate = NOW(), updateBy = ?
+      WHERE id = ? AND presence = 1
+    `,
+    [statusId, String(submitBy || ''), String(id)]
+  );
+
+  if (Number(previousStatusId) !== statusId) {
+    const [history] = await pool.execute(
+      `
+        SELECT id, name FROM ticket_status WHERE id = ?
+        UNION
+        SELECT id, name FROM ticket_status WHERE id = ?
+      `,
+      [previousStatusId, statusId]
+    );
+
+    const previousRow = history.find((row) => Number(row.id) === Number(previousStatusId));
+    const nextRow = history.find((row) => Number(row.id) === statusId);
+
+    const description =
+      'Update Status from <strong>' +
+      (previousRow?.name ?? previousStatusId) +
+      '</strong> To  <strong>' +
+      (nextRow?.name ?? statusId) +
+      '</strong> ';
+
+    await pool.execute(
+      `
+        INSERT INTO ticket_logs (
+          ticketId, description, starDateTime, closeDateTime,
+          presence, inputDate, inputBy, updateDate, updateBy
+        )
+        VALUES (
+          ?, ?, IFNULL(?, NOW()), IFNULL(?, NOW()),
+          1, NOW(), ?, NOW(), ?
+        )
+      `,
+      [String(id), description, null, null, String(submitBy || ''), String(submitBy || '')]
+    );
+  }
+
+  return { id: String(id), ticketStatusId: statusId };
+}
+
 async function submitRateService(id, payload) {
   const fields = [];
 
@@ -606,6 +675,7 @@ module.exports = {
   createTicket,
   createTicketLog,
   updateTicket,
+  updateTicketStatus,
   deleteTicket,
   getTicketLogs,
   submitRateService,

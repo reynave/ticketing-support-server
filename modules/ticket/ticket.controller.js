@@ -100,6 +100,24 @@ async function update(req, res, next) {
   }
 }
 
+async function updateStatus(req, res, next) {
+  try {
+    const id = parseId(req.params.id);
+    const submitBy = req.user?.id ? String(req.user.id) : '';
+
+    if (!submitBy) {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const data = await ticketService.updateTicketStatus(id, req.body?.ticketStatusId, submitBy);
+    return res.json(success('Ticket status updated', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function submitRate(req, res, next) {
   try {
     const id = parseId(req.params.id);
@@ -138,6 +156,7 @@ module.exports = {
   detail,
   create,
   update,
+  updateStatus,
   remove,
   createLog,
   detailLogs,

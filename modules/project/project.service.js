@@ -884,7 +884,7 @@ async function updateProject(id, payload, actorId = '1') {
                         assignTo, actualCompletionDate, ticketStatusId,
                         sorting, projectSorting, presence, inputDate, inputBy, updateDate, updateBy
                     )
-                    VALUES (?, 1, ?, 0, ?, '', '', ?, ?, ?, ?, ?, NOW(), ?, ?, 1, ?, ?, 1, NOW(), ?, NOW(), ?)
+                    VALUES (?, 1, ?, 0, ?, '', '', ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, 1, NOW(), ?, NOW(), ?)
                     `,
                     [
                         ticketId,
@@ -895,6 +895,7 @@ async function updateProject(id, payload, actorId = '1') {
                         draft.targetCompletionDate,
                         String(id),
                         String(actorId),
+                        draft.submitDate,
                         String(draft.assignTo || ''),
                         draft.actualCompletionDate,
                         Number(draft.sorting ?? 999),
@@ -1177,6 +1178,7 @@ async function createProjectDraftTask(projectId, payload, actorId) {
     }
 
     const description = String(payload.description || '').trim();
+    const submitDate = normalizeDateTime(payload.submitDate || new Date());
     const targetCompletionDate = normalizeDateTime(payload.targetCompletionDate || new Date());
     const actualCompletionDate = payload.actualCompletionDate
         ? normalizeDateTime(payload.actualCompletionDate)
@@ -1193,7 +1195,7 @@ async function createProjectDraftTask(projectId, payload, actorId) {
             presence, inputDate, inputBy, updateDate, updateBy,
             productChildId
         )
-        VALUES (?, ?, '', ?, ?, ?, ?, NOW(), ?, ?, ?, 0, ?, 1, NOW(), ?, NOW(), ?, ?)
+        VALUES (?, ?, '', ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 1, NOW(), ?, NOW(), ?, ?)
         `,
         [
             id,
@@ -1202,6 +1204,7 @@ async function createProjectDraftTask(projectId, payload, actorId) {
             description,
             String(projectId),
             String(actorId || ''),
+            submitDate,
             targetCompletionDate,
             assignTo,
             actualCompletionDate,
@@ -1266,6 +1269,15 @@ async function updateProjectDraftTask(id, payload, actorId) {
 
         fields.push('ticketCategoryId = ?');
         params.push(ticketCategoryId);
+    }
+
+    if (payload.submitDate) {
+        const submitDate = normalizeDateTime(payload.submitDate);
+
+        if (submitDate) {
+            fields.push('submitDate = ?');
+            params.push(submitDate);
+        }
     }
 
     if (payload.targetCompletionDate) {
@@ -1406,6 +1418,7 @@ async function createProjectTask(projectId, payload, actorId) {
   }
 
   const description = String(payload.description || '').trim();
+  const submitDate = normalizeDateTime(payload.submitDate || new Date());
   const targetCompletionDate = normalizeDateTime(payload.targetCompletionDate || new Date());
   const actualCompletionDate = payload.actualCompletionDate
     ? normalizeDateTime(payload.actualCompletionDate)
@@ -1422,7 +1435,7 @@ async function createProjectTask(projectId, payload, actorId) {
       presence, inputDate, inputBy, updateDate, updateBy,
       productChildId
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, 1, ?, 1, NOW(), ?, NOW(), ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 1, NOW(), ?, NOW(), ?, ?)
     `,
     [
       ticketId,
@@ -1432,6 +1445,7 @@ async function createProjectTask(projectId, payload, actorId) {
       description,
       String(projectId),
       String(actorId),
+      submitDate,
       targetCompletionDate,
       assignTo,
       actualCompletionDate,

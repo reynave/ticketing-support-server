@@ -10,6 +10,7 @@ router.get('/:id/logs', authMiddleware, ticketController.detailLogs);
 
 router.post('/', authMiddleware, ticketController.create);
 
+router.put('/:id/status', authMiddleware, ticketController.updateStatus);
 router.put('/:id', authMiddleware, ticketController.update);
 router.put('/:id/submitRate', authMiddleware, ticketController.submitRate);
 
