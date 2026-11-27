@@ -68,6 +68,42 @@ async function detail(req, res, next) {
   }
 }
 
+async function caseReport(req, res, next) {
+  try {
+    const projectId = parseId(req.params.id);
+    const filters = {
+      startDate: req.query?.startDate,
+      endDate: req.query?.endDate,
+    };
+
+    // Client users (userTypeId = 2) hanya boleh melihat project milik client-nya.
+    if (req.user?.userTypeId === 2) {
+      const project = await projectMasterService.getProjectDetail(projectId);
+      const isSameClient = String(project?.clientId) === String(req.user.clientId);
+      const contacts = Array.isArray(project?.contacts) ? project.contacts : [];
+      const isContact = contacts.some((contact) => String(contact?.userId) === String(req.user.id));
+
+      if (!isSameClient || !isContact) {
+        const error = new Error('Forbidden');
+        error.statusCode = 403;
+        throw error;
+      }
+    }
+
+    const dcases = await projectMasterService.caseReport(projectId, filters);
+    const summary = await projectMasterService.caseReportSummary(projectId, filters);
+
+    const data = {
+      cases: dcases,
+      summary,
+    };
+
+    return res.json(success('Project case report fetched', data));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function ticketList(req, res, next) {
   try { 
     const userId = req.user?.id ? String(req.user.id) : '';
@@ -376,6 +412,7 @@ module.exports = {
   addContact,
   removeContact,
   ticketList,
+  caseReport,
   draftTaskList,
   createProjectDraftTask,
   updateProjectDraftTask,

@@ -17,6 +17,7 @@ router.put('/draftTasks/:id', authMiddleware, projectController.updateProjectDra
 router.delete('/draftTasks/:id', authMiddleware, projectController.deleteProjectDraftTask);
 
 router.get('/detail/:id', authMiddleware, projectController.detail);
+router.get('/:id/report/cases', authMiddleware, projectController.caseReport);
 
 //router.get('/:id/cases', authMiddleware, projectController.detail);
 //router.get('/:id/cr', authMiddleware, projectController.detail);

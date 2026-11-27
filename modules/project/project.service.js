@@ -2,6 +2,9 @@ const { randomUUID } = require('crypto');
 const { pool } = require('../../config/db');
 const { runningNumber } = require('../../helpers/autoNumber');
 
+// ticketTypeId = 2 artinya CASE
+const CASE_TYPE_ID = 2;
+
 function parseNumeric(value, fieldName) {
     const parsed = Number(value);
 
@@ -80,6 +83,15 @@ function normalizeDate(value, fieldName) {
     const error = new Error(`${fieldName} must be a valid date`);
     error.statusCode = 400;
     throw error;
+}
+
+/** Seperti normalizeDate(), tapi boleh kosong (dipakai untuk filter opsional). */
+function normalizeOptionalDate(value, fieldName) {
+    if (value === undefined || value === null || String(value).trim() === '') {
+        return '';
+    }
+
+    return normalizeDate(value, fieldName);
 }
 
 function buildProjectId(inputId) {
@@ -351,7 +363,8 @@ async function listProjects(filters = {}) {
         pt.ticketBased,
         '' as users,
         '' as modules,
-        (  select sum(ticketIn - ticketOut) as ticketBalance from ticket_balance where projectId = p.id and presence = 1 ) as ticketBalance
+        (  select sum(ticketIn - ticketOut) as ticketBalance from ticket_balance where projectId = p.id and presence = 1 ) as ticketBalance,
+          (select count(c.id) from ticket c where c.projectId = p.id and c.presence = 1 and c.ticketTypeId = ${CASE_TYPE_ID}) as totalCases
         
       FROM project p
       LEFT JOIN client c ON c.id = p.clientId
@@ -1079,6 +1092,117 @@ async function ticketList(filters = {}) {
   );
 
   return grouped;
+}
+
+/**
+ * Data case (ticketTypeId = 2) milik satu project untuk halaman Project Report.
+ * Filter tanggal memakai t.submitDate:
+ * - startDate : submitDate >= startDate
+ * - endDate   : submitDate <= endDate 23:59:59
+ * Semua status case ikut tampil (open maupun closed).
+ */
+async function caseReport(projectId, filters = {}) {
+  const safeProjectId = String(projectId || '').trim();
+
+  if (!safeProjectId) {
+    const error = new Error('projectId is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const conditions = ['t.presence = 1', 't.ticketTypeId = ?', 't.projectId = ?'];
+  const params = [CASE_TYPE_ID, safeProjectId];
+
+  const startDate = normalizeOptionalDate(filters.startDate, 'startDate');
+  if (startDate) {
+    conditions.push('t.submitDate >= ?');
+    params.push(startDate);
+  }
+
+  const endDate = normalizeOptionalDate(filters.endDate, 'endDate');
+  if (endDate) {
+    conditions.push('t.submitDate <= ?');
+    params.push(`${endDate} 23:59:59`);
+  }
+
+  const whereClause = conditions.join(' AND ');
+
+  const q = `
+        SELECT 
+        t.submitDate, t.id,  t.hours, t.actualWorkingHour, t.description, t.taskSolution, ts.name AS 'status',
+        t.title ,
+        pr.name AS  'product', 
+        prc.name AS 'productChild' , 
+        sv.name AS 'severity', t.ticketEstimationCost, tc.name AS 'category'
+
+        FROM ticket t 
+        LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId
+        LEFT JOIN ticket_severity sv ON sv.id = t.ticketSeverityId
+        LEFT JOIN ticket_categories tc ON tc.id = t.ticketCategoryId
+        LEFT JOIN project p ON p.id = t.projectId
+        LEFT JOIN product AS prc ON prc.id = t.productChildId  
+        LEFT JOIN product AS pr ON pr.id = p.productId
+        WHERE ${whereClause}
+        ORDER BY t.submitDate ASC, t.id ASC 
+    `;
+
+  console.log(q, params);
+  const [rows] = await pool.execute(q, params);
+
+  return rows;
+}
+
+/**
+ * Summary data case (ticketTypeId = 2) milik satu project untuk halaman Project Report.
+ * Filter tanggal mengikuti caseReport (berbasis t.submitDate):
+ * - startDate : submitDate >= startDate
+ * - endDate   : submitDate <= endDate 23:59:59
+ *
+ * QUERY DI BAWAH HANYA CONTOH (summary per status) - silakan sesuaikan sendiri
+ * kolom, grouping, dan agregasinya sesuai kebutuhan report.
+ */
+async function caseReportSummary(projectId, filters = {}) {
+  const safeProjectId = String(projectId || '').trim();
+
+  if (!safeProjectId) {
+    const error = new Error('projectId is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const conditions = ['t.presence = 1', 't.ticketTypeId = ?', 't.projectId = ?'];
+  const params = [CASE_TYPE_ID, safeProjectId];
+
+  const startDate = normalizeOptionalDate(filters.startDate, 'startDate');
+  if (startDate) {
+    conditions.push('t.submitDate >= ?');
+    params.push(startDate);
+  }
+
+  const endDate = normalizeOptionalDate(filters.endDate, 'endDate');
+  if (endDate) {
+    conditions.push('t.submitDate <= ?');
+    params.push(`${endDate} 23:59:59`);
+  }
+
+  const whereClause = conditions.join(' AND ');
+
+  const q = `
+        SELECT  tc.name AS 'category', COUNT(t.id) AS 'total' 
+        FROM ticket t 
+        LEFT JOIN ticket_status ts ON ts.id = t.ticketStatusId 
+        LEFT JOIN ticket_categories tc ON tc.id = t.ticketCategoryId 
+         WHERE ${whereClause}
+        GROUP BY tc.name
+       
+        ORDER BY tc.name ASC 
+    `;
+    console.log(q);
+
+  console.log(q, params);
+  const [rows] = await pool.execute(q, params);
+
+  return rows;
 }
 
 async function draftTaskList(filters = {}) {
@@ -2020,6 +2144,8 @@ module.exports = {
     addContactToProject,
     removeContactFromProject,
     ticketList,
+    caseReport,
+    caseReportSummary,
     draftTaskList,
     createProjectDraftTask,
     updateProjectDraftTask,

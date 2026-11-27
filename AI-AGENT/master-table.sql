@@ -40,9 +40,58 @@ CREATE TABLE IF NOT EXISTS `attendance` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.attendance: ~0 rows (approximately)
+-- Dumping data for table thinktank-ticket.attendance: ~48 rows (approximately)
+INSERT INTO `attendance` (`id`, `userId`, `workDate`, `checkIn`, `checkInDateTime`, `checkInLng`, `checkInLat`, `checkInIp`, `checkInUserAgent`, `checkInAddress`, `checkOut`, `checkOutDateTime`, `checkOutLat`, `checkOutLng`, `checkOutIp`, `checkOutUserAgent`, `checkOutAddress`, `presence`, `status`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	(15, 'USR-D0322088', '2026-10-19', 1, '2026-10-19 07:55:36', 106.799803, -6.201742, '192.168.14.170', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-19 18:10:06', -6.205260, 106.801629, '192.168.36.48', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(16, 'USR-E5A4B811', '2026-10-22', 1, '2026-10-22 08:11:03', 106.798630, -6.200770, '192.168.8.230', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-22 17:20:06', -6.199838, 106.796446, '192.168.11.93', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(17, 'USR-E5A4B811', '2026-11-02', 1, '2026-11-02 09:26:46', 106.802173, -6.204674, '10.10.3.248', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Kantor Utama', 1, '2026-11-02 18:13:45', -6.198697, 106.801928, '192.168.38.150', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(18, 'USR-E5A4B811', '2026-10-27', 1, '2026-10-27 07:17:17', 106.801612, -6.198449, '192.168.22.131', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'Kantor Utama', 1, '2026-10-27 17:12:56', -6.201459, 106.795925, '192.168.7.142', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Kantor Utama', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(19, 'USR-D0322088', '2026-11-03', 1, '2026-11-03 09:58:14', 106.797895, -6.205144, '192.168.50.138', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-03 18:11:51', -6.198404, 106.797743, '10.10.3.46', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(20, 'USR-E5A4B811', '2026-10-31', 1, '2026-10-31 08:26:56', 106.796141, -6.200247, '10.10.2.37', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-31 16:35:33', -6.204624, 106.800892, '192.168.37.113', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(21, 'USR-8E476F10', '2026-11-12', 1, '2026-11-12 07:38:43', 106.801211, -6.205650, '192.168.30.5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'Kantor Utama', 1, '2026-11-12 17:01:24', -6.202439, 106.801012, '192.168.4.217', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(22, 'USR-75D1A3D2', '2026-10-26', 1, '2026-10-26 08:57:22', 106.802905, -6.204113, '10.10.0.165', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-10-26 17:08:03', -6.200452, 106.799480, '192.168.1.218', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(23, 'USR-ADMIN', '2026-10-21', 1, '2026-10-21 08:47:13', 106.800505, -6.205838, '192.168.10.138', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-16 17:49:52', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 17:49:52', 'USR-ADMIN'),
+	(24, 'USR-3359BCCE', '2026-10-29', 1, '2026-10-29 07:13:27', 106.797414, -6.204269, '10.10.4.220', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-29 16:29:35', -6.201681, 106.797654, '192.168.30.25', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(25, 'USR-D0322088', '2026-10-17', 1, '2026-10-17 08:33:22', 106.799486, -6.199196, '192.168.3.110', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-17 17:48:34', -6.205711, 106.799969, '10.10.1.146', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Kantor Utama', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(26, 'USR-ADMIN', '2026-11-08', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(27, 'USR-8E476F10', '2026-11-06', 1, '2026-11-06 07:08:23', 106.797055, -6.201060, '192.168.21.223', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(28, 'USR-75D1A3D2', '2026-11-10', 1, '2026-11-10 08:49:43', 106.799418, -6.199287, '10.10.1.232', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(29, 'USR-E5A4B811', '2026-11-16', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(30, 'USR-B99A3272', '2026-10-24', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(31, 'USR-8C76A791', '2026-11-13', 1, '2026-11-13 08:56:04', 106.799096, -6.199885, '192.168.43.95', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Kantor Utama', 1, '2026-11-13 17:53:55', -6.201632, 106.795383, '192.168.12.170', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(32, 'USR-EF278E46', '2026-11-10', 1, '2026-11-10 09:39:36', 106.797465, -6.204206, '10.10.3.27', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'Kantor Utama', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(33, 'USR-B99A3272', '2026-11-04', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(34, 'USR-ACF74981', '2026-11-05', 1, '2026-11-05 09:03:07', 106.797585, -6.199151, '192.168.8.234', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-05 18:50:03', -6.204308, 106.800483, '192.168.1.32', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(35, 'USR-9B2C12BE', '2026-10-26', 1, '2026-10-26 09:06:56', 106.800564, -6.202579, '10.10.4.173', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Kantor Utama', 1, '2026-10-26 18:32:25', -6.204131, 106.800390, '10.10.4.15', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(36, 'USR-ADMIN', '2026-10-17', 1, '2026-10-17 09:25:49', 106.795716, -6.199811, '192.168.9.201', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-10-17 17:26:40', -6.203028, 106.799342, '192.168.48.31', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(37, 'USR-ADMIN', '2026-11-12', 1, '2026-11-12 09:37:59', 106.801942, -6.202733, '192.168.39.226', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Kantor Utama', 1, '2026-11-16 17:49:48', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 17:49:48', 'USR-ADMIN'),
+	(38, 'USR-D0322088', '2026-10-30', 1, '2026-10-30 07:14:50', 106.802508, -6.200029, '192.168.4.61', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(39, 'USR-ADMIN', '2026-10-25', 1, '2026-10-25 09:12:26', 106.797129, -6.201067, '192.168.36.134', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-25 18:05:35', -6.199914, 106.799228, '192.168.7.12', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(40, 'USR-D0322088', '2026-10-19', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(41, 'USR-EF278E46', '2026-10-23', 1, '2026-10-23 07:06:52', 106.799907, -6.199207, '10.10.0.224', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-10-23 17:58:54', -6.204136, 106.796237, '10.10.4.127', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(42, 'USR-D0322088', '2026-11-13', 1, '2026-11-13 07:14:57', 106.799735, -6.201214, '192.168.7.120', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-13 17:16:08', -6.200121, 106.799431, '192.168.27.165', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(43, 'USR-EF278E46', '2026-10-24', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(44, 'USR-ADMIN', '2026-10-22', 1, '2026-10-22 08:35:54', 106.795376, -6.204961, '192.168.3.136', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-22 16:02:42', -6.199671, 106.801424, '192.168.14.118', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Kantor Utama', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(45, 'USR-3359BCCE', '2026-11-15', 1, '2026-11-15 08:29:39', 106.796685, -6.204255, '192.168.11.71', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-15 18:09:35', -6.199973, 106.801300, '192.168.33.34', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(46, 'USR-EF278E46', '2026-10-24', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(47, 'USR-ACF74981', '2026-11-02', 1, '2026-11-02 09:27:28', 106.801262, -6.205657, '192.168.38.204', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-02 17:06:33', -6.203394, 106.799692, '192.168.46.214', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Kantor Utama', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(48, 'USR-ACF74981', '2026-11-09', 1, '2026-11-09 07:28:29', 106.797936, -6.204301, '10.10.0.155', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-09 18:01:46', -6.203669, 106.796097, '10.10.1.144', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Kantor Utama', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(49, 'USR-E5A4B811', '2026-11-09', 1, '2026-11-09 09:40:13', 106.796708, -6.203561, '192.168.20.138', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(50, 'USR-3359BCCE', '2026-11-13', 1, '2026-11-13 09:36:36', 106.801469, -6.198683, '192.168.35.233', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-13 18:28:45', -6.205901, 106.800538, '192.168.35.83', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(51, 'USR-8C76A791', '2026-10-17', 1, '2026-10-17 07:37:26', 106.800455, -6.203249, '192.168.37.172', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-10-17 17:29:51', -6.205545, 106.797779, '192.168.40.153', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(52, 'USR-E5A4B811', '2026-11-16', 1, '2026-11-16 08:57:01', 106.796720, -6.203621, '10.10.4.93', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Menara BCA - Jl. M.H. Thamrin, Jakarta Pusat', 0, '2000-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(53, 'USR-9B2C12BE', '2026-10-31', 1, '2026-10-31 08:52:03', 106.795015, -6.202275, '192.168.22.170', 'Mozilla/5.0 (Linux; Android 16; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36', 'Jl. Jend. Sudirman Kav. 1, Jakarta Pusat', 1, '2026-10-31 16:06:13', -6.198928, 106.799122, '192.168.25.103', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Kantor Utama', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(54, 'USR-75D1A3D2', '2026-11-08', 1, '2026-11-08 08:04:58', 106.797203, -6.201157, '192.168.38.230', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'The Plaza - Jl. M.H. Thamrin, Jakarta Pusat', 1, '2026-11-08 18:45:10', -6.204147, 106.800670, '192.168.6.47', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36', 'Kantor Utama', 1, 1, '2026-11-16 14:30:13', 'seed', '2026-11-16 14:30:13', 'seed'),
+	(57, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 17:50:03', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, '2026-11-16 17:50:16', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, 1, '2026-11-16 17:50:03', 'USR-ADMIN', '2026-11-16 17:50:16', 'USR-ADMIN'),
+	(58, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 17:50:23', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, '2026-11-16 18:03:32', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, 1, '2026-11-16 17:50:23', 'USR-ADMIN', '2026-11-16 18:03:32', 'USR-ADMIN'),
+	(59, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 18:14:34', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, '2026-11-16 18:14:58', -6.210200, 106.836989, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, 1, '2026-11-16 18:14:34', 'USR-ADMIN', '2026-11-16 18:14:58', 'USR-ADMIN'),
+	(60, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 18:15:09', 106.836989, -6.210200, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, '2026-11-16 18:15:11', -6.210200, 106.836989, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', NULL, 1, 1, '2026-11-16 18:15:09', 'USR-ADMIN', '2026-11-16 18:15:11', 'USR-ADMIN'),
+	(61, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 18:22:54', 106.836984, -6.210231, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Kencana, RW 05, Pasar Manggis, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12980, Indonesia', 1, '2026-11-16 18:23:09', -6.210231, 106.836984, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Kencana, RW 05, Pasar Manggis, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12980, Indonesia', 1, 1, '2026-11-16 18:22:54', 'USR-ADMIN', '2026-11-16 18:23:09', 'USR-ADMIN'),
+	(63, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 18:27:26', 106.836987, -6.210135, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Kencana, RW 05, Pasar Manggis, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12980, Indonesia', 1, '2026-11-16 18:27:30', -6.210135, 106.836987, '::ffff:127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Kencana, RW 05, Pasar Manggis, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12980, Indonesia', 1, 1, '2026-11-16 18:27:26', 'USR-ADMIN', '2026-11-16 18:27:30', 'USR-ADMIN'),
+	(64, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 18:27:37', 106.836987, -6.210135, '::ffff:127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Kencana, RW 05, Pasar Manggis, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12980, Indonesia', 1, '2026-11-16 18:31:57', -6.210221, 106.837119, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Muria, RW 02, Menteng Atas, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12970, Indonesia', 1, 1, '2026-11-16 18:27:37', 'USR-ADMIN', '2026-11-16 18:31:57', 'USR-ADMIN'),
+	(65, 'USR-ADMIN', '2026-11-16', 1, '2026-11-16 18:35:02', 106.837069, -6.210185, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Muria, RW 02, Menteng Atas, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12970, Indonesia', 1, '2026-11-16 18:39:41', -6.210034, 106.837113, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 'Jalan Kencana, RW 05, Pasar Manggis, Setiabudi, South Jakarta, Special Capital Region of Jakarta, 12980, Indonesia', 1, 1, '2026-11-16 18:35:02', 'USR-ADMIN', '2026-11-16 18:39:41', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.auto_number
 CREATE TABLE IF NOT EXISTS `auto_number` (
@@ -60,9 +109,9 @@ CREATE TABLE IF NOT EXISTS `auto_number` (
 INSERT INTO `auto_number` (`id`, `name`, `prefix`, `digit`, `runningNumber`, `lastRecord`, `updateDate`) VALUES
 	(324, 'project', 'P', 6, 0, NULL, '2024-01-01 00:00:00'),
 	(325, 'client', 'C', 6, 0, NULL, '2024-01-01 00:00:00'),
-	(326, 'task', 'TA', 6, 99, 'TA000099', '2026-11-11 16:03:51'),
-	(327, 'issue', 'IS', 6, 81, 'IS000081', '2026-10-14 21:47:51'),
-	(328, 'cr', 'CR', 6, 7, 'CR000007', '2026-09-28 15:47:59');
+	(326, 'task', 'TA', 6, 107, 'TA000107', '2026-11-25 15:21:50'),
+	(327, 'issue', 'IS', 6, 85, 'IS000085', '2026-11-25 16:14:33'),
+	(328, 'cr', 'CR', 6, 9, 'CR000009', '2026-11-25 16:20:09');
 
 -- Dumping structure for table thinktank-ticket.client
 CREATE TABLE IF NOT EXISTS `client` (
@@ -114,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `client_product` (
   KEY `clientId` (`clientId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.client_product: ~14 rows (approximately)
+-- Dumping data for table thinktank-ticket.client_product: ~13 rows (approximately)
 INSERT INTO `client_product` (`id`, `clientId`, `productId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 351, 1, 1, 0, '2026-10-27 13:10:33', 'USR-ADMIN', '2026-10-27 13:43:54', 'USR-ADMIN'),
 	(6, 357, 1, 1, 1, '2026-10-27 13:10:38', 'USR-ADMIN', '2026-10-27 13:10:38', 'USR-ADMIN'),
@@ -195,7 +244,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.location: ~1 rows (approximately)
+-- Dumping data for table thinktank-ticket.location: ~0 rows (approximately)
 INSERT INTO `location` (`id`, `asDefault`, `name`, `address`, `lat`, `lng`, `radius`, `officeHourEnd`, `officeHourStart`, `presence`, `status`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(15, 1, 'Kantor Utama', 'ini alamat kantor, tapi hanya sebagai note saja', -6.201907, 106.798959, 100, '17:00:00', '09:00:00', 1, 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
 
@@ -204,9 +253,9 @@ CREATE TABLE IF NOT EXISTS `module` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6003 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=7002 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table thinktank-ticket.module: ~24 rows (approximately)
+-- Dumping data for table thinktank-ticket.module: ~19 rows (approximately)
 INSERT INTO `module` (`id`, `name`) VALUES
 	(1001, 'Industri'),
 	(1002, 'Product'),
@@ -247,7 +296,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.product: ~22 rows (approximately)
+-- Dumping data for table thinktank-ticket.product: ~19 rows (approximately)
 INSERT INTO `product` (`id`, `parentId`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(1, 0, 'Acumatica ERP', 1, 1, '2025-01-01 00:00:00', 1, '2026-08-04 15:09:53', 1),
 	(2, 0, 'SAP B1', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
@@ -294,16 +343,16 @@ CREATE TABLE IF NOT EXISTS `project` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project: ~9 rows (approximately)
+-- Dumping data for table thinktank-ticket.project: ~8 rows (approximately)
 INSERT INTO `project` (`id`, `name`, `projectTypeId`, `projectBilleableId`, `productId`, `ticketCategoriesParentId`, `ticketBaseHours`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	('PRJ-0C41009D', 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 4, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-11 15:05:06', 'USR-ADMIN'),
-	('PRJ-2E85C598', 'TEST 3', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '', 1, '2026-11-10 18:11:38', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN'),
-	('PRJ-32E08A77', '', 0, 0, 0, 113, 0, '0', '2026-11-10', '2026-11-10', 1, '0', 4, '2026-11-10 18:15:57', 'USR-ADMIN', '2026-11-10 18:27:56', 'USR-ADMIN'),
+	('PRJ-0C41009D', 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '', 1, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-25 14:41:05', 'USR-ADMIN'),
+	('PRJ-2E85C598', 'PROJECT twitter 1', 2, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 1, '2026-11-10 18:11:38', 'USR-ADMIN', '2026-11-25 17:21:19', 'USR-ADMIN'),
+	('PRJ-32E08A77', '', 1, 1, 1, 113, 0, '351', '2026-11-10', '2026-11-10', 1, '0', 4, '2026-11-10 18:15:57', 'USR-ADMIN', '2026-11-25 15:06:41', 'USR-ADMIN'),
 	('PRJ-5531ACE6', 'Test 1', 1, 2, 1, 113, 10, '351', '2026-11-10', '2026-11-10', 1, '', 1, '2026-11-10 18:03:12', 'USR-ADMIN', '2026-11-10 18:04:46', 'USR-ADMIN'),
 	('PRJ-9B75E8C1', 'cika', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 100, '2026-11-11 14:10:41', 'USR-ADMIN', '2026-11-11 14:10:41', 'USR-ADMIN'),
 	('PRJ-AD1F6D4B', 'AkanShari', 1, 1, 3, 108, 2, '357', '2026-11-10', '2026-11-10', 1, '0', 1, '2026-11-10 18:05:27', 'USR-ADMIN', '2026-11-10 18:11:34', 'USR-ADMIN'),
-	('PRJ-B287D0E1', 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '13', 4, '2026-11-11 15:04:47', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN'),
-	('PRJ-EB4A08BB', '', 0, 1, 0, 113, 0, '0', '2026-11-10', '2026-11-10', 1, '0', 4, '2026-11-10 18:28:43', 'USR-ADMIN', '2026-11-11 13:16:52', 'USR-ADMIN'),
+	('PRJ-B287D0E1', 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '', 1, '2026-11-11 15:04:47', 'USR-ADMIN', '2026-11-25 14:42:31', 'USR-ADMIN'),
+	('PRJ-EB4A08BB', 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 1, '2026-11-10 18:28:43', 'USR-ADMIN', '2026-11-25 15:30:36', 'USR-ADMIN'),
 	('PRJ-F0326A17', 'cline 1', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 100, '2026-11-11 14:01:45', 'USR-ADMIN', '2026-11-11 14:01:45', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.project_billeable
@@ -338,9 +387,9 @@ CREATE TABLE IF NOT EXISTS `project_contact` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_contact: ~29 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_contact: ~28 rows (approximately)
 INSERT INTO `project_contact` (`id`, `clientId`, `projectId`, `userId`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(43, '351', 'PRJ-FA50EC5D', 'USR-39C10981', 0, '2026-07-23 16:45:45', 'USR-ADMIN', '2026-07-23 17:10:39', 'USR-ADMIN'),
 	(44, '351', 'PRJ-FA50EC5D', 'DEMO1', 0, '2026-07-23 16:45:45', 'USR-ADMIN', '2026-07-23 17:10:39', 'USR-ADMIN'),
@@ -370,7 +419,9 @@ INSERT INTO `project_contact` (`id`, `clientId`, `projectId`, `userId`, `presenc
 	(68, '364', 'PRJ-1F4322E6', 'USR-0E23DF09', 0, '2026-09-21 13:57:30', 'USR-ADMIN', '2026-09-21 14:02:34', 'USR-ADMIN'),
 	(69, '364', 'PRJ-1F4322E6', 'USR-00DE1AE8', 0, '2026-09-21 14:05:08', 'USR-ADMIN', '2026-09-21 14:12:28', 'USR-ADMIN'),
 	(70, '364', 'PRJ-6628F029', 'USR-06F9BB55', 1, '2026-09-21 14:14:58', 'USR-ADMIN', '2026-09-21 14:14:58', 'USR-ADMIN'),
-	(71, '364', 'PRJ-6628F029', 'USR-A9F434EE', 1, '2026-09-30 22:43:34', 'USR-ADMIN', '2026-09-30 22:43:34', 'USR-ADMIN');
+	(71, '364', 'PRJ-6628F029', 'USR-A9F434EE', 1, '2026-09-30 22:43:34', 'USR-ADMIN', '2026-09-30 22:43:34', 'USR-ADMIN'),
+	(72, '351', 'PRJ-2E85C598', 'DEMO1', 1, '2026-11-17 17:11:21', 'USR-ADMIN', '2026-11-17 17:11:21', 'USR-ADMIN'),
+	(73, '351', 'PRJ-2E85C598', 'DEMO2', 1, '2026-11-17 17:11:21', 'USR-ADMIN', '2026-11-17 17:11:21', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.project_ticket_draft
 CREATE TABLE IF NOT EXISTS `project_ticket_draft` (
@@ -415,20 +466,25 @@ CREATE TABLE IF NOT EXISTS `project_ticket_draft` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_ticket_draft: ~12 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_ticket_draft: ~16 rows (approximately)
 INSERT INTO `project_ticket_draft` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `projectSorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
+	('DRFT-00BDCD9A', 1, 121, 0, '19', '', '', 'desc 2', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-EB4A08BB', 'USR-ADMIN', '2026-12-03 00:00:00', '2026-01-01 00:00:00', '2026-12-03 00:00:00', 'USR-75D1A3D2', '', '2026-12-03 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-25 15:07:00', 'USR-ADMIN', '2026-11-25 15:07:04', 'USR-ADMIN'),
 	('DRFT-0B2F85F3', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-9B75E8C1', 'USR-ADMIN', '2026-11-11 14:10:41', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 100, '2026-11-11 14:10:41', 'USR-ADMIN', '2026-11-11 14:10:41', 'USR-ADMIN'),
 	('DRFT-0EB51311', 1, 121, 0, '6', '', '', '123', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-A16D157E', 'USR-ADMIN', '2026-11-10 17:11:14', '2026-01-01 00:00:00', '2026-11-10 17:11:14', 'USR-ADMIN', '', '2026-11-10 17:11:14', 0, 0, '', 0, 0, 999, 1, 1, '2026-11-10 17:11:14', 'USR-ADMIN', '2026-11-10 17:36:02', 'USR-ADMIN'),
 	('DRFT-28A74436', 1, 121, 0, '18', '', '', 'test1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-852BF056', 'USR-ADMIN', '2026-11-10 17:52:08', '2026-01-01 00:00:00', '2026-11-12 00:00:00', 'USR-ADMIN', '', '2026-11-12 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:52:08', 'USR-ADMIN', '2026-11-10 17:57:02', 'USR-ADMIN'),
+	('DRFT-45407F82', 1, 121, 0, '18', '', '', 'test 123', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-0C41009D', 'USR-ADMIN', '2026-12-01 00:00:00', '2026-01-01 00:00:00', '2026-12-01 00:00:00', 'USR-ADMIN', '', '2026-12-04 00:00:00', 0, 0, '', 0, 0, 999, 1, 0, '2026-11-25 14:18:10', 'USR-ADMIN', '2026-11-25 14:41:05', 'USR-ADMIN'),
+	('DRFT-4EE3AA36', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-EB4A08BB', 'USR-ADMIN', '2026-11-25 15:06:09', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-25 15:06:09', 'USR-ADMIN', '2026-11-25 15:07:04', 'USR-ADMIN'),
 	('DRFT-556DB018', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-F0326A17', 'USR-ADMIN', '2026-11-11 14:01:45', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 100, '2026-11-11 14:01:45', 'USR-ADMIN', '2026-11-11 14:01:45', 'USR-ADMIN'),
 	('DRFT-55A8E7F0', 1, 121, 0, '8', '', '', 'tesr2', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-A16D157E', 'USR-ADMIN', '2026-11-10 17:37:08', '2026-01-01 00:00:00', '2026-11-11 00:00:00', 'USR-ADMIN', '', '2026-11-11 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:37:08', 'USR-ADMIN', '2026-11-10 17:37:23', 'USR-ADMIN'),
 	('DRFT-6343BFE9', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-2E85C598', 'USR-ADMIN', '2026-11-10 18:12:12', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 18:12:12', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN'),
-	('DRFT-864C6DCB', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-0C41009D', 'USR-ADMIN', '2026-11-11 15:05:06', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 1, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-11 15:05:06', 'USR-ADMIN'),
+	('DRFT-864C6DCB', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-0C41009D', 'USR-ADMIN', '2026-11-11 15:05:06', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-25 14:41:05', 'USR-ADMIN'),
+	('DRFT-8FE10AAA', 1, 121, 0, '4', '', '', 't123', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-0C41009D', 'USR-ADMIN', '2026-12-02 00:00:00', '2026-01-01 00:00:00', '2026-12-02 00:00:00', 'USR-ADMIN', '', '2026-12-02 00:00:00', 0, 0, '', 0, 0, 999, 2, 0, '2026-11-25 14:40:57', 'USR-ADMIN', '2026-11-25 14:41:05', 'USR-ADMIN'),
 	('DRFT-9956D6D5', 1, 121, 0, '6', '', '', 'tesr 3', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-A16D157E', 'USR-ADMIN', '2026-11-10 17:14:21', '2026-01-01 00:00:00', '2026-11-13 00:00:00', 'USR-8E476F10', '', '2026-11-10 17:14:21', 0, 0, '', 0, 0, 999, 2, 1, '2026-11-10 17:14:21', 'USR-ADMIN', '2026-11-10 17:36:02', 'USR-ADMIN'),
+	('DRFT-A7E2D0CF', 1, 121, 0, '14', '', '', 'desc 1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-12-01 00:00:00', '2026-01-01 00:00:00', '2026-12-01 00:00:00', 'USR-ADMIN', '', '2026-12-01 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-25 14:42:23', 'USR-ADMIN', '2026-11-25 14:42:31', 'USR-ADMIN'),
 	('DRFT-C234677F', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-11-11 15:35:49', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-11 15:35:49', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN'),
 	('DRFT-D8D80021', 1, 121, 0, '19', '', '', 'test 1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-852BF056', 'USR-ADMIN', '2026-11-10 17:51:57', '2026-01-01 00:00:00', '2026-11-10 00:00:00', 'USR-ADMIN', '', '2026-11-10 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:51:57', 'USR-ADMIN', '2026-11-10 17:57:02', 'USR-ADMIN'),
 	('DRFT-E43A4188', 1, 120, 0, '14', '', '', 'uat1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-852BF056', 'USR-ADMIN', '2026-11-10 17:52:17', '2026-01-01 00:00:00', '2026-11-22 00:00:00', 'USR-ADMIN', '', '2026-11-22 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-10 17:52:17', 'USR-ADMIN', '2026-11-10 17:57:02', 'USR-ADMIN'),
-	('DRFT-F1E3EDD3', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-11-11 15:43:06', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 1, '2026-11-11 15:43:06', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN');
+	('DRFT-F1E3EDD3', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-11-11 15:43:06', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 0, '2026-11-11 15:43:06', 'USR-ADMIN', '2026-11-25 14:42:31', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.project_type
 CREATE TABLE IF NOT EXISTS `project_type` (
@@ -465,9 +521,9 @@ CREATE TABLE IF NOT EXISTS `project_users` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=524 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=569 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.project_users: ~112 rows (approximately)
+-- Dumping data for table thinktank-ticket.project_users: ~109 rows (approximately)
 INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(7, 'PRJ-54E3A483', 'USR-8C76A791', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
 	(8, 'PRJ-54E3A483', 'USR-ADMIN', 0, 1, '2026-07-13 16:00:18', 'USR-ADMIN', '2026-07-13 16:00:18', 'USR-ADMIN'),
@@ -569,18 +625,20 @@ INSERT INTO `project_users` (`id`, `projectId`, `userId`, `asManager`, `presence
 	(455, 'PRJ-5531ACE6', 'USR-ADMIN', 1, 1, '2026-11-10 18:04:46', 'USR-ADMIN', '2026-11-10 18:04:46', 'USR-ADMIN'),
 	(472, 'PRJ-AD1F6D4B', 'USR-8C76A791', 0, 1, '2026-11-10 18:11:34', 'USR-ADMIN', '2026-11-10 18:11:34', 'USR-ADMIN'),
 	(473, 'PRJ-AD1F6D4B', 'USR-ADMIN', 1, 1, '2026-11-10 18:11:34', 'USR-ADMIN', '2026-11-10 18:11:34', 'USR-ADMIN'),
-	(480, 'PRJ-2E85C598', 'USR-ADMIN', 1, 1, '2026-11-10 18:12:17', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN'),
-	(482, 'PRJ-32E08A77', 'USR-D0322088', 0, 1, '2026-11-10 18:27:56', 'USR-ADMIN', '2026-11-10 18:27:56', 'USR-ADMIN'),
-	(483, 'PRJ-32E08A77', 'USR-318754F4', 0, 1, '2026-11-10 18:27:56', 'USR-ADMIN', '2026-11-10 18:27:56', 'USR-ADMIN'),
-	(484, 'PRJ-32E08A77', 'USR-ADMIN', 0, 1, '2026-11-10 18:27:56', 'USR-ADMIN', '2026-11-10 18:27:56', 'USR-ADMIN'),
-	(516, 'PRJ-EB4A08BB', 'USR-75D1A3D2', 0, 1, '2026-11-11 13:16:52', 'USR-ADMIN', '2026-11-11 13:16:52', 'USR-ADMIN'),
-	(517, 'PRJ-EB4A08BB', 'USR-8E476F10', 0, 1, '2026-11-11 13:16:52', 'USR-ADMIN', '2026-11-11 13:16:52', 'USR-ADMIN'),
-	(518, 'PRJ-EB4A08BB', 'USR-ADMIN', 0, 1, '2026-11-11 13:16:52', 'USR-ADMIN', '2026-11-11 13:16:52', 'USR-ADMIN'),
 	(519, 'PRJ-F0326A17', 'USR-ADMIN', 1, 100, '2026-11-11 14:01:45', 'USR-ADMIN', '2026-11-11 14:01:45', 'USR-ADMIN'),
 	(520, 'PRJ-9B75E8C1', 'USR-ADMIN', 1, 100, '2026-11-11 14:10:41', 'USR-ADMIN', '2026-11-11 14:10:41', 'USR-ADMIN'),
-	(521, 'PRJ-0C41009D', 'USR-ADMIN', 1, 1, '2026-11-11 15:05:06', 'USR-ADMIN', '2026-11-11 15:05:06', 'USR-ADMIN'),
-	(522, 'PRJ-B287D0E1', 'USR-ADMIN', 1, 0, '2026-11-11 15:35:49', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN'),
-	(523, 'PRJ-B287D0E1', 'USR-ADMIN', 1, 1, '2026-11-11 15:43:06', 'USR-ADMIN', '2026-11-11 15:43:06', 'USR-ADMIN');
+	(532, 'PRJ-0C41009D', 'USR-8C76A791', 0, 1, '2026-11-25 14:41:05', 'USR-ADMIN', '2026-11-25 14:41:05', 'USR-ADMIN'),
+	(533, 'PRJ-0C41009D', 'USR-ADMIN', 1, 1, '2026-11-25 14:41:05', 'USR-ADMIN', '2026-11-25 14:41:05', 'USR-ADMIN'),
+	(534, 'PRJ-B287D0E1', 'USR-ADMIN', 1, 1, '2026-11-25 14:42:31', 'USR-ADMIN', '2026-11-25 14:42:31', 'USR-ADMIN'),
+	(554, 'PRJ-32E08A77', 'USR-D0322088', 0, 1, '2026-11-25 15:06:41', 'USR-ADMIN', '2026-11-25 15:06:41', 'USR-ADMIN'),
+	(555, 'PRJ-32E08A77', 'USR-318754F4', 0, 1, '2026-11-25 15:06:41', 'USR-ADMIN', '2026-11-25 15:06:41', 'USR-ADMIN'),
+	(556, 'PRJ-32E08A77', 'USR-ADMIN', 0, 1, '2026-11-25 15:06:41', 'USR-ADMIN', '2026-11-25 15:06:41', 'USR-ADMIN'),
+	(563, 'PRJ-EB4A08BB', 'USR-75D1A3D2', 0, 1, '2026-11-25 15:30:36', 'USR-ADMIN', '2026-11-25 15:30:36', 'USR-ADMIN'),
+	(564, 'PRJ-EB4A08BB', 'USR-8E476F10', 0, 1, '2026-11-25 15:30:36', 'USR-ADMIN', '2026-11-25 15:30:36', 'USR-ADMIN'),
+	(565, 'PRJ-EB4A08BB', 'USR-ADMIN', 1, 1, '2026-11-25 15:30:36', 'USR-ADMIN', '2026-11-25 15:30:36', 'USR-ADMIN'),
+	(566, 'PRJ-2E85C598', 'USR-ADMIN', 1, 1, '2026-11-25 17:21:19', 'USR-ADMIN', '2026-11-25 17:21:19', 'USR-ADMIN'),
+	(567, 'PRJ-2E85C598', 'USR-12788040', 0, 1, '2026-11-25 17:21:19', 'USR-ADMIN', '2026-11-25 17:21:19', 'USR-ADMIN'),
+	(568, 'PRJ-2E85C598', 'USR-318754F4', 0, 1, '2026-11-25 17:21:19', 'USR-ADMIN', '2026-11-25 17:21:19', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.rating
 CREATE TABLE IF NOT EXISTS `rating` (
@@ -597,11 +655,11 @@ CREATE TABLE IF NOT EXISTS `rating` (
 
 -- Dumping data for table thinktank-ticket.rating: ~5 rows (approximately)
 INSERT INTO `rating` (`id`, `name`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	(10, 'Secara keseluruhan, seberapa puas Anda dengan produk/layanan kami hari ini?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
+	(10, 'Secara keseluruhan, seberapa puas Anda dengan produk/layanan kami hari ini?', 1, 1, '2025-01-01 00:00:00', 1, '2026-11-25 16:03:33', 1),
 	(11, 'Bagaimana Anda menilai kualitas dari produk/layanan yang Anda terima?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(12, 'Seberapa mudah bagi Anda untuk menyelesaikan transaksi/menemukan apa yang Anda butuhkan?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(13, 'Bagaimana penilaian Anda terhadap keramahan dan kecepatan tim kami dalam membantu Anda?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
-	(14, 'Seberapa besar kemungkinan Anda merekomendasikan [Nama Bisnis/Produk] kepada teman atau kolega Anda?', 1, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1);
+	(14, 'Seberapa besar kemungkinan Anda merekomendasikan [Nama Bisnis/Produk] kepada teman atau kolega Anda?', 1, 0, '2025-01-01 00:00:00', 1, '2026-11-25 16:03:41', 1);
 
 -- Dumping structure for table thinktank-ticket.template
 CREATE TABLE IF NOT EXISTS `template` (
@@ -649,7 +707,7 @@ CREATE TABLE IF NOT EXISTS `template_project` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template_project: ~1 rows (approximately)
+-- Dumping data for table thinktank-ticket.template_project: ~0 rows (approximately)
 INSERT INTO `template_project` (`id`, `templateId`, `name`, `projectTypeId`, `projectBilleableId`, `productId`, `ticketCategoriesParentId`, `ticketBaseHours`, `clientId`, `startDate`, `endDate`, `status`, `templateMaster`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	('PRJ-920C04C1', 13, 'test 123', 1, 1, 1, 113, 20, '351', '2026-11-10', '2026-11-10', 1, '0', 1, '2026-11-11 15:01:27', 'USR-ADMIN', '2026-11-11 15:01:27', 'USR-ADMIN');
 
@@ -712,7 +770,7 @@ CREATE TABLE IF NOT EXISTS `template_project_ticket_draft` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template_project_ticket_draft: ~1 rows (approximately)
+-- Dumping data for table thinktank-ticket.template_project_ticket_draft: ~0 rows (approximately)
 INSERT INTO `template_project_ticket_draft` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `projectSorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	('DRFT-7C75E12D', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-920C04C1', 'USR-ADMIN', '2026-11-11 15:01:27', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 0, 0, '', 0, 0, 999, 999, 1, '2026-11-11 15:01:27', 'USR-ADMIN', '2026-11-11 15:01:27', 'USR-ADMIN');
 
@@ -730,7 +788,7 @@ CREATE TABLE IF NOT EXISTS `template_project_users` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=522 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.template_project_users: ~1 rows (approximately)
+-- Dumping data for table thinktank-ticket.template_project_users: ~0 rows (approximately)
 INSERT INTO `template_project_users` (`id`, `projectId`, `userId`, `asManager`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(521, 'PRJ-920C04C1', 'USR-ADMIN', 1, 1, '2026-11-11 15:01:27', 'USR-ADMIN', '2026-11-11 15:01:27', 'USR-ADMIN');
 
@@ -777,10 +835,15 @@ CREATE TABLE IF NOT EXISTS `ticket` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket: ~2 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket: ~7 rows (approximately)
 INSERT INTO `ticket` (`id`, `ticketTypeId`, `ticketCategoryId`, `ticketSeverityId`, `productChildId`, `crNoRef`, `issueNo`, `title`, `description`, `responseDateTime`, `lockTime`, `targetCompletationDateTime`, `actualWorkingDateTime`, `verificationDateTime`, `verificationHour`, `actualWorkingHour`, `ticketSolutionTimeId`, `responseHour`, `projectId`, `submitBy`, `submitDate`, `deadlineDateTime`, `targetCompletionDate`, `assignTo`, `taskSolution`, `actualCompletionDate`, `ticketStatusId`, `rating`, `ratesBy`, `ticketEstimationCost`, `hours`, `sorting`, `projectSorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
-	('TA000098', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-2E85C598', 'USR-ADMIN', '2026-11-10 18:12:17', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 1, 0, '', 0, 0, 999, 999, 1, '2026-11-10 18:12:17', 'USR-ADMIN', '2026-11-10 18:12:17', 'USR-ADMIN'),
-	('TA000099', 1, 122, 0, '14', '', '', 'gogg', 'ok', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-2E85C598', 'USR-ADMIN', '2026-11-11 16:03:51', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 1, 0, '', 0, 0, 999, 999, 1, '2026-11-11 16:03:52', '1', '2026-11-11 16:03:52', '1');
+	('CR000009', 3, 121, 0, '5', '', '', '123123', '<p>13123123</p>', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-0C41009D', 'USR-ADMIN', '2026-11-25 16:20:09', '2026-11-25 16:20:09', '2026-11-26 00:00:00', 'USR-ADMIN', '', '2026-11-25 16:20:20', 900, 0, '', 0, 0, 999, 999, 1, '2026-11-25 16:20:09', '1', '2026-11-25 16:20:20', 'USR-ADMIN'),
+	('IS000085', 2, 121, 10, '4', '', '', '123', '<p>123adsf</p>', '2026-11-25 16:14:00', 1, '2026-11-25 19:14:00', '2026-11-25 16:14:46', '2026-11-25 16:14:46', 0, 0, 102, 3, 'PRJ-0C41009D', 'USR-ADMIN', '2026-11-25 16:14:33', '2026-11-30 16:14:33', '2026-11-30 16:14:33', 'USR-ADMIN', '<p>asdfasdf</p>', '2026-11-25 16:15:02', 900, 3, 'USR-ADMIN', 0, 0, 999, 999, 1, '2026-11-25 16:14:33', '1', '2026-11-25 16:15:10', 'USR-ADMIN'),
+	('TA000103', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-11-25 14:42:31', '2026-01-01 00:00:00', '2026-11-28 00:00:00', 'USR-ADMIN', '', '2026-11-28 00:00:00', 1, 0, '', 0, 0, 999, 999, 1, '2026-11-25 14:42:31', 'USR-ADMIN', '2026-11-25 14:42:31', 'USR-ADMIN'),
+	('TA000104', 1, 121, 0, '14', '', '', 'desc 1', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.45, 0, 0, 'PRJ-B287D0E1', 'USR-ADMIN', '2026-11-25 14:42:31', '2026-01-01 00:00:00', '2027-02-14 00:00:00', 'USR-ADMIN', '', '2026-11-25 15:09:34', 1, 0, '', 0, 0, 999, 999, 1, '2026-11-25 14:42:31', 'USR-ADMIN', '2026-11-25 15:09:34', 'USR-ADMIN'),
+	('TA000105', 1, 122, 0, '14', '', '', 'gogg', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0.9667, 0, 0, 'PRJ-EB4A08BB', 'USR-ADMIN', '2026-11-25 15:06:09', '2026-01-01 00:00:00', '2026-11-29 00:00:00', 'USR-ADMIN', '', '2026-11-25 16:04:31', 900, 0, '', 0, 0, 999, 999, 1, '2026-11-25 15:07:04', 'USR-ADMIN', '2026-11-25 16:04:31', 'USR-ADMIN'),
+	('TA000106', 1, 121, 0, '19', '', '', 'desc 2', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, 0, 0, 0, 'PRJ-EB4A08BB', 'USR-ADMIN', '2026-12-03 00:00:00', '2026-01-01 00:00:00', '2026-12-03 00:00:00', 'USR-75D1A3D2', '', '2026-12-03 00:00:00', 100, 0, '', 0, 0, 999, 999, 1, '2026-11-25 15:07:04', 'USR-ADMIN', '2026-11-25 15:30:27', 'USR-ADMIN'),
+	('TA000107', 1, 121, 0, '4', '', '', 'tes 20924', '', '2026-01-01 00:00:00', 0, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 0, -895.917, 0, 0, 'PRJ-EB4A08BB', 'USR-ADMIN', '2027-01-02 00:00:00', '2026-01-01 00:00:00', '2027-02-27 00:00:00', 'USR-ADMIN', '', '2026-11-25 16:04:19', 900, 0, '', 0, 0, 999, 999, 1, '2026-11-25 15:21:50', 'USR-ADMIN', '2026-11-25 16:04:19', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_balance
 CREATE TABLE IF NOT EXISTS `ticket_balance` (
@@ -798,9 +861,9 @@ CREATE TABLE IF NOT EXISTS `ticket_balance` (
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `projectId` (`projectId`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_balance: ~47 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_balance: ~44 rows (approximately)
 INSERT INTO `ticket_balance` (`id`, `projectId`, `note`, `ticketId`, `date`, `ticketIn`, `ticketOut`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(4, 't3', '', '', '2026-06-10 16:58:11', 10, 0, 1, '2026-06-10 16:58:11', 1, '2026-06-10 16:58:11', 1),
 	(5, 't3', '', '', '2026-06-10 16:58:11', 0, 3, 1, '2026-06-10 16:58:11', 1, '2026-06-10 16:58:11', 1),
@@ -848,7 +911,14 @@ INSERT INTO `ticket_balance` (`id`, `projectId`, `note`, `ticketId`, `date`, `ti
 	(47, 'PRJ-6628F029', '', 'CR000003', '2026-09-22 14:44:07', 0, 0, 1, '2026-09-22 14:44:07', 0, '2025-01-01 00:00:00', 1),
 	(51, 'PRJ-6628F029', '', 'IS000070', '2026-10-01 15:22:53', 0, 4, 1, '2026-10-01 15:22:53', 0, '2025-01-01 00:00:00', 1),
 	(52, 'PRJ-E99C795A', '', 'IS000071', '2026-10-01 15:22:53', 0, 0, 1, '2026-10-01 15:22:53', 0, '2025-01-01 00:00:00', 1),
-	(53, 'PRJ-6628F029', '', 'IS000073', '2026-10-01 15:22:53', 0, 0, 1, '2026-10-01 15:22:53', 0, '2025-01-01 00:00:00', 1);
+	(53, 'PRJ-6628F029', '', 'IS000073', '2026-10-01 15:22:53', 0, 0, 1, '2026-10-01 15:22:53', 0, '2025-01-01 00:00:00', 1),
+	(54, 'PRJ-2E85C598', '', 'IS000083', '2026-11-18 16:28:41', 0, 0, 1, '2026-11-18 16:28:41', 0, '2025-01-01 00:00:00', 1),
+	(55, 'PRJ-2E85C598', '', 'IS000084', '2026-11-18 16:54:09', 0, 2, 1, '2026-11-18 16:54:09', 0, '2025-01-01 00:00:00', 1),
+	(56, 'PRJ-2E85C598', 'topup', '', '2026-11-18 10:02:55', 100, 0, 1, '2026-11-18 17:02:55', 1, '2026-11-18 17:02:55', 1),
+	(57, 'PRJ-2E85C598', '123', '', '2026-11-18 17:12:23', 12, 0, 1, '2026-11-18 17:12:24', 1, '2026-11-18 17:12:24', 1),
+	(58, 'PRJ-2E85C598', 'tiop upa', '', '2026-11-18 17:12:44', 2, 0, 1, '2026-11-18 17:12:44', 1, '2026-11-18 17:12:44', 1),
+	(59, 'PRJ-0C41009D', '', 'IS000085', '2026-11-25 16:15:02', 0, 0, 1, '2026-11-25 16:15:02', 0, '2025-01-01 00:00:00', 1),
+	(60, 'PRJ-0C41009D', '', 'CR000009', '2026-11-25 16:20:20', 0, 0, 1, '2026-11-25 16:20:20', 0, '2025-01-01 00:00:00', 1);
 
 -- Dumping structure for table thinktank-ticket.ticket_categories
 CREATE TABLE IF NOT EXISTS `ticket_categories` (
@@ -918,15 +988,22 @@ CREATE TABLE IF NOT EXISTS `ticket_checklist` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT 'mysql',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_checklist: ~5 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_checklist: ~11 rows (approximately)
 INSERT INTO `ticket_checklist` (`id`, `ticketId`, `ticketChecklistId`, `status`, `description`, `sorting`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(3, 'TA000083', 0, 0, 'ok 1', 1, 0, '2026-11-09 14:20:50', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN'),
 	(4, 'TA000083', 3, 1, '123', 1, 0, '2026-11-09 14:20:59', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN'),
 	(5, 'TA000083', 3, 0, '123 asdf asdf', 3, 0, '2026-11-09 14:21:03', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN'),
 	(6, 'TA000083', 0, 0, 'list module', 2, 0, '2026-11-09 14:22:32', 'USR-ADMIN', '2026-11-09 14:47:58', 'USR-ADMIN'),
-	(7, 'TA000083', 3, 1, '123', 2, 0, '2026-11-09 14:31:08', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN');
+	(7, 'TA000083', 3, 1, '123', 2, 0, '2026-11-09 14:31:08', 'USR-ADMIN', '2026-11-09 14:47:54', 'USR-ADMIN'),
+	(10, 'TA000099', 0, 0, 'tet13', 1, 1, '2026-11-17 15:36:24', 'USR-ADMIN', '2026-11-17 15:36:24', 'USR-ADMIN'),
+	(11, 'TA000099', 0, 0, 'parent2', 2, 1, '2026-11-17 15:36:31', 'USR-ADMIN', '2026-11-17 15:36:31', 'USR-ADMIN'),
+	(12, 'TA000099', 0, 0, 'add 3', 3, 1, '2026-11-17 15:38:39', 'USR-ADMIN', '2026-11-17 15:38:39', 'USR-ADMIN'),
+	(13, 'TA000099', 10, 1, 'todo 2', 2, 0, '2026-11-17 15:39:16', 'USR-ADMIN', '2026-11-17 15:51:26', 'USR-ADMIN'),
+	(14, 'TA000099', 10, 1, 'todo 1', 2, 1, '2026-11-17 15:39:19', 'USR-ADMIN', '2026-11-24 14:54:59', 'USR-ADMIN'),
+	(15, 'TA000099', 11, 1, 'halo', 1, 1, '2026-11-17 15:49:22', 'USR-ADMIN', '2026-11-17 15:49:23', 'USR-ADMIN'),
+	(16, 'TA000099', 10, 1, 'tod1', 1, 1, '2026-11-24 14:54:47', 'USR-ADMIN', '2026-11-24 14:54:59', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_logs
 CREATE TABLE IF NOT EXISTS `ticket_logs` (
@@ -943,9 +1020,9 @@ CREATE TABLE IF NOT EXISTS `ticket_logs` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=364 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=377 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_logs: ~41 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_logs: ~54 rows (approximately)
 INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeDateTime`, `description`, `presence`, `inputBySystem`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(323, 0, 'TA000079', '2026-10-12 21:12:00', '2026-10-12 21:13:00', '<p>admin2@<a href="thinktank.local" target="_blank">thinktank.local</a></p>', 1, 0, '2026-10-12 21:12:43', 'USR-ADMIN', '2026-10-12 21:12:43', 'USR-ADMIN'),
 	(324, 0, 'TA000079', '2026-10-12 21:13:00', '2026-10-12 21:14:00', '<p>admin</p>', 1, 0, '2026-10-12 21:13:18', 'USR-ADMIN', '2026-10-12 21:13:18', 'USR-ADMIN'),
@@ -987,7 +1064,20 @@ INSERT INTO `ticket_logs` (`id`, `parentId`, `ticketId`, `starDateTime`, `closeD
 	(360, 0, 'TA000082', '2026-10-28 16:35:35', '2026-10-28 16:35:35', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong> ', 1, 0, '2026-10-28 16:35:35', 'USR-ADMIN', '2026-10-28 16:35:35', 'USR-ADMIN'),
 	(361, 0, 'TA000083', '2026-11-09 13:26:50', '2026-11-09 13:26:50', 'Update Status from <strong>Open</strong> To  <strong>In Progress</strong> ', 1, 0, '2026-11-09 13:26:50', 'USR-ADMIN', '2026-11-09 13:26:50', 'USR-ADMIN'),
 	(362, 0, 'TA000092', '2026-11-09 16:16:19', '2026-11-09 16:16:19', 'Update Status from <strong>Open</strong> To  <strong>Cancelled</strong> ', 1, 0, '2026-11-09 16:16:19', 'USR-ADMIN', '2026-11-09 16:16:19', 'USR-ADMIN'),
-	(363, 0, 'TA000091', '2026-11-09 16:16:48', '2026-11-09 16:16:48', 'Update Assignee from <strong>Admin2 thinktank</strong> To  <strong>Admin2 TTS</strong> ', 1, 0, '2026-11-09 16:16:48', 'USR-ADMIN', '2026-11-09 16:16:48', 'USR-ADMIN');
+	(363, 0, 'TA000091', '2026-11-09 16:16:48', '2026-11-09 16:16:48', 'Update Assignee from <strong>Admin2 thinktank</strong> To  <strong>Admin2 TTS</strong> ', 1, 0, '2026-11-09 16:16:48', 'USR-ADMIN', '2026-11-09 16:16:48', 'USR-ADMIN'),
+	(364, 0, 'IS000083', '2026-11-18 16:10:00', '2026-11-18 19:10:00', 'Submit IN-PROGRESS: response <strong>2026-11-18 16:10:00</strong>, target completion <strong>2026-11-18 19:10:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-11-18 16:11:32', 'USR-ADMIN', '2026-11-18 16:11:32', 'USR-ADMIN'),
+	(365, 0, 'IS000083', '2026-11-18 16:26:14', '2026-11-18 16:26:14', 'Submit Verification: assign to <strong>Client 200 Demo</strong>', 1, 0, '2026-11-18 16:26:14', 'DEMO1', '2026-11-18 16:26:14', 'DEMO1'),
+	(366, 0, 'IS000083', '2026-11-18 16:28:41', '2026-11-18 16:28:41', 'Update Status from <strong>Verified</strong> To <strong>Closed</strong>', 1, 0, '2026-11-18 16:28:41', 'DEMO1', '2026-11-18 16:28:41', 'DEMO1'),
+	(367, 0, 'IS000084', '2026-11-18 16:53:00', '2026-11-18 19:53:00', 'Submit IN-PROGRESS: response <strong>2026-11-18 16:53:00</strong>, target completion <strong>2026-11-18 19:53:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-11-18 16:53:29', 'USR-ADMIN', '2026-11-18 16:53:29', 'USR-ADMIN'),
+	(368, 0, 'IS000084', '2026-11-18 16:53:56', '2026-11-18 16:53:56', 'Submit Verification: assign to <strong>System Admin</strong>', 1, 0, '2026-11-18 16:53:56', 'DEMO1', '2026-11-18 16:53:56', 'DEMO1'),
+	(369, 0, 'IS000084', '2026-11-18 16:54:09', '2026-11-18 16:54:09', 'Update Status from <strong>Verified</strong> To <strong>Closed</strong>', 1, 0, '2026-11-18 16:54:09', 'DEMO1', '2026-11-18 16:54:09', 'DEMO1'),
+	(370, 0, 'TA000106', '2026-11-25 15:30:27', '2026-11-25 15:30:27', 'Update Status from <strong>Open</strong> To  <strong>In Progress</strong> ', 1, 0, '2026-11-25 15:30:27', 'USR-ADMIN', '2026-11-25 15:30:27', 'USR-ADMIN'),
+	(371, 0, 'TA000107', '2026-11-25 16:04:19', '2026-11-25 16:04:19', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong> ', 1, 0, '2026-11-25 16:04:19', 'USR-ADMIN', '2026-11-25 16:04:19', 'USR-ADMIN'),
+	(372, 0, 'TA000105', '2026-11-25 16:04:31', '2026-11-25 16:04:31', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong> ', 1, 0, '2026-11-25 16:04:31', 'USR-ADMIN', '2026-11-25 16:04:31', 'USR-ADMIN'),
+	(373, 0, 'IS000085', '2026-11-25 16:14:00', '2026-11-25 19:14:00', 'Submit IN-PROGRESS: response <strong>2026-11-25 16:14:00</strong>, target completion <strong>2026-11-25 19:14:00</strong>, response hour <strong>3</strong>, ticket solution time id <strong>102</strong>', 1, 0, '2026-11-25 16:14:34', 'USR-ADMIN', '2026-11-25 16:14:34', 'USR-ADMIN'),
+	(374, 0, 'IS000085', '2026-11-25 16:14:46', '2026-11-25 16:14:46', 'Submit Verification: assign to <strong>System Admin</strong>', 1, 0, '2026-11-25 16:14:46', 'USR-ADMIN', '2026-11-25 16:14:46', 'USR-ADMIN'),
+	(375, 0, 'IS000085', '2026-11-25 16:15:02', '2026-11-25 16:15:02', 'Verification: case <strong>IS000085</strong> Closed by <strong>USR-ADMIN</strong> (from <strong>Verified</strong>)', 1, 1, '2026-11-25 16:15:02', 'USR-ADMIN', '2026-11-25 16:15:02', 'USR-ADMIN'),
+	(376, 0, 'CR000009', '2026-11-25 16:20:20', '2026-11-25 16:20:20', 'Update Status from <strong>Open</strong> To  <strong>Closed</strong>', 1, 0, '2026-11-25 16:20:20', 'USR-ADMIN', '2026-11-25 16:20:20', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_logs_attachments
 CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
@@ -1004,7 +1094,7 @@ CREATE TABLE IF NOT EXISTS `ticket_logs_attachments` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table thinktank-ticket.ticket_logs_attachments: ~23 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_logs_attachments: ~19 rows (approximately)
 INSERT INTO `ticket_logs_attachments` (`id`, `ticketId`, `ticketLogId`, `originalName`, `filename`, `mimetype`, `size`, `url`, `inputDate`, `inputBy`) VALUES
 	(1, 'C22', 33, '9f602d89e09afc00586c4531712d98c0.jpg', '1782373257961-575028619.jpg', 'image/jpeg', 78999, 'http://localhost:3000/uploads/1782373257961-575028619.jpg', '2026-06-25 14:40:57', 'USR-ADMIN'),
 	(2, 'C22', 34, 'af9ba7cec186ceed2959188052710d88.jpg', '1782374733014-180734174.jpg', 'image/jpeg', 75719, 'http://localhost:3000/uploads/1782374733014-180734174.jpg', '2026-06-25 15:05:33', 'USR-ADMIN'),
@@ -1042,9 +1132,9 @@ CREATE TABLE IF NOT EXISTS `ticket_rating` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.ticket_rating: ~110 rows (approximately)
+-- Dumping data for table thinktank-ticket.ticket_rating: ~91 rows (approximately)
 INSERT INTO `ticket_rating` (`id`, `ticketId`, `value`, `ratingId`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(10, 'IS000022', 3, 10, 1, '2026-07-31 15:30:27', '0', '2026-07-31 15:30:27', '0'),
 	(11, 'IS000022', 3, 11, 1, '2026-07-31 15:30:27', '0', '2026-07-31 15:30:27', '0'),
@@ -1155,7 +1245,21 @@ INSERT INTO `ticket_rating` (`id`, `ticketId`, `value`, `ratingId`, `presence`, 
 	(116, 'IS000073', 3, 11, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
 	(117, 'IS000073', 3, 12, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
 	(118, 'IS000073', 3, 13, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
-	(119, 'IS000073', 3, 14, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN');
+	(119, 'IS000073', 3, 14, 1, '2026-10-01 14:38:39', 'USR-ADMIN', '2026-10-01 14:38:39', 'USR-ADMIN'),
+	(120, 'IS000083', 3, 10, 1, '2026-11-18 16:28:46', 'DEMO1', '2026-11-18 16:28:46', 'DEMO1'),
+	(121, 'IS000083', 3, 11, 1, '2026-11-18 16:28:46', 'DEMO1', '2026-11-18 16:28:46', 'DEMO1'),
+	(122, 'IS000083', 3, 12, 1, '2026-11-18 16:28:46', 'DEMO1', '2026-11-18 16:28:46', 'DEMO1'),
+	(123, 'IS000083', 3, 13, 1, '2026-11-18 16:28:46', 'DEMO1', '2026-11-18 16:28:46', 'DEMO1'),
+	(124, 'IS000083', 3, 14, 1, '2026-11-18 16:28:46', 'DEMO1', '2026-11-18 16:28:46', 'DEMO1'),
+	(125, 'IS000084', 3, 10, 1, '2026-11-18 16:54:10', 'DEMO1', '2026-11-18 16:54:10', 'DEMO1'),
+	(126, 'IS000084', 3, 11, 1, '2026-11-18 16:54:10', 'DEMO1', '2026-11-18 16:54:10', 'DEMO1'),
+	(127, 'IS000084', 3, 12, 1, '2026-11-18 16:54:10', 'DEMO1', '2026-11-18 16:54:10', 'DEMO1'),
+	(128, 'IS000084', 3, 13, 1, '2026-11-18 16:54:10', 'DEMO1', '2026-11-18 16:54:10', 'DEMO1'),
+	(129, 'IS000084', 3, 14, 1, '2026-11-18 16:54:10', 'DEMO1', '2026-11-18 16:54:10', 'DEMO1'),
+	(130, 'IS000085', 3, 10, 1, '2026-11-25 16:15:10', 'USR-ADMIN', '2026-11-25 16:15:10', 'USR-ADMIN'),
+	(131, 'IS000085', 3, 11, 1, '2026-11-25 16:15:10', 'USR-ADMIN', '2026-11-25 16:15:10', 'USR-ADMIN'),
+	(132, 'IS000085', 3, 12, 1, '2026-11-25 16:15:10', 'USR-ADMIN', '2026-11-25 16:15:10', 'USR-ADMIN'),
+	(133, 'IS000085', 3, 13, 1, '2026-11-25 16:15:10', 'USR-ADMIN', '2026-11-25 16:15:10', 'USR-ADMIN');
 
 -- Dumping structure for table thinktank-ticket.ticket_severity
 CREATE TABLE IF NOT EXISTS `ticket_severity` (
@@ -1282,7 +1386,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user: ~49 rows (approximately)
+-- Dumping data for table thinktank-ticket.user: ~48 rows (approximately)
 INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAuthLevelId`, `firstName`, `lastName`, `phone`, `mobile`, `birthday`, `division`, `position`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	('DEMO1', 'client2.demo@thinktank.local', 351, 2, '$2b$04$vpl.W2psDhKPJt3CdgMOUOPqdxu6dG3ORdEMUCHl5Fo65ZMzeTD3S', 2, 'Client 200', 'Demo', '021111111', '081200000002', '1992-02-02', 'Division', 'Position', 1, 1, '2026-06-10 15:53:03', 1, '2026-08-04 17:27:58', 1),
 	('DEMO2', 'client3.demo@thinktank.local', 351, 2, '$2b$04$vpl.W2psDhKPJt3CdgMOUOPqdxu6dG3ORdEMUCHl5Fo65ZMzeTD3S', 2, 'Client 300', 'Demo', '021111111', '081200000002', '1992-02-02', '', '', 1, 1, '2026-06-10 15:53:03', 1, '2026-06-10 15:53:03', 1),
@@ -1320,7 +1424,7 @@ INSERT INTO `user` (`id`, `email`, `clientId`, `userTypeId`, `password`, `userAu
 	('USR-9B8746FD', 'ext.1781164821.2@thinktank.local', 353, 2, '$2b$04$HtnLpRDw4ChNT73Uh26.s.GaDhDAKk2sWx03N2a2r6LDHYIhoT94O', 2, 'External', 'Two', NULL, NULL, '2000-01-01', '', '', 0, 1, '2026-06-11 15:00:21', 1, '2026-06-11 15:00:21', 1),
 	('USR-A9F434EE', 'baba@yayahocl.com', 364, 2, '$2b$04$c4ZHzod6q688eWqX2rlXEeOBbsEsYoRsrMEAcXqAkSG/MB9/jtmGS', 0, 'baba', '', '', '', '2000-01-01', '', '', 1, 1, '2026-09-30 22:43:32', 1, '2026-09-30 22:43:32', 1),
 	('USR-ACF74981', 'ABC3@admin.com', 0, 1, '$2b$04$nVrh9kgDLXkDYoexz4Kovu3vl64TkGYhS5/OR27I0ADyzR/260cZ2', 14, 'Admin3', 'ABC', NULL, NULL, '2000-01-01', 'Divisi', 'Posisi', 1, 1, '2026-08-14 15:29:22', 1, '2026-08-14 15:33:22', 1),
-	('USR-ADMIN', 'admin@thinktank.local', 0, 1, '$2b$04$pBuL95VqIupLzvuvu399huQEYeuC5bJbEfAU.6uo58Xq3xVIs6BLS', 1, 'System', 'Admin', '021000000', '081200000001', '1990-01-01', '', '', 1, 1, '2026-06-10 15:53:03', 1, '2026-11-10 17:03:41', 1),
+	('USR-ADMIN', 'admin@admin.com', 0, 1, '$2b$04$FfHp1JF1RoFbEmLbsIQYDuDBEwnO/qVSQtYOROHRN4btt6b7rPAU2', 1, 'System', 'Admin', '021000000', '081200000001', '1990-01-01', '', '', 1, 1, '2026-06-10 15:53:03', 1, '2026-11-25 14:40:24', 1),
 	('USR-B910B246', 'anggie@crm.co.id', 357, 2, '$2b$04$uVlvlM8yXEfyYFcyBSOHI.FwJXTrmFh0LYKikmYxRJ8.LvSBnKp/y', 0, 'abc', 'abc', '123', NULL, '2000-01-01', '', '', 1, 1, '2026-07-30 15:03:04', 1, '2026-07-30 15:03:04', 1),
 	('USR-B99A3272', 'admin2@TOP.COM', 0, 1, '$2b$04$mRE9Rc0Esw0HMGvTHLYCIe4UECOs1e4M7DRlZXMVEyozj2YZxolo.', 14, 'Admin', 'TOP', NULL, NULL, '2000-01-01', 'Division', 'Position', 1, 1, '2026-08-26 15:40:20', 1, '2026-08-26 15:40:20', 1),
 	('USR-CB2038BF', 'admin@cuan.com', 361, 2, '$2b$04$fPkfnSpThH8FDxAq6MxkKuyd4GY.c5Qs85BC2vYKv6SKS45XYdPZ.', 0, 'Admin', 'CUAN', '111111', NULL, '2000-01-01', 'Divisi', 'Posisi', 1, 1, '2026-08-26 15:59:31', 1, '2026-08-26 15:59:31', 1),
@@ -1350,9 +1454,9 @@ CREATE TABLE IF NOT EXISTS `user_access_right` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` smallint(6) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=447 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_access_right: ~96 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_access_right: ~92 rows (approximately)
 INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`, `d`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(351, 1, 0, 0, 0, 0, 0, 0, 1, '2025-01-01 00:00:00', 1, '2025-01-01 00:00:00', 1),
 	(352, 1, 1001, 1, 1, 1, 1, 0, 1, '2026-07-08 13:49:46', 1, '2026-09-11 17:52:58', 1),
@@ -1449,7 +1553,8 @@ INSERT INTO `user_access_right` (`id`, `authLevelId`, `moduleId`, `c`, `r`, `u`,
 	(443, 1, 1008, 1, 1, 1, 1, 0, 1, '2026-09-25 13:23:23', 1, '2026-09-25 13:23:23', 1),
 	(444, 1, 1009, 1, 1, 1, 1, 0, 1, '2026-09-29 15:43:20', 1, '2026-10-01 13:02:30', 1),
 	(445, 1, 5106, 1, 1, 1, 1, 0, 1, '2026-10-01 13:02:30', 1, '2026-10-01 13:02:30', 1),
-	(446, 1, 2000, 1, 1, 1, 1, 0, 1, '2026-10-19 21:46:36', 1, '2026-10-23 13:17:42', 1);
+	(446, 1, 2000, 1, 1, 1, 1, 0, 1, '2026-10-19 21:46:36', 1, '2026-10-23 13:17:42', 1),
+	(447, 1, 7001, 1, 1, 1, 1, 0, 1, '2026-11-16 14:26:50', 1, '2026-11-16 14:26:50', 1);
 
 -- Dumping structure for table thinktank-ticket.user_auth_level
 CREATE TABLE IF NOT EXISTS `user_auth_level` (
@@ -1489,9 +1594,9 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `updateDate` datetime NOT NULL DEFAULT '2025-01-01 00:00:00',
   `updateBy` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=326 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=339 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_login_history: ~321 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_login_history: ~258 rows (approximately)
 INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `userAgent`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-ADMIN', '2026-07-15 12:39:36', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(6, 'USR-ADMIN', '2026-07-15 17:50:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
@@ -1813,7 +1918,20 @@ INSERT INTO `user_login_history` (`id`, `userId`, `loginTime`, `ipAddress`, `use
 	(322, 'USR-ADMIN', '2026-11-09 18:12:07', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(323, 'USR-ADMIN', '2026-11-10 15:24:54', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
 	(324, 'USR-ADMIN', '2026-11-11 13:13:00', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
-	(325, 'USR-ADMIN', '2026-11-16 13:53:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
+	(325, 'USR-ADMIN', '2026-11-16 13:53:51', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(326, 'USR-ADMIN', '2026-11-16 14:26:52', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(327, 'USR-ADMIN', '2026-11-16 17:25:29', '::1', 'Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.6456', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(328, 'USR-ADMIN', '2026-11-17 15:36:11', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(329, 'DEMO1', '2026-11-17 16:51:37', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(330, 'DEMO1', '2026-11-18 14:12:49', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(331, 'USR-ADMIN', '2026-11-18 14:33:47', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(332, 'DEMO1', '2026-11-18 17:36:45', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(333, 'USR-ADMIN', '2026-11-24 14:24:41', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(334, 'USR-ADMIN', '2026-11-24 14:31:41', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(335, 'USR-ADMIN', '2026-11-25 14:17:49', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(336, 'USR-ADMIN', '2026-11-25 14:40:14', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(337, 'USR-ADMIN', '2026-11-25 15:21:22', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', ''),
+	(338, 'USR-ADMIN', '2026-11-27 15:07:14', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36', 1, '2025-01-01 00:00:00', '', '2025-01-01 00:00:00', '');
 
 -- Dumping structure for table thinktank-ticket.user_product
 CREATE TABLE IF NOT EXISTS `user_product` (
@@ -1829,7 +1947,7 @@ CREATE TABLE IF NOT EXISTS `user_product` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table thinktank-ticket.user_product: ~12 rows (approximately)
+-- Dumping data for table thinktank-ticket.user_product: ~11 rows (approximately)
 INSERT INTO `user_product` (`id`, `userId`, `productId`, `status`, `presence`, `inputDate`, `inputBy`, `updateDate`, `updateBy`) VALUES
 	(5, 'USR-75D1A3D2', 1, 1, 1, '2026-10-27 12:57:18', 'USR-ADMIN', '2026-10-27 12:57:18', 'USR-ADMIN'),
 	(6, 'USR-75D1A3D2', 3, 1, 1, '2026-10-27 12:57:18', 'USR-ADMIN', '2026-10-27 12:57:18', 'USR-ADMIN'),
